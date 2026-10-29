@@ -810,26 +810,35 @@
       setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy URL'; }, 2000);
     });
 
-    function connectSetupToSB() {
+function connectSetupToSB() {
       const state = getSetupState();
       if (sbAdminClient) {
         try { sbAdminClient.disconnect(); } catch (e) {}
       }
 
-      const clientOptions = { host: state.host, port: parseInt(state.port, 10), endpoint: '/' };
-      if (state.password) clientOptions.password = state.password;
+      const clientOptions = {
+        host: state.host,
+        port: parseInt(state.port, 10),
+        endpoint: '/',
+        subscribe: {
+          General: ['Custom']
+        },
+        onConnect: () => {
+          sbStatusBadge.classList.add('connected');
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected';
+        },
+        onDisconnect: () => {
+          sbStatusBadge.classList.remove('connected');
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected';
+        }
+      };
+
+      // Only attach password if the user typed one
+      if (state.password) {
+        clientOptions.password = state.password;
+      }
 
       sbAdminClient = new StreamerbotClient(clientOptions);
-
-      sbAdminClient.on('Connect', () => {
-        sbStatusBadge.classList.add('connected');
-        sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected';
-      });
-
-      sbAdminClient.on('Disconnect', () => {
-        sbStatusBadge.classList.remove('connected');
-        sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected';
-      });
 
       sbAdminClient.on('General.Custom', (payload) => {
         let data = payload.data || payload;

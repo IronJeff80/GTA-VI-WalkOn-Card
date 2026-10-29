@@ -162,14 +162,22 @@ class GTAWalkOnOverlay {
     });
   }
 
-  initWebSocket() {
+initWebSocket() {
     if (typeof StreamerbotClient === 'undefined') return;
 
     const clientOptions = {
       host: this.config.host,
       port: this.config.port,
       endpoint: this.config.endpoint,
-      subscribe: { General: ['Custom'] }
+      subscribe: {
+        General: ['Custom']
+      },
+      onConnect: () => {
+        console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
+      },
+      onDisconnect: () => {
+        console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
+      }
     };
 
     if (this.config.password) {
@@ -177,14 +185,6 @@ class GTAWalkOnOverlay {
     }
 
     this.client = new StreamerbotClient(clientOptions);
-
-    this.client.on('Connect', () => {
-      console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
-    });
-
-    this.client.on('Disconnect', () => {
-      console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
-    });
 
     this.client.on('General.Custom', (payload) => {
       let data = payload.data || payload;
