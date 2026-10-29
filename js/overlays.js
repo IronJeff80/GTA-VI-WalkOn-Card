@@ -21,13 +21,13 @@ const GTAOverlayConfig = (() => {
   }
 
   return {
-    // Streamer.bot WebSocket Config
+    previewMode: params.get('preview') === '1',
     host: params.get('host') || '127.0.0.1',
     port: parseInt(params.get('port') || '8080', 10),
     endpoint: params.get('endpoint') || '/',
+    password: params.get('password') || '',
     eventName: params.get('event') || 'MemberWalkOn',
 
-    // Layout & Visuals
     posX: params.get('x') || '60',
     posY: params.get('y') || '60',
     scale: params.get('scale') || '1',
@@ -38,7 +38,6 @@ const GTAOverlayConfig = (() => {
     fontBody: params.get('fontBody') || 'Inter',
     bgUrl: params.get('bg') || 'assets/gta6-bg.webp',
 
-    // Custom Colors
     colors: {
       pink:       params.get('cPink')   || '#f4acc4',
       teal:       params.get('cTeal')   || '#53d8bf',
@@ -49,7 +48,6 @@ const GTAOverlayConfig = (() => {
       bgFill:     params.get('cBg')     || '#303030'
     },
 
-    // Core Header Variables & Dynamic Stat Rows
     varAvatar: params.get('vAvatar') || 'avatarUrl',
     varTier:   params.get('vTier')   || 'levelName',
     stats:     Array.isArray(parsedStats) ? parsedStats : DEFAULT_STAT_ROWS
@@ -62,6 +60,7 @@ class GTAWalkOnOverlay {
     this.client = null;
     this.isAnimating = false;
     this.queue = [];
+    this.lastData = {};
 
     this.dom = {
       container:  document.getElementById('walkon-container'),
@@ -74,6 +73,11 @@ class GTAWalkOnOverlay {
 
     this.applyConfiguration();
     this.renderStatRows({});
+
+    if (this.config.previewMode) {
+      this.setPreviewPinned(true);
+    }
+
     this.initWebSocket();
     this.initPostMessageBridge();
   }
@@ -81,14 +85,12 @@ class GTAWalkOnOverlay {
   applyConfiguration() {
     const root = document.documentElement;
 
-    // Position & Fonts
     root.style.setProperty('--card-x', `${this.config.posX}px`);
     root.style.setProperty('--card-y', `${this.config.posY}px`);
     root.style.setProperty('--card-scale', this.config.scale);
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
     root.style.setProperty('--font-body', `'${this.config.fontBody}', sans-serif`);
 
-    // Palette Overrides
     root.style.setProperty('--gta-pink', this.config.colors.pink);
     root.style.setProperty('--gta-teal', this.config.colors.teal);
     root.style.setProperty('--gta-purple', this.config.colors.purple);
@@ -112,7 +114,19 @@ class GTAWalkOnOverlay {
     }
   }
 
-  // Dynamically builds the stat rows based on user configuration
+  setPreviewPinned(pinned) {
+    this.config.previewMode = pinned;
+    if (this.isAnimating) return;
+
+    if (pinned) {
+      this.dom.container.classList.remove('animate-out');
+      this.dom.container.classList.add('animate-in');
+    } else {
+      this.dom.container.classList.remove('animate-in');
+      this.dom.container.classList.add('animate-out');
+    }
+  }
+
   renderStatRows(data = {}) {
     if (!this.dom.metaBox) return;
     this.dom.metaBox.innerHTML = '';
@@ -127,10 +141,11 @@ class GTAWalkOnOverlay {
     this.config.stats.forEach((stat, index) => {
       const row = document.createElement('div');
       row.className = 'meta-row';
-      // Stagger each row pop animation by 0.12s starting at 0.35s
       row.style.setProperty('--row-delay', `${(0.35 + index * 0.12).toFixed(2)}s`);
 
-      const rawVal = data[stat.varName] !== undefined ? data[stat.varName] : (stat.fallback || '--');
+      const rawVal = data[stat.varName] !== undefined && data[stat.varName] !== null
+        ? data[stat.varName]
+        : (stat.fallback || '--');
       const displayVal = `${rawVal}${stat.suffix || ''}`;
 
       row.innerHTML = `
@@ -150,17 +165,25 @@ class GTAWalkOnOverlay {
   initWebSocket() {
     if (typeof StreamerbotClient === 'undefined') return;
 
-    this.client = new StreamerbotClient({
+    const clientOptions = {
       host: this.config.host,
       port: this.config.port,
       endpoint: this.config.endpoint,
-      subscribe: { General: ['Custom'] },
-      onConnect: () => {
-        console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
-      },
-      onDisconnect: () => {
-        console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
-      }
+      subscribe: { General: ['Custom'] }
+    };
+
+    if (this.config.password) {
+      clientOptions.password = this.config.password;
+    }
+
+    this.client = new StreamerbotClient(clientOptions);
+
+    this.client.on('Connect', () => {
+      console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
+    });
+
+    this.client.on('Disconnect', () => {
+      console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
     });
 
     this.client.on('General.Custom', (payload) => {
@@ -182,6 +205,36 @@ class GTAWalkOnOverlay {
 
       if (msg.type === 'TRIGGER_WALKON_TEST') {
         this.enqueueWalkOn(msg.payload || {});
+      } else if (msg.type === 'SET_PREVIEW_PINNED') {
+        this.setPreviewPinned(Boolean(msg.pinned));
+      } else if (msg.type === 'LIVE_CONFIG_UPDATE') {
+        const s = msg.state;
+        this.config.posX = s.x;
+        this.config.posY = s.y;
+        this.config.scale = s.scale;
+        this.config.duration = parseInt(s.duration || '8', 10) * 1000;
+        this.config.cardAnim = s.cardAnim;
+        this.config.avatarAnim = s.avatarAnim;
+        this.config.fontHeading = s.fontHeading;
+        this.config.fontBody = s.fontBody;
+        this.config.bgUrl = s.bg;
+        this.config.varAvatar = s.vAvatar;
+        this.config.varTier = s.vTier;
+        this.config.colors = {
+          pink: s.cPink,
+          teal: s.cTeal,
+          purple: s.cPurple,
+          yellow: s.cYellow,
+          iconStroke: s.cStroke,
+          border: s.cBorder,
+          bgFill: s.cBg
+        };
+        try {
+          this.config.stats = JSON.parse(s.stats);
+        } catch (e) {}
+
+        this.applyConfiguration();
+        this.renderStatRows(this.lastData);
       }
     });
   }
@@ -196,6 +249,11 @@ class GTAWalkOnOverlay {
   async processQueue() {
     if (this.queue.length === 0) {
       this.isAnimating = false;
+      if (this.config.previewMode) {
+        await this.wait(250);
+        this.dom.container.classList.remove('animate-out');
+        this.dom.container.classList.add('animate-in');
+      }
       return;
     }
 
@@ -210,6 +268,14 @@ class GTAWalkOnOverlay {
   }
 
   async playWalkOn(raw) {
+    this.lastData = raw;
+
+    if (this.dom.container.classList.contains('animate-in')) {
+      this.dom.container.classList.remove('animate-in');
+      this.dom.container.classList.add('animate-out');
+      await this.wait(450);
+    }
+
     const userName = raw.userName || raw.user || 'ViceCityLegend';
     const avatarUrl = raw[this.config.varAvatar] || raw.avatarUrl || 'https://www.gstatic.com/youtube/img/creator/avatar/default_64.png';
     const levelName = raw[this.config.varTier] || raw.levelName || 'VIP Member';
@@ -218,17 +284,14 @@ class GTAWalkOnOverlay {
     this.dom.username.textContent = userName;
     this.dom.tier.textContent = String(levelName).toUpperCase();
 
-    // Populate Dynamic Stat Rows
     this.renderStatRows(raw);
 
-    // Trigger Entrance
     this.dom.container.classList.remove('animate-out', 'animate-in');
-    void this.dom.container.offsetWidth; // Force reflow
+    void this.dom.container.offsetWidth;
     this.dom.container.classList.add('animate-in');
 
     await this.wait(this.config.duration);
 
-    // Trigger Exit
     this.dom.container.classList.remove('animate-in');
     this.dom.container.classList.add('animate-out');
 
