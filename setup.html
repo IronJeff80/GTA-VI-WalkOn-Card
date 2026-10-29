@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GTA VI Overlays - Universal Setup & Testing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
+
+  <style>
+    :root {
+      --gta-pink: #f4acc4;
+      --gta-teal: #53d8bf;
+      --gta-purple: #a688ff;
+      --gta-yellow: #fede9a;
+      --gta-icon-stroke: #171a21;
+      --gta-border: #0b2328;
+      --gta-bg-fill: #303030;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #12151a;
+      color: #f0f4f8;
+      font-family: 'Inter', sans-serif;
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Controls */
+    .sidebar {
+      background: #171a21;
+      border-right: 3px solid var(--gta-border);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--gta-bg-fill);
+      padding-bottom: 12px;
+    }
+
+    .brand-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 1.5px;
+      color: var(--gta-pink);
+      text-shadow: 0 2px 0 var(--gta-border);
+    }
+
+    .sb-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: #2b1d28;
+      color: var(--gta-pink);
+      border: 1px solid var(--gta-pink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sb-badge.connected {
+      background: #132a28;
+      color: var(--gta-teal);
+      border-color: var(--gta-teal);
+    }
+
+    .panel {
+      background: #1e222b;
+      border: 2px solid var(--gta-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gta-teal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: #b0b8c4;
+      font-weight: 600;
+    }
+
+    input, select {
+      background: #12151a;
+      border: 1px solid #303642;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--gta-pink);
+    }
+
+    .btn {
+      cursor: pointer;
+      border: 2px solid var(--gta-border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: transform 0.1s ease, filter 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-teal { background: var(--gta-teal); color: var(--gta-icon-stroke); }
+    .btn-pink { background: var(--gta-pink); color: var(--gta-icon-stroke); }
+    .btn-purple { background: var(--gta-purple); color: var(--gta-icon-stroke); }
+    .btn-yellow { background: var(--gta-yellow); color: var(--gta-icon-stroke); }
+
+    /* Main Workspace & Preview */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .url-box {
+      background: #171a21;
+      border: 2px solid var(--gta-teal);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .url-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .url-input {
+      flex: 1;
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #0e1014;
+      color: var(--gta-yellow);
+    }
+
+    .preview-wrapper {
+      flex: 1;
+      background: 
+        radial-gradient(circle at center, #222733 0%, #0e1015 100%);
+      border: 3px solid var(--gta-border);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 480px;
+    }
+
+    .canvas-scaler {
+      width: 1920px;
+      height: 1080px;
+      transform: scale(0.55);
+      transform-origin: center center;
+      border: 2px dashed rgba(244, 172, 196, 0.35);
+      position: relative;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    iframe {
+      width: 1920px;
+      height: 1080px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand-header">
+      <div class="brand-title">GTA VI OVERLAY HUB</div>
+      <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> Disconnected</div>
+    </div>
+
+    <!-- 1. Streamer.bot WebSocket Settings -->
+    <div class="panel">
+      <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection (YouTube)</div>
+      <div class="grid-2">
+        <label>WebSocket IP / Host
+          <input type="text" id="cfg-host" value="127.0.0.1">
+        </label>
+        <label>Port
+          <input type="number" id="cfg-port" value="8080">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Custom Event Name
+          <input type="text" id="cfg-event" value="MemberWalkOn">
+        </label>
+        <label>persisted User Store
+          <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:auto;">Connect SB</button>
+        </label>
+      </div>
+    </div>
+
+    <!-- 2. Position, Scale & Timing -->
+    <div class="panel">
+      <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Card Position & Timing</div>
+      <div class="grid-2">
+        <label>Left Offset (X px)
+          <input type="number" id="cfg-x" value="60" min="0" max="1600">
+        </label>
+        <label>Bottom Offset (Y px)
+          <input type="number" id="cfg-y" value="60" min="0" max="900">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Card Scale (0.5 - 2.0)
+          <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0">
+        </label>
+        <label>Display Duration (sec)
+          <input type="number" id="cfg-duration" value="8" min="3" max="30">
+        </label>
+      </div>
+    </div>
+
+    <!-- 3. Animations & Styling -->
+    <div class="panel">
+      <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Animations & Aesthetics</div>
+      <div class="grid-2">
+        <label>Card Transition
+          <select id="cfg-cardAnim">
+            <option value="anim-slide-left">Slide In (Left)</option>
+            <option value="anim-slide-right">Slide In (Right)</option>
+            <option value="anim-slide-up">Slide Up (Bottom)</option>
+            <option value="anim-zoom">Vice Zoom Pop</option>
+          </select>
+        </label>
+        <label>Avatar Animation
+          <select id="cfg-avatarAnim">
+            <option value="av-flip">3D Coin Flip</option>
+            <option value="av-spin">360° Spin In</option>
+            <option value="av-pop">Elastic Pop</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Heading Font
+          <select id="cfg-fontHeading">
+            <option value="Bebas Neue">Bebas Neue</option>
+            <option value="Anton">Anton</option>
+            <option value="Changa One">Changa One</option>
+          </select>
+        </label>
+        <label>Body Font
+          <select id="cfg-fontBody">
+            <option value="Inter">Inter</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Outfit">Outfit</option>
+          </select>
+        </label>
+      </div>
+      <label>Card Background Image URL / Path
+        <input type="text" id="cfg-bg" value="assets/gta6-bg.webp">
+      </label>
+    </div>
+
+    <!-- 4. Streamer.bot YouTube User Variables & Labels -->
+    <div class="panel">
+      <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube User Variables & Labels</div>
+      <div class="grid-2">
+        <label>Row 1 Label
+          <input type="text" id="cfg-lbl1" value="Tenure">
+        </label>
+        <label>Row 1 SB Variable
+          <input type="text" id="cfg-vMonths" value="months">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Row 2 Label
+          <input type="text" id="cfg-lbl2" value="Joined">
+        </label>
+        <label>Row 2 SB Variable
+          <input type="text" id="cfg-vSince" value="memberSince">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Row 3 Label
+          <input type="text" id="cfg-lbl3" value="Loyalty">
+        </label>
+        <label>Row 3 SB Variable
+          <input type="text" id="cfg-vLoyalty" value="loyaltyLevel">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label>Avatar SB Variable
+          <input type="text" id="cfg-vAvatar" value="avatarUrl">
+        </label>
+        <label>Tier SB Variable
+          <input type="text" id="cfg-vTier" value="levelName">
+        </label>
+      </div>
+    </div>
+
+    <!-- 5. Walk-On Simulator & Specific User Test -->
+    <div class="panel">
+      <div class="panel-title"><i class="fa-solid fa-flask"></i> Walk-On Testing & Simulation</div>
+      <button class="btn btn-pink" id="btn-sim-random">
+        <i class="fa-solid fa-dice"></i> Simulate Random YouTube Walk-On
+      </button>
+      <label style="margin-top:4px;">Test Specific YouTube User (Name or Channel ID)
+        <div class="url-row">
+          <input type="text" id="test-user-input" placeholder="e.g. JasonLeonida" style="flex:1;">
+          <button class="btn btn-purple" id="btn-test-user">Test User</button>
+        </div>
+      </label>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <div class="url-box">
+      <div class="panel-title"><i class="fa-solid fa-link"></i> Generated OBS Browser Source URL (1920x1080)</div>
+      <div class="url-row">
+        <input type="text" id="obs-url-output" class="url-input" readonly>
+        <button class="btn btn-yellow" id="btn-copy-url"><i class="fa-solid fa-copy"></i> Copy URL</button>
+      </div>
+    </div>
+
+    <div class="preview-wrapper">
+      <div class="canvas-scaler">
+        <iframe id="preview-frame" src="walkon-vi-card.html"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let sbAdminClient = null;
+    const previewFrame = document.getElementById('preview-frame');
+    const urlOutput = document.getElementById('obs-url-output');
+    const sbStatusBadge = document.getElementById('sb-status');
+
+    const configIds = [
+      'host', 'port', 'event', 'x', 'y', 'scale', 'duration',
+      'cardAnim', 'avatarAnim', 'fontHeading', 'fontBody', 'bg',
+      'lbl1', 'lbl2', 'lbl3', 'vMonths', 'vSince', 'vLoyalty', 'vAvatar', 'vTier'
+    ];
+
+    function getSetupState() {
+      const state = {};
+      configIds.forEach(id => {
+        state[id] = document.getElementById(`cfg-${id}`).value.trim();
+      });
+      return state;
+    }
+
+    function updateURLAndPreview() {
+      const state = getSetupState();
+      const params = new URLSearchParams(state);
+      const basePath = window.location.href.replace(/setup\.html.*$/, 'walkon-vi-card.html');
+      const fullUrl = `${basePath}?${params.toString()}`;
+      urlOutput.value = fullUrl;
+      previewFrame.src = `walkon-vi-card.html?${params.toString()}`;
+    }
+
+    // Attach listeners to all inputs
+    configIds.forEach(id => {
+      document.getElementById(`cfg-${id}`).addEventListener('change', updateURLAndPreview);
+    });
+
+    // Copy OBS URL
+    document.getElementById('btn-copy-url').addEventListener('click', () => {
+      navigator.clipboard.writeText(urlOutput.value);
+      const btn = document.getElementById('btn-copy-url');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+      setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy URL'; }, 2000);
+    });
+
+    // Connect Setup Page directly to Streamer.bot for Live User Variable Lookups
+    function connectSetupToSB() {
+      const state = getSetupState();
+      if (sbAdminClient) {
+        try { sbAdminClient.disconnect(); } catch (e) {}
+      }
+
+      sbAdminClient = new StreamerbotClient({
+        host: state.host,
+        port: parseInt(state.port, 10),
+        endpoint: '/',
+        onConnect: () => {
+          sbStatusBadge.classList.add('connected');
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected';
+        },
+        onDisconnect: () => {
+          sbStatusBadge.classList.remove('connected');
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected';
+        }
+      });
+    }
+
+    document.getElementById('btn-connect-sb').addEventListener('click', connectSetupToSB);
+
+    // Random YouTube Walk-On Simulation
+    const mockUsers = [
+      { userName: 'Lucia_Caminos', levelName: 'Vice City Syndicate', months: 24, memberSince: '10/2024', loyaltyLevel: 'Level 9', avatarUrl: 'https://i.pravatar.cc/300?img=47' },
+      { userName: 'Jason_Leonida', levelName: 'Leonida Enforcer', months: 14, memberSince: '08/2025', loyaltyLevel: 'Level 6', avatarUrl: 'https://i.pravatar.cc/300?img=12' },
+      { userName: 'TommyV_86', levelName: 'Starfish Island VIP', months: 36, memberSince: '10/2023', loyaltyLevel: 'Level 10', avatarUrl: 'https://i.pravatar.cc/300?img=68' },
+      { userName: 'PortGellhornDrift', levelName: 'Street Crew', months: 5, memberSince: '05/2026', loyaltyLevel: 'Level 3', avatarUrl: 'https://i.pravatar.cc/300?img=33' }
+    ];
+
+    document.getElementById('btn-sim-random').addEventListener('click', () => {
+      const pick = mockUsers[Math.floor(Math.random() * mockUsers.length)];
+      triggerWalkOnTest(pick);
+    });
+
+    // Specific YouTube User Test (Queries Streamer.bot User Variables or Falls Back to Named Test)
+    document.getElementById('btn-test-user').addEventListener('click', async () => {
+      const targetUser = document.getElementById('test-user-input').value.trim() || 'ViceTester';
+      const state = getSetupState();
+
+      let userPayload = {
+        userName: targetUser,
+        avatarUrl: 'https://i.pravatar.cc/300?u=' + encodeURIComponent(targetUser),
+        levelName: 'Leonida VIP',
+        months: 18,
+        memberSince: '04/2025',
+        loyaltyLevel: 'Level 7'
+      };
+
+      // If connected to Streamer.bot, attempt to pull persisted YouTube User Variables
+      if (sbAdminClient && sbStatusBadge.classList.contains('connected')) {
+        try {
+          const globalsRes = await sbAdminClient.getGlobals(true);
+          if (globalsRes && globalsRes.variables) {
+            // Check if a custom test JSON or user variable exists in SB globals
+            const userKey = `yt_user_${targetUser.toLowerCase()}`;
+            if (globalsRes.variables[userKey]) {
+              const parsed = JSON.parse(globalsRes.variables[userKey].value);
+              userPayload = { ...userPayload, ...parsed };
+            }
+          }
+        } catch (err) {
+          console.warn('Could not fetch specific user globals from SB, using simulated stats for user:', err);
+        }
+      }
+
+      triggerWalkOnTest(userPayload);
+    });
+
+    function triggerWalkOnTest(payload) {
+      // 1. Send direct postMessage to the preview iframe
+      previewFrame.contentWindow.postMessage({
+        type: 'TRIGGER_WALKON_TEST',
+        payload
+      }, '*');
+
+      // 2. Also broadcast via Streamer.bot WebSocket if connected so active OBS instances receive the test
+      if (sbAdminClient && sbStatusBadge.classList.contains('connected')) {
+        const state = getSetupState();
+        sbAdminClient.doAction({ name: 'WalkOnTestBroadcast' }, {
+          event: state.event,
+          ...payload
+        }).catch(() => {});
+      }
+    }
+
+    // Initialize on load
+    updateURLAndPreview();
+    connectSetupToSB();
+  </script>
+</body>
+</html>

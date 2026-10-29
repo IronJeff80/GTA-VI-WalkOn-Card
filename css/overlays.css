@@ -1,0 +1,286 @@
+/* ==========================================================================
+   GTA VI OBS OVERLAYS - MASTER STYLESHEET (css/overlays.css)
+   ========================================================================== */
+
+:root {
+  /* Extracted GTA VI Palette */
+  --gta-pink: #f4acc4;
+  --gta-teal: #53d8bf;
+  --gta-purple: #a688ff;
+  --gta-yellow: #fede9a;
+  --gta-icon-stroke: #171a21;
+  --gta-border: #0b2328;
+  --gta-bg-fill: #303030;
+  --gta-bg-alpha: rgba(48, 48, 48, 0.85);
+
+  /* Glow Tokens */
+  --glow-pink: rgba(244, 172, 196, 0.45);
+  --glow-teal: rgba(83, 216, 191, 0.45);
+  --glow-purple: rgba(166, 136, 255, 0.45);
+  --glow-yellow: rgba(254, 222, 154, 0.45);
+
+  /* Gradients */
+  --grad-gta-badge: linear-gradient(135deg, var(--gta-purple) 0%, var(--gta-pink) 100%);
+  --grad-gta-border: linear-gradient(90deg, var(--gta-teal), var(--gta-pink), var(--gta-purple));
+
+  /* Dynamic Setup Overrides (Controlled via URL Params) */
+  --card-x: 60px;
+  --card-y: 60px;
+  --card-scale: 1;
+  --font-heading: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --card-bg-image: url('../assets/gta6-bg.webp');
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.obs-canvas {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: transparent !important;
+  font-family: var(--font-body);
+  position: relative;
+  perspective: 1200px;
+}
+
+/* ==========================================================================
+   WALK-ON CARD COMPONENT
+   ========================================================================== */
+
+.walkon-container {
+  position: absolute;
+  left: var(--card-x);
+  bottom: var(--card-y);
+  width: 340px;
+  transform-origin: bottom left;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Card Entrance Variations */
+.walkon-container.anim-slide-left {
+  transform: scale(var(--card-scale)) translateX(-520px);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+}
+.walkon-container.anim-slide-right {
+  transform: scale(var(--card-scale)) translateX(520px);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+}
+.walkon-container.anim-slide-up {
+  transform: scale(var(--card-scale)) translateY(400px);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+}
+.walkon-container.anim-zoom {
+  transform: scale(0.3);
+  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+}
+
+/* Active State */
+.walkon-container.animate-in {
+  transform: scale(var(--card-scale)) translate(0, 0) !important;
+  opacity: 1;
+}
+
+/* Exit State */
+.walkon-container.animate-out {
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.35s ease !important;
+}
+
+/* Main Card Shell */
+.walkon-card {
+  background-color: var(--gta-bg-fill);
+  background-image: 
+    linear-gradient(160deg, rgba(23, 26, 33, 0.65) 0%, rgba(48, 48, 48, 0.92) 100%),
+    var(--card-bg-image);
+  background-size: cover;
+  background-position: center;
+  border: 3px solid var(--gta-border);
+  border-top: 5px solid var(--gta-teal);
+  border-radius: 18px;
+  padding: 1.8rem 1.4rem;
+  box-shadow: 
+    0 12px 36px rgba(11, 35, 40, 0.85),
+    0 0 24px var(--glow-teal),
+    inset 0 0 0 2px var(--gta-icon-stroke);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+/* ==========================================================================
+   AVATAR & ANIMATIONS
+   ========================================================================== */
+
+.avatar-wrapper {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  border: 4px solid var(--gta-border);
+  outline: 3px solid var(--gta-pink);
+  box-shadow: 0 0 20px var(--glow-pink), inset 0 0 12px var(--gta-icon-stroke);
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: var(--gta-bg-fill);
+  flex-shrink: 0;
+  transform-style: preserve-3d;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Avatar Keyframe Triggers */
+.animate-in .avatar-wrapper.av-flip {
+  animation: gtaAvatarFlip 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+.animate-in .avatar-wrapper.av-spin {
+  animation: gtaAvatarSpin 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+.animate-in .avatar-wrapper.av-pop {
+  animation: gtaStatPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes gtaAvatarFlip {
+  0% { transform: perspective(600px) rotateY(-180deg) scale(0.5); opacity: 0; }
+  60% { transform: perspective(600px) rotateY(20deg) scale(1.08); opacity: 1; }
+  100% { transform: perspective(600px) rotateY(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes gtaAvatarSpin {
+  0% { transform: rotate(-360deg) scale(0); opacity: 0; }
+  70% { transform: rotate(15deg) scale(1.08); opacity: 1; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   TYPOGRAPHY & BADGES
+   ========================================================================== */
+
+.user-name {
+  font-family: var(--font-heading);
+  font-size: 2.35rem;
+  letter-spacing: 2px;
+  color: var(--gta-yellow);
+  -webkit-text-stroke: 1.5px var(--gta-icon-stroke);
+  text-shadow: 0 3px 0 var(--gta-border), 0 0 12px var(--glow-yellow);
+  line-height: 1.05;
+  margin-bottom: 0.45rem;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tier-badge {
+  display: inline-block;
+  background: var(--grad-gta-badge);
+  color: var(--gta-icon-stroke);
+  border: 2px solid var(--gta-border);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  box-shadow: 0 3px 0 var(--gta-border), 0 0 12px var(--glow-purple);
+  margin-bottom: 1.15rem;
+}
+
+/* ==========================================================================
+   STATS META BOX & POP ANIMATIONS
+   ========================================================================== */
+
+.meta-box {
+  width: 100%;
+  background: var(--gta-bg-alpha);
+  border: 2px solid var(--gta-border);
+  border-left: 5px solid var(--gta-teal);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  text-align: left;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  opacity: 0;
+  transform: scale(0.6) translateY(12px);
+}
+
+/* Staggered Pop-In when Card is Active */
+.animate-in .meta-row:nth-child(1) {
+  animation: gtaStatPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s forwards;
+}
+.animate-in .meta-row:nth-child(2) {
+  animation: gtaStatPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.48s forwards;
+}
+.animate-in .meta-row:nth-child(3) {
+  animation: gtaStatPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.61s forwards;
+}
+
+@keyframes gtaStatPop {
+  0% { opacity: 0; transform: scale(0.5) translateY(15px); }
+  70% { opacity: 1; transform: scale(1.06) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.meta-label {
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* HUD-style Circular Icon Wrapper */
+.hud-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gta-bg-fill);
+  border: 2px solid var(--gta-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.hud-icon.icon-pink { color: var(--gta-pink); }
+.hud-icon.icon-teal { color: var(--gta-teal); }
+.hud-icon.icon-purple { color: var(--gta-purple); }
+.hud-icon.icon-yellow { color: var(--gta-yellow); }
+
+.meta-val {
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: 0.4px;
+  text-shadow: 0 2px 0 var(--gta-icon-stroke);
+}
+
+.meta-val.val-yellow { color: var(--gta-yellow); }
+.meta-val.val-pink   { color: var(--gta-pink); }
+.meta-val.val-teal   { color: var(--gta-teal); }
+.meta-val.val-purple { color: var(--gta-purple); }

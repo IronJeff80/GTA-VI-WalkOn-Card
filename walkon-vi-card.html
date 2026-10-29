@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GTA VI - Walk-On Card Overlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Changa+One&family=Inter:wght@400;600;700;800&family=Montserrat:wght@500;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Shared GTA VI Stylesheet -->
+  <link rel="stylesheet" href="css/overlays.css">
+
+  <!-- Streamer.bot Client Library -->
+  <script src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
+</head>
+<body class="obs-canvas">
+
+  <div id="walkon-container" class="walkon-container anim-slide-left">
+    <div class="walkon-card">
+      <div id="avatar-wrapper" class="avatar-wrapper av-flip">
+        <img id="card-avatar" class="avatar-img" src="https://www.gstatic.com/youtube/img/creator/avatar/default_64.png" alt="Avatar" />
+      </div>
+
+      <div id="card-username" class="user-name">LUCIA_VI</div>
+      <div id="card-tier" class="tier-badge">LEONIDA VIP</div>
+
+      <div class="meta-box">
+        <div class="meta-row">
+          <span class="meta-label">
+            <span class="hud-icon icon-pink"><i class="fa-solid fa-heart"></i></span>
+            <span id="label-row-1">Tenure:</span>
+          </span>
+          <span id="card-months" class="meta-val val-yellow">12 Months</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">
+            <span class="hud-icon icon-teal"><i class="fa-solid fa-calendar-check"></i></span>
+            <span id="label-row-2">Joined:</span>
+          </span>
+          <span id="card-since" class="meta-val val-pink">05/2025</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">
+            <span class="hud-icon icon-purple"><i class="fa-solid fa-eye"></i></span>
+            <span id="label-row-3">Loyalty:</span>
+          </span>
+          <span id="card-loyalty" class="meta-val val-teal">Level 5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared GTA VI Overlay Engine -->
+  <script src="js/overlays.js"></script>
+</body>
+</html>
