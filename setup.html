@@ -27,28 +27,27 @@
       color: #f0f4f8;
       font-family: 'Inter', sans-serif;
       display: grid;
-      grid-template-columns: 440px 1fr;
+      grid-template-columns: 480px 1fr;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Sidebar Controls */
+    /* Sidebar */
     .sidebar {
       background: #171a21;
       border-right: 3px solid var(--gta-border);
-      padding: 20px;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .brand-header {
+      padding: 18px 20px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid var(--gta-bg-fill);
-      padding-bottom: 12px;
+      border-bottom: 2px solid #232834;
     }
 
     .brand-title {
@@ -77,6 +76,57 @@
       border-color: var(--gta-teal);
     }
 
+    /* Tab Navigation Bar */
+    .tab-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #12151a;
+      border-bottom: 2px solid #232834;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: #8c96a6;
+      padding: 12px 6px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--gta-teal);
+      border-bottom-color: var(--gta-teal);
+      background: #171a21;
+    }
+
+    /* Tab Content Containers */
+    .tab-content {
+      display: none;
+      padding: 18px 20px;
+      overflow-y: auto;
+      flex: 1;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
     .panel {
       background: #1e222b;
       border: 2px solid var(--gta-border);
@@ -87,8 +137,14 @@
       gap: 12px;
     }
 
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .panel-title {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -104,11 +160,17 @@
       gap: 10px;
     }
 
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
     label {
       display: flex;
       flex-direction: column;
       gap: 5px;
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       color: #b0b8c4;
       font-weight: 600;
     }
@@ -117,15 +179,66 @@
       background: #12151a;
       border: 1px solid #303642;
       color: #fff;
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-family: inherit;
+      width: 100%;
     }
 
     input:focus, select:focus {
       outline: none;
       border-color: var(--gta-pink);
+    }
+
+    /* Dynamic Stat Row Card */
+    .stat-row-editor {
+      background: #151820;
+      border: 1px solid #2d3340;
+      border-left: 4px solid var(--gta-pink);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stat-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gta-yellow);
+    }
+
+    .btn-icon-remove {
+      background: #3a1c24;
+      color: #ff6b81;
+      border: 1px solid #ff6b81;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .btn-icon-remove:hover {
+      background: #ff6b81;
+      color: #12151a;
+    }
+
+    /* Color Picker Row */
+    .color-picker-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="color"] {
+      width: 38px;
+      height: 34px;
+      padding: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
     }
 
     .btn {
@@ -134,7 +247,7 @@
       border-radius: 8px;
       padding: 9px 14px;
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       transition: transform 0.1s ease, filter 0.15s ease;
@@ -148,6 +261,7 @@
     .btn-pink { background: var(--gta-pink); color: var(--gta-icon-stroke); }
     .btn-purple { background: var(--gta-purple); color: var(--gta-icon-stroke); }
     .btn-yellow { background: var(--gta-yellow); color: var(--gta-icon-stroke); }
+    .btn-dark { background: #262b36; color: #e2e8f0; border-color: #384050; }
 
     /* Main Workspace & Preview */
     .workspace {
@@ -183,8 +297,7 @@
 
     .preview-wrapper {
       flex: 1;
-      background: 
-        radial-gradient(circle at center, #222733 0%, #0e1015 100%);
+      background: radial-gradient(circle at center, #222733 0%, #0e1015 100%);
       border: 3px solid var(--gta-border);
       border-radius: 14px;
       position: relative;
@@ -223,141 +336,211 @@
       <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> Disconnected</div>
     </div>
 
-    <!-- 1. Streamer.bot WebSocket Settings -->
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection (YouTube)</div>
-      <div class="grid-2">
-        <label>WebSocket IP / Host
-          <input type="text" id="cfg-host" value="127.0.0.1">
-        </label>
-        <label>Port
-          <input type="number" id="cfg-port" value="8080">
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Custom Event Name
-          <input type="text" id="cfg-event" value="MemberWalkOn">
-        </label>
-        <label>persisted User Store
-          <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:auto;">Connect SB</button>
-        </label>
-      </div>
-    </div>
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-general"><i class="fa-solid fa-sliders"></i> General</button>
+      <button class="tab-btn" data-tab="tab-vars"><i class="fa-solid fa-list-check"></i> Variables</button>
+      <button class="tab-btn" data-tab="tab-colors"><i class="fa-solid fa-palette"></i> Colors</button>
+      <button class="tab-btn" data-tab="tab-test"><i class="fa-solid fa-flask"></i> Test</button>
+    </nav>
 
-    <!-- 2. Position, Scale & Timing -->
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Card Position & Timing</div>
-      <div class="grid-2">
-        <label>Left Offset (X px)
-          <input type="number" id="cfg-x" value="60" min="0" max="1600">
-        </label>
-        <label>Bottom Offset (Y px)
-          <input type="number" id="cfg-y" value="60" min="0" max="900">
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Card Scale (0.5 - 2.0)
-          <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0">
-        </label>
-        <label>Display Duration (sec)
-          <input type="number" id="cfg-duration" value="8" min="3" max="30">
-        </label>
-      </div>
-    </div>
-
-    <!-- 3. Animations & Styling -->
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Animations & Aesthetics</div>
-      <div class="grid-2">
-        <label>Card Transition
-          <select id="cfg-cardAnim">
-            <option value="anim-slide-left">Slide In (Left)</option>
-            <option value="anim-slide-right">Slide In (Right)</option>
-            <option value="anim-slide-up">Slide Up (Bottom)</option>
-            <option value="anim-zoom">Vice Zoom Pop</option>
-          </select>
-        </label>
-        <label>Avatar Animation
-          <select id="cfg-avatarAnim">
-            <option value="av-flip">3D Coin Flip</option>
-            <option value="av-spin">360° Spin In</option>
-            <option value="av-pop">Elastic Pop</option>
-          </select>
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Heading Font
-          <select id="cfg-fontHeading">
-            <option value="Bebas Neue">Bebas Neue</option>
-            <option value="Anton">Anton</option>
-            <option value="Changa One">Changa One</option>
-          </select>
-        </label>
-        <label>Body Font
-          <select id="cfg-fontBody">
-            <option value="Inter">Inter</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Outfit">Outfit</option>
-          </select>
-        </label>
-      </div>
-      <label>Card Background Image URL / Path
-        <input type="text" id="cfg-bg" value="assets/gta6-bg.webp">
-      </label>
-    </div>
-
-    <!-- 4. Streamer.bot YouTube User Variables & Labels -->
-    <div class="panel">
-      <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube User Variables & Labels</div>
-      <div class="grid-2">
-        <label>Row 1 Label
-          <input type="text" id="cfg-lbl1" value="Tenure">
-        </label>
-        <label>Row 1 SB Variable
-          <input type="text" id="cfg-vMonths" value="months">
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Row 2 Label
-          <input type="text" id="cfg-lbl2" value="Joined">
-        </label>
-        <label>Row 2 SB Variable
-          <input type="text" id="cfg-vSince" value="memberSince">
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Row 3 Label
-          <input type="text" id="cfg-lbl3" value="Loyalty">
-        </label>
-        <label>Row 3 SB Variable
-          <input type="text" id="cfg-vLoyalty" value="loyaltyLevel">
-        </label>
-      </div>
-      <div class="grid-2">
-        <label>Avatar SB Variable
-          <input type="text" id="cfg-vAvatar" value="avatarUrl">
-        </label>
-        <label>Tier SB Variable
-          <input type="text" id="cfg-vTier" value="levelName">
-        </label>
-      </div>
-    </div>
-
-    <!-- 5. Walk-On Simulator & Specific User Test -->
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-flask"></i> Walk-On Testing & Simulation</div>
-      <button class="btn btn-pink" id="btn-sim-random">
-        <i class="fa-solid fa-dice"></i> Simulate Random YouTube Walk-On
-      </button>
-      <label style="margin-top:4px;">Test Specific YouTube User (Name or Channel ID)
-        <div class="url-row">
-          <input type="text" id="test-user-input" placeholder="e.g. JasonLeonida" style="flex:1;">
-          <button class="btn btn-purple" id="btn-test-user">Test User</button>
+    <!-- TAB 1: GENERAL SETTINGS -->
+    <div id="tab-general" class="tab-content active">
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection (YouTube)</div>
+        <div class="grid-2">
+          <label>WebSocket IP / Host
+            <input type="text" id="cfg-host" value="127.0.0.1">
+          </label>
+          <label>Port
+            <input type="number" id="cfg-port" value="8080">
+          </label>
         </div>
-      </label>
+        <div class="grid-2">
+          <label>Custom Event Name
+            <input type="text" id="cfg-event" value="MemberWalkOn">
+          </label>
+          <label>Reconnect
+            <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:auto;">Connect SB</button>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Card Position & Timing</div>
+        <div class="grid-2">
+          <label>Left Offset (X px)
+            <input type="number" id="cfg-x" value="60" min="0" max="1600">
+          </label>
+          <label>Bottom Offset (Y px)
+            <input type="number" id="cfg-y" value="60" min="0" max="900">
+          </label>
+        </div>
+        <div class="grid-2">
+          <label>Card Scale (0.5 - 2.0)
+            <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0">
+          </label>
+          <label>Display Duration (sec)
+            <input type="number" id="cfg-duration" value="8" min="3" max="30">
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Animations & Aesthetics</div>
+        <div class="grid-2">
+          <label>Card Transition
+            <select id="cfg-cardAnim">
+              <option value="anim-slide-left">Slide In (Left)</option>
+              <option value="anim-slide-right">Slide In (Right)</option>
+              <option value="anim-slide-up">Slide Up (Bottom)</option>
+              <option value="anim-zoom">Vice Zoom Pop</option>
+            </select>
+          </label>
+          <label>Avatar Animation
+            <select id="cfg-avatarAnim">
+              <option value="av-flip">3D Coin Flip</option>
+              <option value="av-spin">360° Spin In</option>
+              <option value="av-pop">Elastic Pop</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid-2">
+          <label>Heading Font
+            <select id="cfg-fontHeading">
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Anton">Anton</option>
+              <option value="Changa One">Changa One</option>
+            </select>
+          </label>
+          <label>Body Font
+            <select id="cfg-fontBody">
+              <option value="Inter">Inter</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Outfit">Outfit</option>
+            </select>
+          </label>
+        </div>
+        <label>Card Background Image URL / Path
+          <input type="text" id="cfg-bg" value="assets/gta6-bg.webp">
+        </label>
+      </div>
+    </div>
+
+    <!-- TAB 2: VARIABLES & DYNAMIC STAT ROWS -->
+    <div id="tab-vars" class="tab-content">
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-id-badge"></i> Header Variables</div>
+        <div class="grid-2">
+          <label>Avatar SB Variable
+            <input type="text" id="cfg-vAvatar" value="avatarUrl">
+          </label>
+          <label>Tier Badge SB Variable
+            <input type="text" id="cfg-vTier" value="levelName">
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-layer-group"></i> Stat Rows (Add / Remove)</div>
+          <button class="btn btn-teal" id="btn-add-stat" style="padding: 5px 10px; font-size: 0.72rem;">
+            <i class="fa-solid fa-plus"></i> Add Stat
+          </button>
+        </div>
+        <div id="stats-list-container" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: COLORS CUSTOMIZATION -->
+    <div id="tab-colors" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-eye-dropper"></i> GTA VI Palette Overrides</div>
+          <button class="btn btn-dark" id="btn-reset-colors" style="padding: 5px 10px; font-size: 0.72rem;">
+            <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+          </button>
+        </div>
+
+        <div class="grid-2">
+          <label>Primary Pink
+            <div class="color-picker-group">
+              <input type="color" id="picker-cPink" value="#f4acc4">
+              <input type="text" id="cfg-cPink" value="#f4acc4">
+            </div>
+          </label>
+          <label>Primary Teal
+            <div class="color-picker-group">
+              <input type="color" id="picker-cTeal" value="#53d8bf">
+              <input type="text" id="cfg-cTeal" value="#53d8bf">
+            </div>
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label>Primary Purple
+            <div class="color-picker-group">
+              <input type="color" id="picker-cPurple" value="#a688ff">
+              <input type="text" id="cfg-cPurple" value="#a688ff">
+            </div>
+          </label>
+          <label>Primary Yellow
+            <div class="color-picker-group">
+              <input type="color" id="picker-cYellow" value="#fede9a">
+              <input type="text" id="cfg-cYellow" value="#fede9a">
+            </div>
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label>Icon / Text Stroke
+            <div class="color-picker-group">
+              <input type="color" id="picker-cStroke" value="#171a21">
+              <input type="text" id="cfg-cStroke" value="#171a21">
+            </div>
+          </label>
+          <label>Card Outer Border
+            <div class="color-picker-group">
+              <input type="color" id="picker-cBorder" value="#0b2328">
+              <input type="text" id="cfg-cBorder" value="#0b2328">
+            </div>
+          </label>
+        </div>
+
+        <label>Card Base Background Fill
+          <div class="color-picker-group">
+            <input type="color" id="picker-cBg" value="#303030">
+            <input type="text" id="cfg-cBg" value="#303030">
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- TAB 4: SIMULATOR & TESTING -->
+    <div id="tab-test" class="tab-content">
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-dice"></i> Instant Walk-On Simulator</div>
+        <p style="font-size:0.76rem; color:#9aa4b2; line-height:1.4;">
+          Fires a simulated walk-on event into the preview canvas (and broadcasts to Streamer.bot if connected) using your custom variables and colors.
+        </p>
+        <button class="btn btn-pink" id="btn-sim-random">
+          <i class="fa-solid fa-play"></i> Simulate Random YouTube Walk-On
+        </button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> Specific YouTube User Test</div>
+        <label>Enter YouTube Username or Channel ID
+          <div class="url-row" style="margin-top:4px;">
+            <input type="text" id="test-user-input" placeholder="e.g. JasonLeonida" style="flex:1;">
+            <button class="btn btn-purple" id="btn-test-user">Test User</button>
+          </div>
+        </label>
+      </div>
     </div>
   </aside>
 
+  <!-- Main Preview Workspace -->
   <main class="workspace">
     <div class="url-box">
       <div class="panel-title"><i class="fa-solid fa-link"></i> Generated OBS Browser Source URL (1920x1080)</div>
@@ -379,18 +562,176 @@
     const previewFrame = document.getElementById('preview-frame');
     const urlOutput = document.getElementById('obs-url-output');
     const sbStatusBadge = document.getElementById('sb-status');
+    const statsListContainer = document.getElementById('stats-list-container');
 
-    const configIds = [
+    // Tab Switching Logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Default GTA VI Palette
+    const DEFAULT_COLORS = {
+      cPink:   '#f4acc4',
+      cTeal:   '#53d8bf',
+      cPurple: '#a688ff',
+      cYellow: '#fede9a',
+      cStroke: '#171a21',
+      cBorder: '#0b2328',
+      cBg:     '#303030'
+    };
+
+    // Mutable Dynamic Stat Rows State
+    let statRows = [
+      { label: 'Tenure',  varName: 'months',       suffix: ' Months', icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow' },
+      { label: 'Joined',  varName: 'memberSince',  suffix: '',        icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink' },
+      { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '',        icon: 'fa-eye',            iconColor: 'purple', valColor: 'teal' }
+    ];
+
+    const availableIcons = [
+      { value: 'fa-heart',          label: 'Heart (Health)' },
+      { value: 'fa-calendar-check', label: 'Calendar (Joined)' },
+      { value: 'fa-eye',            label: 'Eye (Focus)' },
+      { value: 'fa-crown',          label: 'Crown (Loyalty)' },
+      { value: 'fa-medal',          label: 'Medal (Tenure)' },
+      { value: 'fa-skull',          label: 'Skull (Bad Deed)' },
+      { value: 'fa-bolt',           label: 'Bolt (Stamina)' },
+      { value: 'fa-sack-dollar',    label: 'Cash (BuckMe)' },
+      { value: 'fa-star',           label: 'Star (Wanted)' }
+    ];
+
+    const availableColors = ['pink', 'teal', 'purple', 'yellow'];
+
+    function renderStatRowEditors() {
+      statsListContainer.innerHTML = '';
+
+      statRows.forEach((row, idx) => {
+        const card = document.createElement('div');
+        card.className = 'stat-row-editor';
+
+        const iconOptions = availableIcons.map(ic =>
+          `<option value="${ic.value}" ${row.icon === ic.value ? 'selected' : ''}>${ic.label}</option>`
+        ).join('');
+
+        const iconColorOptions = availableColors.map(c =>
+          `<option value="${c}" ${row.iconColor === c ? 'selected' : ''}>${c.toUpperCase()}</option>`
+        ).join('');
+
+        const valColorOptions = availableColors.map(c =>
+          `<option value="${c}" ${row.valColor === c ? 'selected' : ''}>${c.toUpperCase()}</option>`
+        ).join('');
+
+        card.innerHTML = `
+          <div class="stat-row-top">
+            <span>ROW #${idx + 1}</span>
+            <button class="btn-icon-remove" data-idx="${idx}" title="Remove Stat Row">
+              <i class="fa-solid fa-trash-can"></i> Remove
+            </button>
+          </div>
+          <div class="grid-3">
+            <label>Label
+              <input type="text" data-idx="${idx}" data-field="label" value="${row.label}">
+            </label>
+            <label>SB Variable
+              <input type="text" data-idx="${idx}" data-field="varName" value="${row.varName}">
+            </label>
+            <label>Suffix (Optional)
+              <input type="text" data-idx="${idx}" data-field="suffix" value="${row.suffix}" placeholder="e.g.  Months">
+            </label>
+          </div>
+          <div class="grid-3">
+            <label>HUD Icon
+              <select data-idx="${idx}" data-field="icon">${iconOptions}</select>
+            </label>
+            <label>Icon Color
+              <select data-idx="${idx}" data-field="iconColor">${iconColorOptions}</select>
+            </label>
+            <label>Value Color
+              <select data-idx="${idx}" data-field="valColor">${valColorOptions}</select>
+            </label>
+          </div>
+        `;
+
+        statsListContainer.appendChild(card);
+      });
+
+      // Attach listeners for inputs inside dynamic rows
+      statsListContainer.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('change', (e) => {
+          const i = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          statRows[i][field] = e.target.value;
+          updateURLAndPreview();
+        });
+      });
+
+      // Attach listeners for remove buttons
+      statsListContainer.querySelectorAll('.btn-icon-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const i = parseInt(e.currentTarget.dataset.idx, 10);
+          statRows.splice(i, 1);
+          renderStatRowEditors();
+          updateURLAndPreview();
+        });
+      });
+    }
+
+    document.getElementById('btn-add-stat').addEventListener('click', () => {
+      statRows.push({
+        label: 'Watch Time',
+        varName: 'watchHours',
+        suffix: ' hrs',
+        icon: 'fa-bolt',
+        iconColor: 'yellow',
+        valColor: 'purple'
+      });
+      renderStatRowEditors();
+      updateURLAndPreview();
+    });
+
+    // Color Pickers Sync
+    Object.keys(DEFAULT_COLORS).forEach(key => {
+      const picker = document.getElementById(`picker-${key}`);
+      const textInput = document.getElementById(`cfg-${key}`);
+
+      picker.addEventListener('input', () => {
+        textInput.value = picker.value;
+        updateURLAndPreview();
+      });
+
+      textInput.addEventListener('change', () => {
+        if (/^#[0-9A-Fa-f]{6}$/.test(textInput.value.trim())) {
+          picker.value = textInput.value.trim();
+        }
+        updateURLAndPreview();
+      });
+    });
+
+    document.getElementById('btn-reset-colors').addEventListener('click', () => {
+      Object.entries(DEFAULT_COLORS).forEach(([key, hex]) => {
+        document.getElementById(`picker-${key}`).value = hex;
+        document.getElementById(`cfg-${key}`).value = hex;
+      });
+      updateURLAndPreview();
+    });
+
+    const baseConfigIds = [
       'host', 'port', 'event', 'x', 'y', 'scale', 'duration',
       'cardAnim', 'avatarAnim', 'fontHeading', 'fontBody', 'bg',
-      'lbl1', 'lbl2', 'lbl3', 'vMonths', 'vSince', 'vLoyalty', 'vAvatar', 'vTier'
+      'vAvatar', 'vTier',
+      'cPink', 'cTeal', 'cPurple', 'cYellow', 'cStroke', 'cBorder', 'cBg'
     ];
 
     function getSetupState() {
       const state = {};
-      configIds.forEach(id => {
+      baseConfigIds.forEach(id => {
         state[id] = document.getElementById(`cfg-${id}`).value.trim();
       });
+      state.stats = JSON.stringify(statRows);
       return state;
     }
 
@@ -403,8 +744,7 @@
       previewFrame.src = `walkon-vi-card.html?${params.toString()}`;
     }
 
-    // Attach listeners to all inputs
-    configIds.forEach(id => {
+    baseConfigIds.forEach(id => {
       document.getElementById(`cfg-${id}`).addEventListener('change', updateURLAndPreview);
     });
 
@@ -416,7 +756,7 @@
       setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy URL'; }, 2000);
     });
 
-    // Connect Setup Page directly to Streamer.bot for Live User Variable Lookups
+    // Connect Setup Page directly to Streamer.bot
     function connectSetupToSB() {
       const state = getSetupState();
       if (sbAdminClient) {
@@ -440,7 +780,17 @@
 
     document.getElementById('btn-connect-sb').addEventListener('click', connectSetupToSB);
 
-    // Random YouTube Walk-On Simulation
+    // Build dynamic mock values for any custom variables a user added
+    function attachDynamicMockValues(baseMock) {
+      const enriched = { ...baseMock };
+      statRows.forEach((r, idx) => {
+        if (enriched[r.varName] === undefined) {
+          enriched[r.varName] = (idx + 1) * 15;
+        }
+      });
+      return enriched;
+    }
+
     const mockUsers = [
       { userName: 'Lucia_Caminos', levelName: 'Vice City Syndicate', months: 24, memberSince: '10/2024', loyaltyLevel: 'Level 9', avatarUrl: 'https://i.pravatar.cc/300?img=47' },
       { userName: 'Jason_Leonida', levelName: 'Leonida Enforcer', months: 14, memberSince: '08/2025', loyaltyLevel: 'Level 6', avatarUrl: 'https://i.pravatar.cc/300?img=12' },
@@ -450,29 +800,24 @@
 
     document.getElementById('btn-sim-random').addEventListener('click', () => {
       const pick = mockUsers[Math.floor(Math.random() * mockUsers.length)];
-      triggerWalkOnTest(pick);
+      triggerWalkOnTest(attachDynamicMockValues(pick));
     });
 
-    // Specific YouTube User Test (Queries Streamer.bot User Variables or Falls Back to Named Test)
     document.getElementById('btn-test-user').addEventListener('click', async () => {
       const targetUser = document.getElementById('test-user-input').value.trim() || 'ViceTester';
-      const state = getSetupState();
-
-      let userPayload = {
+      let userPayload = attachDynamicMockValues({
         userName: targetUser,
         avatarUrl: 'https://i.pravatar.cc/300?u=' + encodeURIComponent(targetUser),
         levelName: 'Leonida VIP',
         months: 18,
         memberSince: '04/2025',
         loyaltyLevel: 'Level 7'
-      };
+      });
 
-      // If connected to Streamer.bot, attempt to pull persisted YouTube User Variables
       if (sbAdminClient && sbStatusBadge.classList.contains('connected')) {
         try {
           const globalsRes = await sbAdminClient.getGlobals(true);
           if (globalsRes && globalsRes.variables) {
-            // Check if a custom test JSON or user variable exists in SB globals
             const userKey = `yt_user_${targetUser.toLowerCase()}`;
             if (globalsRes.variables[userKey]) {
               const parsed = JSON.parse(globalsRes.variables[userKey].value);
@@ -480,7 +825,7 @@
             }
           }
         } catch (err) {
-          console.warn('Could not fetch specific user globals from SB, using simulated stats for user:', err);
+          console.warn('Using simulated stats for user:', err);
         }
       }
 
@@ -488,23 +833,14 @@
     });
 
     function triggerWalkOnTest(payload) {
-      // 1. Send direct postMessage to the preview iframe
       previewFrame.contentWindow.postMessage({
         type: 'TRIGGER_WALKON_TEST',
         payload
       }, '*');
-
-      // 2. Also broadcast via Streamer.bot WebSocket if connected so active OBS instances receive the test
-      if (sbAdminClient && sbStatusBadge.classList.contains('connected')) {
-        const state = getSetupState();
-        sbAdminClient.doAction({ name: 'WalkOnTestBroadcast' }, {
-          event: state.event,
-          ...payload
-        }).catch(() => {});
-      }
     }
 
-    // Initialize on load
+    // Initialize UI
+    renderStatRowEditors();
     updateURLAndPreview();
     connectSetupToSB();
   </script>

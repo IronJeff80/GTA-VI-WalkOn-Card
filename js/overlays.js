@@ -2,8 +2,23 @@
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
    ========================================================================== */
 
+const DEFAULT_STAT_ROWS = [
+  { label: 'Tenure',  varName: 'months',       suffix: ' Months', icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow', fallback: '12' },
+  { label: 'Joined',  varName: 'memberSince',  suffix: '',        icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink',   fallback: '05/2025' },
+  { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '',        icon: 'fa-eye',            iconColor: 'purple', valColor: 'teal',   fallback: 'Level 5' }
+];
+
 const GTAOverlayConfig = (() => {
   const params = new URLSearchParams(window.location.search);
+
+  let parsedStats = DEFAULT_STAT_ROWS;
+  if (params.has('stats')) {
+    try {
+      parsedStats = JSON.parse(params.get('stats'));
+    } catch (e) {
+      console.warn('[GTA-Overlay] Invalid stats JSON in URL, using defaults.');
+    }
+  }
 
   return {
     // Streamer.bot WebSocket Config
@@ -23,17 +38,21 @@ const GTAOverlayConfig = (() => {
     fontBody: params.get('fontBody') || 'Inter',
     bgUrl: params.get('bg') || 'assets/gta6-bg.webp',
 
-    // Custom Labels
-    labelRow1: params.get('lbl1') || 'Tenure',
-    labelRow2: params.get('lbl2') || 'Joined',
-    labelRow3: params.get('lbl3') || 'Loyalty',
+    // Custom Colors
+    colors: {
+      pink:       params.get('cPink')   || '#f4acc4',
+      teal:       params.get('cTeal')   || '#53d8bf',
+      purple:     params.get('cPurple') || '#a688ff',
+      yellow:     params.get('cYellow') || '#fede9a',
+      iconStroke: params.get('cStroke') || '#171a21',
+      border:     params.get('cBorder') || '#0b2328',
+      bgFill:     params.get('cBg')     || '#303030'
+    },
 
-    // Streamer.bot YouTube User Variable Names
+    // Core Header Variables & Dynamic Stat Rows
     varAvatar: params.get('vAvatar') || 'avatarUrl',
-    varTier: params.get('vTier') || 'levelName',
-    varMonths: params.get('vMonths') || 'months',
-    varSince: params.get('vSince') || 'memberSince',
-    varLoyalty: params.get('vLoyalty') || 'loyaltyLevel'
+    varTier:   params.get('vTier')   || 'levelName',
+    stats:     Array.isArray(parsedStats) ? parsedStats : DEFAULT_STAT_ROWS
   };
 })();
 
@@ -45,31 +64,38 @@ class GTAWalkOnOverlay {
     this.queue = [];
 
     this.dom = {
-      container: document.getElementById('walkon-container'),
+      container:  document.getElementById('walkon-container'),
       avatarWrap: document.getElementById('avatar-wrapper'),
-      avatar: document.getElementById('card-avatar'),
-      username: document.getElementById('card-username'),
-      tier: document.getElementById('card-tier'),
-      lbl1: document.getElementById('label-row-1'),
-      lbl2: document.getElementById('label-row-2'),
-      lbl3: document.getElementById('label-row-3'),
-      months: document.getElementById('card-months'),
-      since: document.getElementById('card-since'),
-      loyalty: document.getElementById('card-loyalty')
+      avatar:     document.getElementById('card-avatar'),
+      username:   document.getElementById('card-username'),
+      tier:       document.getElementById('card-tier'),
+      metaBox:    document.getElementById('meta-box')
     };
 
     this.applyConfiguration();
+    this.renderStatRows({});
     this.initWebSocket();
     this.initPostMessageBridge();
   }
 
   applyConfiguration() {
     const root = document.documentElement;
+
+    // Position & Fonts
     root.style.setProperty('--card-x', `${this.config.posX}px`);
     root.style.setProperty('--card-y', `${this.config.posY}px`);
     root.style.setProperty('--card-scale', this.config.scale);
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
     root.style.setProperty('--font-body', `'${this.config.fontBody}', sans-serif`);
+
+    // Palette Overrides
+    root.style.setProperty('--gta-pink', this.config.colors.pink);
+    root.style.setProperty('--gta-teal', this.config.colors.teal);
+    root.style.setProperty('--gta-purple', this.config.colors.purple);
+    root.style.setProperty('--gta-yellow', this.config.colors.yellow);
+    root.style.setProperty('--gta-icon-stroke', this.config.colors.iconStroke);
+    root.style.setProperty('--gta-border', this.config.colors.border);
+    root.style.setProperty('--gta-bg-fill', this.config.colors.bgFill);
 
     if (this.config.bgUrl) {
       root.style.setProperty('--card-bg-image', `url('${this.config.bgUrl}')`);
@@ -84,32 +110,56 @@ class GTAWalkOnOverlay {
       this.dom.avatarWrap.classList.remove('av-flip', 'av-spin', 'av-pop');
       this.dom.avatarWrap.classList.add(this.config.avatarAnim);
     }
+  }
 
-    if (this.dom.lbl1) this.dom.lbl1.textContent = `${this.config.labelRow1}:`;
-    if (this.dom.lbl2) this.dom.lbl2.textContent = `${this.config.labelRow2}:`;
-    if (this.dom.lbl3) this.dom.lbl3.textContent = `${this.config.labelRow3}:`;
+  // Dynamically builds the stat rows based on user configuration
+  renderStatRows(data = {}) {
+    if (!this.dom.metaBox) return;
+    this.dom.metaBox.innerHTML = '';
+
+    if (!this.config.stats || this.config.stats.length === 0) {
+      this.dom.metaBox.classList.add('empty-stats');
+      return;
+    }
+
+    this.dom.metaBox.classList.remove('empty-stats');
+
+    this.config.stats.forEach((stat, index) => {
+      const row = document.createElement('div');
+      row.className = 'meta-row';
+      // Stagger each row pop animation by 0.12s starting at 0.35s
+      row.style.setProperty('--row-delay', `${(0.35 + index * 0.12).toFixed(2)}s`);
+
+      const rawVal = data[stat.varName] !== undefined ? data[stat.varName] : (stat.fallback || '--');
+      const displayVal = `${rawVal}${stat.suffix || ''}`;
+
+      row.innerHTML = `
+        <span class="meta-label">
+          <span class="hud-icon icon-${stat.iconColor || 'pink'}">
+            <i class="fa-solid ${stat.icon || 'fa-star'}"></i>
+          </span>
+          <span>${stat.label}:</span>
+        </span>
+        <span class="meta-val val-${stat.valColor || 'yellow'}">${displayVal}</span>
+      `;
+
+      this.dom.metaBox.appendChild(row);
+    });
   }
 
   initWebSocket() {
-    if (typeof StreamerbotClient === 'undefined') {
-      console.error('[GTA-Overlay] StreamerbotClient library not loaded.');
-      return;
-    }
+    if (typeof StreamerbotClient === 'undefined') return;
 
     this.client = new StreamerbotClient({
       host: this.config.host,
       port: this.config.port,
       endpoint: this.config.endpoint,
-      subscribe: {
-        General: ['Custom']
-      },
+      subscribe: { General: ['Custom'] },
       onConnect: () => {
         console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
-        window.parent.postMessage({ type: 'SB_STATUS', connected: true }, '*');
       },
       onDisconnect: () => {
         console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
-        window.parent.postMessage({ type: 'SB_STATUS', connected: false }, '*');
       }
     });
 
@@ -120,31 +170,18 @@ class GTAWalkOnOverlay {
       }
 
       if (data && (data.event === this.config.eventName || data.type === this.config.eventName)) {
-        this.enqueueWalkOn(this.normalizePayload(data));
+        this.enqueueWalkOn(data);
       }
     });
   }
 
-  // Maps dynamic Streamer.bot variable names or standard payload properties
-  normalizePayload(raw) {
-    return {
-      userName: raw.userName || raw.user || 'ViceCityLegend',
-      avatarUrl: raw[this.config.varAvatar] || raw.avatarUrl || 'https://www.gstatic.com/youtube/img/creator/avatar/default_64.png',
-      levelName: raw[this.config.varTier] || raw.levelName || 'VIP Member',
-      months: raw[this.config.varMonths] !== undefined ? raw[this.config.varMonths] : (raw.months || 1),
-      memberSince: raw[this.config.varSince] || raw.memberSince || '10/2026',
-      loyaltyLevel: raw[this.config.varLoyalty] || raw.loyaltyLevel || 'Level 1'
-    };
-  }
-
-  // Allows setup.html iframe preview to trigger instant tests without reloading
   initPostMessageBridge() {
     window.addEventListener('message', (event) => {
       const msg = event.data;
       if (!msg || !msg.type) return;
 
       if (msg.type === 'TRIGGER_WALKON_TEST') {
-        this.enqueueWalkOn(this.normalizePayload(msg.payload));
+        this.enqueueWalkOn(msg.payload || {});
       }
     });
   }
@@ -172,20 +209,21 @@ class GTAWalkOnOverlay {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async playWalkOn(data) {
-    // Populate DOM
-    this.dom.avatar.src = data.avatarUrl;
-    this.dom.username.textContent = data.userName;
-    this.dom.tier.textContent = String(data.levelName).toUpperCase();
-    this.dom.months.textContent = `${data.months} Months`;
-    this.dom.since.textContent = data.memberSince;
-    this.dom.loyalty.textContent = String(data.loyaltyLevel).toLowerCase().includes('level')
-      ? data.loyaltyLevel
-      : `Level ${data.loyaltyLevel}`;
+  async playWalkOn(raw) {
+    const userName = raw.userName || raw.user || 'ViceCityLegend';
+    const avatarUrl = raw[this.config.varAvatar] || raw.avatarUrl || 'https://www.gstatic.com/youtube/img/creator/avatar/default_64.png';
+    const levelName = raw[this.config.varTier] || raw.levelName || 'VIP Member';
 
-    // Reset & Trigger Entrance
+    this.dom.avatar.src = avatarUrl;
+    this.dom.username.textContent = userName;
+    this.dom.tier.textContent = String(levelName).toUpperCase();
+
+    // Populate Dynamic Stat Rows
+    this.renderStatRows(raw);
+
+    // Trigger Entrance
     this.dom.container.classList.remove('animate-out', 'animate-in');
-    void this.dom.container.offsetWidth; // Force reflow so keyframe animations replay cleanly
+    void this.dom.container.offsetWidth; // Force reflow
     this.dom.container.classList.add('animate-in');
 
     await this.wait(this.config.duration);
