@@ -187,9 +187,14 @@ initWebSocket() {
     this.client = new StreamerbotClient(clientOptions);
 
     this.client.on('General.Custom', (payload) => {
-      let data = payload.data || payload;
+      let data = payload?.data ?? payload;
       if (typeof data === 'string') {
         try { data = JSON.parse(data); } catch (e) { return; }
+      }
+      if (data && data.data && typeof data.data === 'object' && !data.event) {
+        data = data.data;
+      } else if (data && typeof data.data === 'string') {
+        try { data = JSON.parse(data.data); } catch (e) {}
       }
 
       if (data && (data.event === this.config.eventName || data.type === this.config.eventName)) {

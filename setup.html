@@ -841,11 +841,20 @@ function connectSetupToSB() {
       sbAdminClient = new StreamerbotClient(clientOptions);
 
       sbAdminClient.on('General.Custom', (payload) => {
-        let data = payload.data || payload;
+        console.log('[Setup] Received General.Custom payload:', payload);
+
+        let data = payload?.data ?? payload;
         if (typeof data === 'string') {
-          try { data = JSON.parse(data); } catch (e) { return; }
+          try { data = JSON.parse(data); } catch (e) {}
         }
-        if (data && data.event === 'GTA_UserLookupResult') {
+        // Handle nested data property if Streamer.bot wraps Custom broadcasts
+        if (data && data.data && typeof data.data === 'object' && !data.event) {
+          data = data.data;
+        } else if (data && typeof data.data === 'string') {
+          try { data = JSON.parse(data.data); } catch (e) {}
+        }
+
+        if (data && (data.event === 'GTA_UserLookupResult' || data.type === 'GTA_UserLookupResult')) {
           testStatusLog.style.color = '#53d8bf';
           testStatusLog.textContent = `Loaded real SB vars for ${data.userName || data.targetUser}! Playing animation...`;
           triggerWalkOnTest(data);
