@@ -2,6 +2,15 @@
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
    ========================================================================== */
 
+// Clean inline SVG fallback avatar (prevents Firefox/OBS OpaqueResponseBlocking errors)
+const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+  '<rect width="120" height="120" fill="#171a21"/>' +
+  '<circle cx="60" cy="44" r="22" fill="#f4acc4"/>' +
+  '<path d="M22 108 C22 78, 98 78, 98 108 Z" fill="#53d8bf"/>' +
+  '</svg>'
+);
+
 const DEFAULT_STAT_ROWS = [
   { label: 'Tenure',  varName: 'months',       suffix: ' Months', icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow', fallback: '12' },
   { label: 'Joined',  varName: 'memberSince',  suffix: '',        icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink',   fallback: '05/2025' },
@@ -71,6 +80,14 @@ class GTAWalkOnOverlay {
       metaBox:    document.getElementById('meta-box')
     };
 
+    if (this.dom.avatar) {
+      this.dom.avatar.onerror = () => {
+        if (this.dom.avatar.src !== DEFAULT_AVATAR_SVG) {
+          this.dom.avatar.src = DEFAULT_AVATAR_SVG;
+        }
+      };
+    }
+
     this.applyConfiguration();
     this.renderStatRows({});
 
@@ -80,6 +97,46 @@ class GTAWalkOnOverlay {
 
     this.initWebSocket();
     this.initPostMessageBridge();
+  }
+
+  // Resolves relative paths cleanly against the HTML document root so css/ folder doesn't cause 404s
+  resolveAssetUrl(rawPath) {
+    if (!rawPath) return '';
+    const trimmed = rawPath.trim();
+    if (/^(https?:|data:|blob:|\/)/i.test(trimmed)) {
+      return trimmed;
+    }
+    try {
+      return new URL(trimmed, window.location.href).href;
+    } catch (e) {
+      return trimmed;
+    }
+  }
+
+  // Case-insensitive & alias-aware property lookup for Streamer.bot payloads
+  getField(obj, key, aliases = []) {
+    if (!obj || typeof obj !== 'object') return undefined;
+    const candidates = [key, ...aliases].filter(Boolean);
+
+    for (const c of candidates) {
+      if (obj[c] !== undefined && obj[c] !== null && obj[c] !== '') {
+        return obj[c];
+      }
+    }
+
+    const lowerMap = {};
+    Object.keys(obj).forEach(k => {
+      lowerMap[k.toLowerCase().replace(/[\s_-]/g, '')] = obj[k];
+    });
+
+    for (const c of candidates) {
+      const normalized = String(c).toLowerCase().replace(/[\s_-]/g, '');
+      if (lowerMap[normalized] !== undefined && lowerMap[normalized] !== null && lowerMap[normalized] !== '') {
+        return lowerMap[normalized];
+      }
+    }
+
+    return undefined;
   }
 
   applyConfiguration() {
@@ -100,7 +157,8 @@ class GTAWalkOnOverlay {
     root.style.setProperty('--gta-bg-fill', this.config.colors.bgFill);
 
     if (this.config.bgUrl) {
-      root.style.setProperty('--card-bg-image', `url('${this.config.bgUrl}')`);
+      const resolvedBg = this.resolveAssetUrl(this.config.bgUrl);
+      root.style.setProperty('--card-bg-image', `url("${resolvedBg}")`);
     }
 
     if (this.dom.container) {
@@ -143,9 +201,8 @@ class GTAWalkOnOverlay {
       row.className = 'meta-row';
       row.style.setProperty('--row-delay', `${(0.35 + index * 0.12).toFixed(2)}s`);
 
-      const rawVal = data[stat.varName] !== undefined && data[stat.varName] !== null
-        ? data[stat.varName]
-        : (stat.fallback || '--');
+      const matchedVal = this.getField(data, stat.varName);
+      const rawVal = matchedVal !== undefined ? matchedVal : (stat.fallback || '--');
       const displayVal = `${rawVal}${stat.suffix || ''}`;
 
       row.innerHTML = `
@@ -162,7 +219,13 @@ class GTAWalkOnOverlay {
     });
   }
 
-initWebSocket() {
+  initWebSocket() {
+    // When running inside setup.html's preview iframe, setup.html handles WebSocket & forwards events via postMessage
+    if (this.config.previewMode && window.parent !== window) {
+      console.log('[GTA-Overlay] Preview mode active: receiving events via Setup Hub bridge.');
+      return;
+    }
+
     if (typeof StreamerbotClient === 'undefined') return;
 
     const clientOptions = {
@@ -281,9 +344,9 @@ initWebSocket() {
       await this.wait(450);
     }
 
-    const userName = raw.userName || raw.user || 'ViceCityLegend';
-    const avatarUrl = raw[this.config.varAvatar] || raw.avatarUrl || 'https://www.gstatic.com/youtube/img/creator/avatar/default_64.png';
-    const levelName = raw[this.config.varTier] || raw.levelName || 'VIP Member';
+    const userName = this.getField(raw, 'userName', ['user', 'targetUser', 'displayName']) || 'ViceCityLegend';
+    const avatarUrl = this.getField(raw, this.config.varAvatar, ['avatarUrl', 'userProfileUrl', 'avatar', 'profileImageUrl']) || DEFAULT_AVATAR_SVG;
+    const levelName = this.getField(raw, this.config.varTier, ['levelName', 'tier', 'tierName', 'memberTier', 'role']) || 'VIP Member';
 
     this.dom.avatar.src = avatarUrl;
     this.dom.username.textContent = userName;

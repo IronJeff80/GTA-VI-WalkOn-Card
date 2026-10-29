@@ -29,7 +29,7 @@
   --card-scale: 1;
   --font-heading: 'Bebas Neue', sans-serif;
   --font-body: 'Inter', sans-serif;
-  --card-bg-image: url('assets/gta6-bg.webp');
+  --card-bg-image: url('../assets/gta6-bg.webp');
 }
 
 * {

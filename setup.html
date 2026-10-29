@@ -358,9 +358,11 @@
       background: #12151a;
       border: 1px solid #2b313e;
       color: #9aa4b2;
-      min-height: 34px;
+      min-height: 46px;
       display: flex;
       align-items: center;
+      line-height: 1.35;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -572,7 +574,7 @@
           Queries Streamer.bot for this user's real persisted YouTube User Variables.
         </p>
         <label>YouTube Channel ID (e.g. UC...) or Username
-          <input type="text" id="test-user-input" placeholder="e.g. UC_x5XG1OV2P6uZZ5FSM9Ttw or Username">
+          <input type="text" id="test-user-input" placeholder="e.g. UCVu2Tib4ZyK3FzwnCjPBHGw">
         </label>
         <label>SB Lookup Action Name
           <input type="text" id="cfg-lookupAction" value="GTA_LookupYouTubeUser">
@@ -770,7 +772,9 @@
     function getSetupState() {
       const state = {};
       baseConfigIds.forEach(id => {
-        state[id] = document.getElementById(`cfg-${id}`).value.trim();
+        const val = document.getElementById(`cfg-${id}`).value.trim();
+        if (id === 'password' && !val) return;
+        state[id] = val;
       });
       state.stats = JSON.stringify(statRows);
       return state;
@@ -810,7 +814,7 @@
       setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy URL'; }, 2000);
     });
 
-function connectSetupToSB() {
+    function connectSetupToSB() {
       const state = getSetupState();
       if (sbAdminClient) {
         try { sbAdminClient.disconnect(); } catch (e) {}
@@ -833,7 +837,6 @@ function connectSetupToSB() {
         }
       };
 
-      // Only attach password if the user typed one
       if (state.password) {
         clientOptions.password = state.password;
       }
@@ -847,16 +850,22 @@ function connectSetupToSB() {
         if (typeof data === 'string') {
           try { data = JSON.parse(data); } catch (e) {}
         }
-        // Handle nested data property if Streamer.bot wraps Custom broadcasts
         if (data && data.data && typeof data.data === 'object' && !data.event) {
           data = data.data;
         } else if (data && typeof data.data === 'string') {
           try { data = JSON.parse(data.data); } catch (e) {}
         }
 
-        if (data && (data.event === 'GTA_UserLookupResult' || data.type === 'GTA_UserLookupResult')) {
+        const currentState = getSetupState();
+        if (data && (
+          data.event === 'GTA_UserLookupResult' ||
+          data.type === 'GTA_UserLookupResult' ||
+          data.event === currentState.event ||
+          data.type === currentState.event
+        )) {
+          const loadedKeys = Object.keys(data).filter(k => !['event', 'type', 'targetUser'].includes(k));
           testStatusLog.style.color = '#53d8bf';
-          testStatusLog.textContent = `Loaded real SB vars for ${data.userName || data.targetUser}! Playing animation...`;
+          testStatusLog.textContent = `Loaded [${loadedKeys.join(', ')}] for ${data.userName || data.targetUser}! Playing...`;
           triggerWalkOnTest(data);
         }
       });
