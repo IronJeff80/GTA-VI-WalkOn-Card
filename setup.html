@@ -345,24 +345,36 @@
       inputX.disabled = chkAlignH.checked; inputY.disabled = chkAlignV.checked;
       syncLiveConfig();
     }
-    chkAlignH.addEventListener('change', updateAlignUI); chkAlignV.addEventListener('change', updateAlignUI);
-    chkAlignScreen.addEventListener('change', () => { chkAlignH.checked = chkAlignScreen.checked; chkAlignV.checked = chkAlignScreen.checked; updateAlignUI(); });
+    if (chkAlignH) chkAlignH.addEventListener('change', updateAlignUI); 
+    if (chkAlignV) chkAlignV.addEventListener('change', updateAlignUI);
+    if (chkAlignScreen) chkAlignScreen.addEventListener('change', () => { chkAlignH.checked = chkAlignScreen.checked; chkAlignV.checked = chkAlignScreen.checked; updateAlignUI(); });
     
     function updateAAlignUI() { inputAX.disabled = chkAAlignH.checked; inputAY.disabled = chkAAlignV.checked; syncLiveConfig(); }
-    chkAAlignH.addEventListener('change', updateAAlignUI); chkAAlignV.addEventListener('change', updateAAlignUI);
+    if (chkAAlignH) chkAAlignH.addEventListener('change', updateAAlignUI); 
+    if (chkAAlignV) chkAAlignV.addEventListener('change', updateAAlignUI);
 
     window.addEventListener('message', (msg) => {
       if (!msg || !msg.data) return;
       if (msg.data.type === 'CARD_MANIPULATED') {
-        inputX.value = msg.data.x; inputY.value = msg.data.y; inputScale.value = msg.data.scale;
-        chkAlignH.checked = Boolean(msg.data.alignH); chkAlignV.checked = Boolean(msg.data.alignV);
-        chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
-        inputX.disabled = chkAlignH.checked; inputY.disabled = chkAlignV.checked;
+        if (inputX) inputX.value = msg.data.x; 
+        if (inputY) inputY.value = msg.data.y; 
+        if (inputScale) inputScale.value = msg.data.scale;
+        if (chkAlignH) chkAlignH.checked = Boolean(msg.data.alignH); 
+        if (chkAlignV) chkAlignV.checked = Boolean(msg.data.alignV);
+        if (chkAlignScreen) chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
+        if (inputX) inputX.disabled = chkAlignH.checked; 
+        if (inputY) inputY.disabled = chkAlignV.checked;
         updateGeneratedUrlOnly();
       } else if (msg.data.type === 'ALERT_MANIPULATED') {
-        inputAX.value = msg.data.ax; inputAY.value = msg.data.ay; document.getElementById('cfg-ascale').value = msg.data.ascale;
-        chkAAlignH.checked = Boolean(msg.data.aAlignH); chkAAlignV.checked = Boolean(msg.data.aAlignV);
-        inputAX.disabled = chkAAlignH.checked; inputAY.disabled = chkAAlignV.checked;
+        if (inputAX) inputAX.value = msg.data.ax; 
+        if (inputAY) inputAY.value = msg.data.ay; 
+        const aScale = document.getElementById('cfg-ascale');
+        if (aScale) aScale.value = msg.data.ascale;
+        
+        if (chkAAlignH) chkAAlignH.checked = Boolean(msg.data.aAlignH); 
+        if (chkAAlignV) chkAAlignV.checked = Boolean(msg.data.aAlignV);
+        if (inputAX) inputAX.disabled = chkAAlignH.checked; 
+        if (inputAY) inputAY.disabled = chkAAlignV.checked;
         updateGeneratedUrlOnly();
       }
     });
@@ -377,6 +389,7 @@
     const availColors = ['pink', 'teal', 'purple', 'yellow'];
 
     function renderStatRowEditors() {
+      if (!statsListContainer) return;
       statsListContainer.innerHTML = '';
       statRows.forEach((row, idx) => {
         const d = document.createElement('div'); d.className = 'stat-row-editor';
@@ -397,12 +410,19 @@
       statsListContainer.querySelectorAll('input, select').forEach(el => el.addEventListener('input', e => { statRows[e.target.dataset.idx][e.target.dataset.field] = e.target.value; syncLiveConfig(); }));
       statsListContainer.querySelectorAll('.btn-icon-remove').forEach(btn => btn.addEventListener('click', e => { statRows.splice(e.currentTarget.dataset.idx, 1); renderStatRowEditors(); syncLiveConfig(); }));
     }
-    document.getElementById('btn-add-stat').addEventListener('click', () => { statRows.push({ label: 'New', varName: 'newVar', suffix: '', icon: 'fa-star', iconColor: 'yellow', valColor: 'yellow' }); renderStatRowEditors(); syncLiveConfig(); });
+    const btnAddStat = document.getElementById('btn-add-stat');
+    if (btnAddStat) btnAddStat.addEventListener('click', () => { statRows.push({ label: 'New', varName: 'newVar', suffix: '', icon: 'fa-star', iconColor: 'yellow', valColor: 'yellow' }); renderStatRowEditors(); syncLiveConfig(); });
+    
     Object.keys(DEFAULT_COLORS).forEach(k => {
-      document.getElementById(`picker-${k}`).addEventListener('input', e => { document.getElementById(`cfg-${k}`).value = e.target.value; syncLiveConfig(); });
-      document.getElementById(`cfg-${k}`).addEventListener('input', e => { if(/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) document.getElementById(`picker-${k}`).value = e.target.value; syncLiveConfig(); });
+      const picker = document.getElementById(`picker-${k}`);
+      const txt = document.getElementById(`cfg-${k}`);
+      if (picker && txt) {
+        picker.addEventListener('input', e => { txt.value = e.target.value; syncLiveConfig(); });
+        txt.addEventListener('input', e => { if(/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) picker.value = e.target.value; syncLiveConfig(); });
+      }
     });
-    document.getElementById('btn-reset-colors').addEventListener('click', () => { Object.entries(DEFAULT_COLORS).forEach(([k, h]) => { document.getElementById(`picker-${k}`).value = h; document.getElementById(`cfg-${k}`).value = h; }); syncLiveConfig(); });
+    const btnResetColors = document.getElementById('btn-reset-colors');
+    if (btnResetColors) btnResetColors.addEventListener('click', () => { Object.entries(DEFAULT_COLORS).forEach(([k, h]) => { const p = document.getElementById(`picker-${k}`); const c = document.getElementById(`cfg-${k}`); if(p) p.value = h; if(c) c.value = h; }); syncLiveConfig(); });
 
     const baseInputs = ['host','port','password','event','x','y','scale','duration','cardAnim','avatarAnim','fontHeading','fontBody','bg','vAvatar','vTier','cPink','cTeal','cPurple','cYellow','cStroke','cBorder','cBg','alertEvent','ax','ay','ascale','aDur'];
     const checkboxToggles = ['al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl','showAvatar','showUser','showTier','noBg'];
@@ -421,15 +441,18 @@
         if(el && !el.checked) s[id] = '0';
       });
       
-      if (chkAlignH.checked) s.alignH = '1'; if (chkAlignV.checked) s.alignV = '1';
-      if (chkAAlignH.checked) s.aAlignH = '1'; else s.aAlignH = '0'; 
-      if (chkAAlignV.checked) s.aAlignV = '1';
-      s.modules = selModules.value;
+      if (chkAlignH && chkAlignH.checked) s.alignH = '1'; 
+      if (chkAlignV && chkAlignV.checked) s.alignV = '1';
+      if (chkAAlignH && chkAAlignH.checked) s.aAlignH = '1'; else s.aAlignH = '0'; 
+      if (chkAAlignV && chkAAlignV.checked) s.aAlignV = '1';
+      
+      if (selModules) s.modules = selModules.value;
       s.stats = JSON.stringify(statRows);
       return s;
     }
 
     function updateGeneratedUrlOnly() {
+      if (!urlOutput) return;
       const p = new URLSearchParams(getSetupState());
       urlOutput.value = window.location.href.replace(/setup\.html.*$/, 'gta-overlay.html') + '?' + p.toString();
     }
@@ -437,31 +460,32 @@
     function syncLiveConfig() {
       const state = getSetupState();
       updateGeneratedUrlOnly();
-      if (previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
+      if (previewFrame && previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
     }
 
     function initialLoadIframe() {
       updateGeneratedUrlOnly();
+      if (!previewFrame) return;
       const p = new URLSearchParams(getSetupState());
-      if (pinCheckbox.checked) p.set('preview', '1');
+      if (pinCheckbox && pinCheckbox.checked) p.set('preview', '1');
       previewFrame.src = 'gta-overlay.html?' + p.toString();
     }
 
-    // Attach listeners
+    // Attach listeners safely
     baseInputs.forEach(id => { 
       const el = document.getElementById(`cfg-${id}`);
-      if(el) {
-        el.addEventListener('input', syncLiveConfig); 
-        el.addEventListener('change', syncLiveConfig);
-      }
+      if(el) { el.addEventListener('input', syncLiveConfig); el.addEventListener('change', syncLiveConfig); }
     });
     checkboxToggles.forEach(id => { 
       const el = document.getElementById('chk-'+id) || document.getElementById(id);
       if (el) el.addEventListener('change', syncLiveConfig); 
     });
-    selModules.addEventListener('change', initialLoadIframe);
+    if (selModules) selModules.addEventListener('change', initialLoadIframe);
 
-    document.getElementById('btn-copy-url').addEventListener('click', () => { navigator.clipboard.writeText(urlOutput.value); });
+    const btnCopyUrl = document.getElementById('btn-copy-url');
+    if (btnCopyUrl && urlOutput) {
+      btnCopyUrl.addEventListener('click', () => { navigator.clipboard.writeText(urlOutput.value); });
+    }
 
     function connectSetupToSB() {
       const state = getSetupState();
@@ -473,12 +497,10 @@
         endpoint: '/', 
         subscribe: { General: ['Custom'] },
         onConnect: () => { 
-          sbStatusBadge.classList.add('connected'); 
-          sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; 
+          if(sbStatusBadge) { sbStatusBadge.classList.add('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; }
         },
         onDisconnect: () => { 
-          sbStatusBadge.classList.remove('connected'); 
-          sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; 
+          if(sbStatusBadge) { sbStatusBadge.classList.remove('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; }
         }
       };
       if (state.password) opts.password = state.password;
@@ -490,45 +512,72 @@
         if(typeof d === 'string') try{d=JSON.parse(d)}catch(e){}
         if(d?.data && !d.event) d=d.data; else if(typeof d?.data==='string') try{d=JSON.parse(d.data)}catch(e){}
         if (d && (d.event === 'GTA_UserLookupResult' || d.type === 'GTA_UserLookupResult')) {
-          testStatusLog.style.color = '#53d8bf'; testStatusLog.textContent = `Loaded real SB vars for ${d.userName || d.targetUser}!`;
-          previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: d }, '*');
+          if (testStatusLog) { testStatusLog.style.color = '#53d8bf'; testStatusLog.textContent = `Loaded real SB vars for ${d.userName || d.targetUser}!`; }
+          if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: d }, '*');
         }
       });
     }
-    document.getElementById('btn-connect-sb').addEventListener('click', connectSetupToSB);
+    const btnConnectSb = document.getElementById('btn-connect-sb');
+    if (btnConnectSb) btnConnectSb.addEventListener('click', connectSetupToSB);
 
     // Mock Simulators
     const mocks = [ { userName: 'Lucia_Caminos', levelName: 'Vice City Syndicate', months: 24, avatarUrl: 'https://i.pravatar.cc/300?img=47' } ];
-    document.getElementById('btn-sim-walkon').addEventListener('click', () => {
-      let p = {...mocks[0]}; statRows.forEach((r,i) => p[r.varName] = (i+1)*10);
-      previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: p }, '*');
-    });
+    const btnSimWalkon = document.getElementById('btn-sim-walkon');
+    if (btnSimWalkon) {
+      btnSimWalkon.addEventListener('click', () => {
+        let p = {...mocks[0]}; statRows.forEach((r,i) => p[r.varName] = (i+1)*10);
+        if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: p }, '*');
+      });
+    }
 
-    document.getElementById('btn-sim-alert').addEventListener('click', () => {
-      const type = document.getElementById('sim-alert-type').value;
-      const p = { alertType: type, userName: 'Lucia_Caminos', userProfileUrl: 'https://i.pravatar.cc/300?img=47' };
-      if (type==='sub') p.triggerName = "New Subscriber";
-      if (type==='member') { p.triggerName = "New Member"; p.levelName = "Leonida VIP"; }
-      if (type==='milestone') { p.triggerName = "Milestone"; p.months = 12; p.levelName = "Leonida VIP"; p.message = "Keep up the great streams!"; }
-      if (type==='gift') { p.triggerName = "Membership Gift"; p.count = 5; }
-      if (type==='giftRec') { p.triggerName = "Gift Received"; p.gifterUser = "TommyV_86"; }
-      if (type==='superchat') { p.triggerName = "Super Chat"; p.amount = "$20.00"; p.message = "Love the stream!"; }
-      if (type==='supersticker') { p.triggerName = "Super Sticker"; p.amount = "$5.00"; p.stickerImageUrl = "https://i.pravatar.cc/120?img=1"; p.message="Awesome!"; }
-      if (type==='jewels') { p.triggerName = "Jewels Gifted"; p.jewelsAmount = 150; p.jewelsName = "Diamond"; p.jewelsUrl = "https://i.pravatar.cc/120?img=5"; }
-      previewFrame.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: p }, '*');
-    });
+    const btnSimAlert = document.getElementById('btn-sim-alert');
+    if (btnSimAlert) {
+      btnSimAlert.addEventListener('click', () => {
+        const typeEl = document.getElementById('sim-alert-type');
+        const type = typeEl ? typeEl.value : 'sub';
+        const p = { alertType: type, userName: 'Lucia_Caminos', userProfileUrl: 'https://i.pravatar.cc/300?img=47' };
+        if (type==='sub') p.triggerName = "New Subscriber";
+        if (type==='member') { p.triggerName = "New Member"; p.levelName = "Leonida VIP"; }
+        if (type==='milestone') { p.triggerName = "Milestone"; p.months = 12; p.levelName = "Leonida VIP"; p.message = "Keep up the great streams!"; }
+        if (type==='gift') { p.triggerName = "Membership Gift"; p.count = 5; }
+        if (type==='giftRec') { p.triggerName = "Gift Received"; p.gifterUser = "TommyV_86"; }
+        if (type==='superchat') { p.triggerName = "Super Chat"; p.amount = "$20.00"; p.message = "Love the stream!"; }
+        if (type==='supersticker') { p.triggerName = "Super Sticker"; p.amount = "$5.00"; p.stickerImageUrl = "https://i.pravatar.cc/120?img=1"; p.message="Awesome!"; }
+        if (type==='jewels') { p.triggerName = "Jewels Gifted"; p.jewelsAmount = 150; p.jewelsName = "Diamond"; p.jewelsUrl = "https://i.pravatar.cc/120?img=5"; }
+        if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: p }, '*');
+      });
+    }
 
-    document.getElementById('btn-test-user').addEventListener('click', async () => {
-      const targetUser = document.getElementById('test-user-input').value.trim();
-      const actionName = document.getElementById('cfg-lookupAction').value.trim() || 'GTA_LookupYouTubeUser';
-      if (!targetUser) return (testStatusLog.style.color = '#f4acc4', testStatusLog.textContent = 'Enter a Channel ID.');
-      if (!sbAdminClient || !sbStatusBadge.classList.contains('connected')) return;
-      try {
-        const res = await sbAdminClient.getActions();
-        const action = (res.actions || []).find(a => a.name.toLowerCase() === actionName.toLowerCase());
-        if (action) await sbAdminClient.doAction(action.id, { targetUser, requestedVars: [document.getElementById('cfg-vAvatar').value, document.getElementById('cfg-vTier').value, ...statRows.map(r=>r.varName)].join(','), eventName: document.getElementById('cfg-event').value });
-      } catch (err) { testStatusLog.textContent = 'Error querying SB.'; }
-    });
+    const btnTestUser = document.getElementById('btn-test-user');
+    if (btnTestUser) {
+      btnTestUser.addEventListener('click', async () => {
+        const targetUserEl = document.getElementById('test-user-input');
+        const targetUser = targetUserEl ? targetUserEl.value.trim() : '';
+        const actionNameEl = document.getElementById('cfg-lookupAction');
+        const actionName = actionNameEl ? actionNameEl.value.trim() : 'GTA_LookupYouTubeUser';
+        
+        if (!targetUser) {
+          if (testStatusLog) { testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = 'Enter a Channel ID.'; }
+          return;
+        }
+        if (!sbAdminClient || !sbStatusBadge.classList.contains('connected')) return;
+        try {
+          const res = await sbAdminClient.getActions();
+          const action = (res.actions || []).find(a => a.name.toLowerCase() === actionName.toLowerCase());
+          const reqVars = [
+            document.getElementById('cfg-vAvatar') ? document.getElementById('cfg-vAvatar').value : 'avatarUrl', 
+            document.getElementById('cfg-vTier') ? document.getElementById('cfg-vTier').value : 'levelName', 
+            ...statRows.map(r=>r.varName)
+          ].filter(Boolean).join(',');
+          
+          const evName = document.getElementById('cfg-event') ? document.getElementById('cfg-event').value : 'MemberWalkOn';
+          
+          if (action) {
+            await sbAdminClient.doAction(action.id, { targetUser, requestedVars: reqVars, eventName: evName });
+          }
+        } catch (err) { if (testStatusLog) testStatusLog.textContent = 'Error querying SB.'; }
+      });
+    }
 
     fitPreviewCanvas(); renderStatRowEditors(); initialLoadIframe(); connectSetupToSB();
   </script>

@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
-   v0.0.3.1 - Modules Update & Bug Fixes
+   v0.0.3.2 - Modules Update & Lookup Fixes
    ========================================================================== */
 
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -26,7 +26,6 @@ const GTAOverlayConfig = (() => {
     catch (e) { console.warn('[GTA-Overlay] Invalid stats JSON in URL, using defaults.'); }
   }
 
-  // Parse modules to enable (default: all)
   const modulesParam = params.get('modules') || 'all';
   const enableWalkon = modulesParam === 'all' || modulesParam.includes('walkon');
   const enableAlerts = modulesParam === 'all' || modulesParam.includes('alerts');
@@ -51,17 +50,16 @@ const GTAOverlayConfig = (() => {
     cardAnim: params.get('cardAnim') || 'anim-slide-left',
     avatarAnim: params.get('avatarAnim') || 'av-flip',
     
-    // Default Variable Toggles (Show/Hide elements)
     showAvatar: params.get('showAvatar') !== '0',
     showUser: params.get('showUser') !== '0',
     showTier: params.get('showTier') !== '0',
 
     // Alerts Config
     alertEvent: params.get('alertEvent') || 'GTA_Alert',
-    alertX: parseFloat(params.get('ax') || '960'), // Center X by default
-    alertY: parseFloat(params.get('ay') || '100'), // Top Y by default
+    alertX: parseFloat(params.get('ax') || '960'), 
+    alertY: parseFloat(params.get('ay') || '100'), 
     alertScale: parseFloat(params.get('ascale') || '1'),
-    alertAlignH: params.get('aAlignH') !== '0', // Default true
+    alertAlignH: params.get('aAlignH') !== '0', 
     alertAlignV: params.get('aAlignV') === '1',
     alertDuration: parseInt(params.get('aDur') || '6', 10) * 1000,
     alertsConfig: {
@@ -116,7 +114,6 @@ class GTAOverlayEngine {
       alertBox:        document.getElementById('alert-box')
     };
 
-    // Ensure modules are visible/hidden based on URL
     if (this.dom.walkonContainer && !this.config.modules.walkon) this.dom.walkonContainer.style.display = 'none';
     if (this.dom.alertContainer && !this.config.modules.alerts) this.dom.alertContainer.style.display = 'none';
 
@@ -164,9 +161,6 @@ class GTAOverlayEngine {
     return undefined;
   }
 
-  // =====================================
-  // STYLES & COORDINATES
-  // =====================================
   applyGlobalStyles() {
     const root = document.documentElement;
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
@@ -190,7 +184,6 @@ class GTAOverlayEngine {
         this.dom.walkonContainer.className = `walkon-container ${this.config.cardAnim}`;
       }
       
-      // Default variables display logic
       const avWrap = document.getElementById('avatar-wrapper');
       const userEl = document.getElementById('card-username');
       const tierEl = document.getElementById('card-tier');
@@ -257,7 +250,6 @@ class GTAOverlayEngine {
       metaBox.classList.add('empty-stats');
       return;
     }
-
     metaBox.classList.remove('empty-stats');
 
     this.config.stats.forEach((stat, index) => {
@@ -278,14 +270,10 @@ class GTAOverlayEngine {
         </span>
         <span class="meta-val val-${stat.valColor || 'yellow'}">${displayVal}</span>
       `;
-
       metaBox.appendChild(row);
     });
   }
 
-  // =====================================
-  // STUDIO INTERACTIVITY (DRAG & RESIZE)
-  // =====================================
   initStudioInteractivity() {
     const guideV = document.createElement('div'); guideV.className = 'snap-guide vertical'; guideV.style.left = '960px'; document.body.appendChild(guideV);
     const guideH = document.createElement('div'); guideH.className = 'snap-guide horizontal'; guideH.style.top = '540px'; document.body.appendChild(guideH);
@@ -406,9 +394,6 @@ class GTAOverlayEngine {
     }
   }
 
-  // =====================================
-  // WEBSOCKET & EVENTS
-  // =====================================
   initWebSocket() {
     if (this.config.previewMode && window.parent !== window) return; 
     if (typeof StreamerbotClient === 'undefined') return;
@@ -430,7 +415,6 @@ class GTAOverlayEngine {
 
     this.client = new StreamerbotClient(opts);
     
-    // Listen for custom broadcast (WalkOn or Generic JSON Alerts)
     this.client.on('General.Custom', (payload) => {
       let data = payload?.data ?? payload;
       if (typeof data === 'string') try { data = JSON.parse(data); } catch(e){}
@@ -445,7 +429,6 @@ class GTAOverlayEngine {
       }
     });
 
-    // Native Streamer.bot YouTube Event Hooks
     if (this.config.modules.alerts) {
       this.client.on('YouTube.NewSubscriber', (p) => this.handleNativeAlert('sub', 'New Subscriber', p.data));
       this.client.on('YouTube.NewSponsor', (p) => this.handleNativeAlert('member', 'New Member', p.data));
@@ -494,7 +477,6 @@ class GTAOverlayEngine {
         this.config.noBg = s.noBg === '1'; this.config.duration = parseInt(s.duration, 10) * 1000;
         this.config.cardAnim = s.cardAnim; this.config.avatarAnim = s.avatarAnim;
         
-        // Update default variable toggles
         this.config.showAvatar = s.showAvatar !== '0';
         this.config.showUser = s.showUser !== '0';
         this.config.showTier = s.showTier !== '0';
@@ -550,7 +532,10 @@ class GTAOverlayEngine {
     const userEl = document.getElementById('card-username');
     const tierEl = document.getElementById('card-tier');
     
-    if (avatarEl) avatarEl.src = avatarUrl;
+    if (avatarEl) {
+      avatarEl.onerror = () => { if (avatarEl.src !== DEFAULT_AVATAR_SVG) avatarEl.src = DEFAULT_AVATAR_SVG; };
+      avatarEl.src = avatarUrl;
+    }
     if (userEl) userEl.textContent = userName;
     if (tierEl) tierEl.textContent = String(levelName).toUpperCase();
     
@@ -619,7 +604,12 @@ class GTAOverlayEngine {
 
     document.getElementById('alert-event-name').textContent = triggerName;
     document.getElementById('alert-user-name').textContent = userName;
-    document.getElementById('alert-avatar').src = avatarUrl;
+    
+    const alertAv = document.getElementById('alert-avatar');
+    if (alertAv) {
+      alertAv.onerror = () => { if (alertAv.src !== DEFAULT_AVATAR_SVG) alertAv.src = DEFAULT_AVATAR_SVG; };
+      alertAv.src = avatarUrl;
+    }
 
     const bodyEl = document.getElementById('alert-body');
     bodyEl.innerHTML = '';
