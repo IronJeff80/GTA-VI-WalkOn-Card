@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
-   v0.0.3 - Modules Update
+   v0.0.3.1 - Modules Update & Bug Fixes
    ========================================================================== */
 
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -50,6 +50,11 @@ const GTAOverlayConfig = (() => {
     duration: parseInt(params.get('duration') || '8', 10) * 1000,
     cardAnim: params.get('cardAnim') || 'anim-slide-left',
     avatarAnim: params.get('avatarAnim') || 'av-flip',
+    
+    // Default Variable Toggles (Show/Hide elements)
+    showAvatar: params.get('showAvatar') !== '0',
+    showUser: params.get('showUser') !== '0',
+    showTier: params.get('showTier') !== '0',
 
     // Alerts Config
     alertEvent: params.get('alertEvent') || 'GTA_Alert',
@@ -184,6 +189,15 @@ class GTAOverlayEngine {
       if (this.dom.walkonContainer) {
         this.dom.walkonContainer.className = `walkon-container ${this.config.cardAnim}`;
       }
+      
+      // Default variables display logic
+      const avWrap = document.getElementById('avatar-wrapper');
+      const userEl = document.getElementById('card-username');
+      const tierEl = document.getElementById('card-tier');
+      
+      if (avWrap) avWrap.style.display = this.config.showAvatar ? 'block' : 'none';
+      if (userEl) userEl.style.display = this.config.showUser ? 'block' : 'none';
+      if (tierEl) tierEl.style.display = this.config.showTier ? 'inline-block' : 'none';
     }
     
     this.updateDomCoords();
@@ -203,9 +217,7 @@ class GTAOverlayEngine {
     const scale = this.config.alertScale || 1;
     const w = this.dom.alertContainer.offsetWidth || 460;
     const h = this.dom.alertContainer.offsetHeight || 140;
-    // Alert is transform-origin: top center, translated -50% X. 
-    // So X represents the CENTER of the alert.
-    if (this.config.alertAlignH) this.config.alertX = 960; // Center screen
+    if (this.config.alertAlignH) this.config.alertX = 960; 
     if (this.config.alertAlignV) this.config.alertY = Math.round((1080 - (h * scale)) / 2);
   }
 
@@ -236,11 +248,45 @@ class GTAOverlayEngine {
     }
   }
 
+  renderStatRows(data = {}) {
+    const metaBox = document.getElementById('meta-box');
+    if (!metaBox) return;
+    metaBox.innerHTML = '';
+
+    if (!this.config.stats || this.config.stats.length === 0) {
+      metaBox.classList.add('empty-stats');
+      return;
+    }
+
+    metaBox.classList.remove('empty-stats');
+
+    this.config.stats.forEach((stat, index) => {
+      const row = document.createElement('div');
+      row.className = 'meta-row';
+      row.style.setProperty('--row-delay', `${(0.35 + index * 0.12).toFixed(2)}s`);
+
+      const matchedVal = this.getField(data, stat.varName);
+      const rawVal = matchedVal !== undefined ? matchedVal : (stat.fallback || '--');
+      const displayVal = `${rawVal}${stat.suffix || ''}`;
+
+      row.innerHTML = `
+        <span class="meta-label">
+          <span class="hud-icon icon-${stat.iconColor || 'pink'}">
+            <i class="fa-solid ${stat.icon || 'fa-star'}"></i>
+          </span>
+          <span>${stat.label}:</span>
+        </span>
+        <span class="meta-val val-${stat.valColor || 'yellow'}">${displayVal}</span>
+      `;
+
+      metaBox.appendChild(row);
+    });
+  }
+
   // =====================================
   // STUDIO INTERACTIVITY (DRAG & RESIZE)
   // =====================================
   initStudioInteractivity() {
-    // Shared guides
     const guideV = document.createElement('div'); guideV.className = 'snap-guide vertical'; guideV.style.left = '960px'; document.body.appendChild(guideV);
     const guideH = document.createElement('div'); guideH.className = 'snap-guide horizontal'; guideH.style.top = '540px'; document.body.appendChild(guideH);
 
@@ -298,7 +344,7 @@ class GTAOverlayEngine {
 
         if (modType === 'walkon') {
           nextX = Math.max(0, Math.min(1920 - (baseW * scale), startObjX + dx));
-          nextY = Math.max(0, Math.min(1080 - (baseH * scale), startObjY - dy)); // Bottom origin
+          nextY = Math.max(0, Math.min(1080 - (baseH * scale), startObjY - dy)); 
           if (!e.altKey) {
             const cx = (1920 - (baseW * scale)) / 2;
             const cy = (1080 - (baseH * scale)) / 2;
@@ -310,9 +356,8 @@ class GTAOverlayEngine {
           this.config.alignH = false; this.config.alignV = false;
           this.config.posX = nextX; this.config.posY = nextY;
         } else {
-          // Alert (Top Center origin)
           nextX = Math.max((baseW * scale)/2, Math.min(1920 - (baseW * scale)/2, startObjX + dx));
-          nextY = Math.max(0, Math.min(1080 - (baseH * scale), startObjY + dy)); // Top origin
+          nextY = Math.max(0, Math.min(1080 - (baseH * scale), startObjY + dy)); 
           if (!e.altKey) {
             const cx = 960;
             const cy = (1080 - (baseH * scale)) / 2;
@@ -365,14 +410,25 @@ class GTAOverlayEngine {
   // WEBSOCKET & EVENTS
   // =====================================
   initWebSocket() {
-    if (this.config.previewMode && window.parent !== window) return; // Managed by setup.html
+    if (this.config.previewMode && window.parent !== window) return; 
     if (typeof StreamerbotClient === 'undefined') return;
 
-    const opts = { host: this.config.host, port: this.config.port, endpoint: this.config.endpoint, subscribe: { General: ['Custom'], YouTube: ['*'] } };
+    const opts = { 
+      host: this.config.host, 
+      port: this.config.port, 
+      endpoint: this.config.endpoint, 
+      subscribe: { General: ['Custom'], YouTube: ['*'] },
+      onConnect: () => {
+        console.log(`[GTA-Overlay] Connected to Streamer.bot (${this.config.host}:${this.config.port})`);
+      },
+      onDisconnect: () => {
+        console.warn('[GTA-Overlay] Disconnected from Streamer.bot.');
+      }
+    };
+    
     if (this.config.password) opts.password = this.config.password;
 
     this.client = new StreamerbotClient(opts);
-    this.client.on('Connect', () => console.log('[GTA-Overlay] Connected to SB.'));
     
     // Listen for custom broadcast (WalkOn or Generic JSON Alerts)
     this.client.on('General.Custom', (payload) => {
@@ -402,7 +458,7 @@ class GTAOverlayEngine {
   }
 
   handleNativeAlert(type, title, data) {
-    if (!this.config.alertsConfig[type]) return; // Disabled in config
+    if (!this.config.alertsConfig[type]) return; 
     const alertData = { alertType: type, triggerName: title };
     
     if (data.user) {
@@ -437,6 +493,11 @@ class GTAOverlayEngine {
         this.config.alignH = s.alignH === '1'; this.config.alignV = s.alignV === '1';
         this.config.noBg = s.noBg === '1'; this.config.duration = parseInt(s.duration, 10) * 1000;
         this.config.cardAnim = s.cardAnim; this.config.avatarAnim = s.avatarAnim;
+        
+        // Update default variable toggles
+        this.config.showAvatar = s.showAvatar !== '0';
+        this.config.showUser = s.showUser !== '0';
+        this.config.showTier = s.showTier !== '0';
         
         this.config.alertX = parseFloat(s.ax); this.config.alertY = parseFloat(s.ay); this.config.alertScale = parseFloat(s.ascale);
         this.config.alertAlignH = s.aAlignH === '1'; this.config.alertAlignV = s.aAlignV === '1';
@@ -485,9 +546,14 @@ class GTAOverlayEngine {
     const avatarUrl = this.getField(raw, this.config.varAvatar, ['avatarUrl', 'userProfileUrl', 'avatar']) || DEFAULT_AVATAR_SVG;
     const levelName = this.getField(raw, this.config.varTier, ['levelName', 'tier', 'role']) || 'VIP Member';
 
-    document.getElementById('card-avatar').src = avatarUrl;
-    document.getElementById('card-username').textContent = userName;
-    document.getElementById('card-tier').textContent = String(levelName).toUpperCase();
+    const avatarEl = document.getElementById('card-avatar');
+    const userEl = document.getElementById('card-username');
+    const tierEl = document.getElementById('card-tier');
+    
+    if (avatarEl) avatarEl.src = avatarUrl;
+    if (userEl) userEl.textContent = userName;
+    if (tierEl) tierEl.textContent = String(levelName).toUpperCase();
+    
     this.renderStatRows(raw);
     
     if (this.dom.avatarWrap) {
@@ -505,7 +571,6 @@ class GTAOverlayEngine {
   // ALERTS PLAYBACK
   // =====================================
   enqueueAlert(data) {
-    // Check toggle before queuing
     const t = data.alertType || 'generic';
     if (t !== 'generic' && this.config.alertsConfig[t] === false) return;
     
@@ -559,7 +624,6 @@ class GTAOverlayEngine {
     const bodyEl = document.getElementById('alert-body');
     bodyEl.innerHTML = '';
 
-    // Sub/Member basic detail
     if (type === 'member' && levelName) {
       bodyEl.innerHTML += `<div class="alert-detail-row"><span>Tier</span><span class="alert-highlight">${levelName}</span></div>`;
     } else if (type === 'milestone') {
@@ -584,10 +648,9 @@ class GTAOverlayEngine {
       bodyEl.innerHTML += `<div class="alert-message">${message}</div>`;
     }
 
-    // Hide body if empty
     bodyEl.style.display = bodyEl.innerHTML === '' ? 'none' : 'flex';
 
-    void this.dom.alertContainer.offsetWidth; // Reflow
+    void this.dom.alertContainer.offsetWidth; 
     this.dom.alertContainer.classList.add('animate-in');
     
     await this.wait(this.config.alertDuration);

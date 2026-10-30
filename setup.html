@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GTA VI Overlays - Universal Setup v0.0.3</title>
+  <title>GTA VI Overlays - Universal Setup v0.0.3.1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -93,7 +93,7 @@
     <!-- TAB 1: GENERAL -->
     <div id="tab-general" class="tab-content active">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection (YouTube)</div>
+        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection</div>
         <div class="grid-2">
           <label>WebSocket IP / Host <input type="text" id="cfg-host" value="127.0.0.1"></label>
           <label>Port <input type="number" id="cfg-port" value="8080"></label>
@@ -126,7 +126,12 @@
     <!-- TAB 2: WALK-ON CARD -->
     <div id="tab-walkon" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-id-card"></i> Card Position & Timing</div>
+        <div class="panel-title"><i class="fa-solid fa-id-card"></i> Card Base Layout</div>
+        <div class="toggle-strip">
+          <label class="mini-switch-card"><span>Show Avatar</span><input type="checkbox" class="switch" id="chk-showAvatar" checked></label>
+          <label class="mini-switch-card"><span>Show User</span><input type="checkbox" class="switch" id="chk-showUser" checked></label>
+          <label class="mini-switch-card"><span>Show Tier</span><input type="checkbox" class="switch" id="chk-showTier" checked></label>
+        </div>
         <div class="toggle-strip">
           <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-align-h"></label>
           <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-align-v"></label>
@@ -160,7 +165,7 @@
         <label>SB Custom Event Name <input type="text" id="cfg-event" value="MemberWalkOn"></label>
         <label class="inline-toggle-row">
           <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> Solid Fill (No Image)</span>
-          <input type="checkbox" class="switch" id="chk-no-bg">
+          <input type="checkbox" class="switch" id="chk-noBg">
         </label>
         <label>Background Image URL <input type="text" id="cfg-bg" value="assets/gta6-bg.webp"></label>
       </div>
@@ -190,8 +195,8 @@
       <div class="panel">
         <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Alerts Position & Timing</div>
         <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-a-align-h" checked></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-a-align-v"></label>
+          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-aAlignH" checked></label>
+          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-aAlignV"></label>
         </div>
         <div class="grid-2">
           <label>Top Offset (Y px) <input type="number" id="cfg-ay" value="100" min="0" max="1000" step="5"></label>
@@ -304,13 +309,12 @@
     const chkAlignH = document.getElementById('chk-align-h');
     const chkAlignV = document.getElementById('chk-align-v');
     const chkAlignScreen = document.getElementById('chk-align-screen');
-    const chkNoBg = document.getElementById('chk-no-bg');
     const inputX = document.getElementById('cfg-x');
     const inputY = document.getElementById('cfg-y');
     const inputScale = document.getElementById('cfg-scale');
     
-    const chkAAlignH = document.getElementById('chk-a-align-h');
-    const chkAAlignV = document.getElementById('chk-a-align-v');
+    const chkAAlignH = document.getElementById('chk-aAlignH');
+    const chkAAlignV = document.getElementById('chk-aAlignV');
     const inputAX = document.getElementById('cfg-ax');
     const inputAY = document.getElementById('cfg-ay');
 
@@ -343,7 +347,6 @@
     }
     chkAlignH.addEventListener('change', updateAlignUI); chkAlignV.addEventListener('change', updateAlignUI);
     chkAlignScreen.addEventListener('change', () => { chkAlignH.checked = chkAlignScreen.checked; chkAlignV.checked = chkAlignScreen.checked; updateAlignUI(); });
-    chkNoBg.addEventListener('change', () => { document.getElementById('cfg-bg').disabled = chkNoBg.checked; syncLiveConfig(); });
     
     function updateAAlignUI() { inputAX.disabled = chkAAlignH.checked; inputAY.disabled = chkAAlignV.checked; syncLiveConfig(); }
     chkAAlignH.addEventListener('change', updateAAlignUI); chkAAlignV.addEventListener('change', updateAAlignUI);
@@ -402,13 +405,23 @@
     document.getElementById('btn-reset-colors').addEventListener('click', () => { Object.entries(DEFAULT_COLORS).forEach(([k, h]) => { document.getElementById(`picker-${k}`).value = h; document.getElementById(`cfg-${k}`).value = h; }); syncLiveConfig(); });
 
     const baseInputs = ['host','port','password','event','x','y','scale','duration','cardAnim','avatarAnim','fontHeading','fontBody','bg','vAvatar','vTier','cPink','cTeal','cPurple','cYellow','cStroke','cBorder','cBg','alertEvent','ax','ay','ascale','aDur'];
-    const alertToggles = ['al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl'];
+    const checkboxToggles = ['al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl','showAvatar','showUser','showTier','noBg'];
     
     function getSetupState() {
       const s = {};
-      baseInputs.forEach(id => { const val = document.getElementById(`cfg-${id}`).value.trim(); if(val || id!=='password') s[id] = val; });
-      alertToggles.forEach(id => { if(!document.getElementById(id).checked) s[id] = '0'; });
-      if (chkAlignH.checked) s.alignH = '1'; if (chkAlignV.checked) s.alignV = '1'; if (chkNoBg.checked) s.noBg = '1';
+      baseInputs.forEach(id => { 
+        const el = document.getElementById(`cfg-${id}`);
+        if(el) {
+          const val = el.value.trim();
+          if (val || id !== 'password') s[id] = val;
+        }
+      });
+      checkboxToggles.forEach(id => {
+        const el = document.getElementById('chk-'+id) || document.getElementById(id);
+        if(el && !el.checked) s[id] = '0';
+      });
+      
+      if (chkAlignH.checked) s.alignH = '1'; if (chkAlignV.checked) s.alignV = '1';
       if (chkAAlignH.checked) s.aAlignH = '1'; else s.aAlignH = '0'; 
       if (chkAAlignV.checked) s.aAlignV = '1';
       s.modules = selModules.value;
@@ -434,8 +447,18 @@
       previewFrame.src = 'gta-overlay.html?' + p.toString();
     }
 
-    baseInputs.forEach(id => { document.getElementById(`cfg-${id}`).addEventListener('change', syncLiveConfig); });
-    alertToggles.forEach(id => { document.getElementById(id).addEventListener('change', syncLiveConfig); });
+    // Attach listeners
+    baseInputs.forEach(id => { 
+      const el = document.getElementById(`cfg-${id}`);
+      if(el) {
+        el.addEventListener('input', syncLiveConfig); 
+        el.addEventListener('change', syncLiveConfig);
+      }
+    });
+    checkboxToggles.forEach(id => { 
+      const el = document.getElementById('chk-'+id) || document.getElementById(id);
+      if (el) el.addEventListener('change', syncLiveConfig); 
+    });
     selModules.addEventListener('change', initialLoadIframe);
 
     document.getElementById('btn-copy-url').addEventListener('click', () => { navigator.clipboard.writeText(urlOutput.value); });
@@ -443,11 +466,25 @@
     function connectSetupToSB() {
       const state = getSetupState();
       if (sbAdminClient) try { sbAdminClient.disconnect(); } catch (e) {}
-      const opts = { host: state.host, port: parseInt(state.port, 10), endpoint: '/', subscribe: { General: ['Custom'] } };
+      
+      const opts = { 
+        host: state.host, 
+        port: parseInt(state.port, 10), 
+        endpoint: '/', 
+        subscribe: { General: ['Custom'] },
+        onConnect: () => { 
+          sbStatusBadge.classList.add('connected'); 
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; 
+        },
+        onDisconnect: () => { 
+          sbStatusBadge.classList.remove('connected'); 
+          sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; 
+        }
+      };
       if (state.password) opts.password = state.password;
+      
       sbAdminClient = new StreamerbotClient(opts);
-      sbAdminClient.on('Connect', () => { sbStatusBadge.classList.add('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; });
-      sbAdminClient.on('Disconnect', () => { sbStatusBadge.classList.remove('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; });
+      
       sbAdminClient.on('General.Custom', (p) => {
         let d = p?.data ?? p;
         if(typeof d === 'string') try{d=JSON.parse(d)}catch(e){}
