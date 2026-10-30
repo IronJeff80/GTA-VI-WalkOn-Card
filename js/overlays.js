@@ -2,7 +2,6 @@
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
    ========================================================================== */
 
-// Clean inline SVG fallback avatar (prevents Firefox/OBS OpaqueResponseBlocking errors)
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
   '<rect width="120" height="120" fill="#171a21"/>' +
@@ -37,9 +36,13 @@ const GTAOverlayConfig = (() => {
     password: params.get('password') || '',
     eventName: params.get('event') || 'MemberWalkOn',
 
-    posX: params.get('x') || '60',
-    posY: params.get('y') || '60',
-    scale: params.get('scale') || '1',
+    posX: parseFloat(params.get('x') || '60'),
+    posY: parseFloat(params.get('y') || '60'),
+    scale: parseFloat(params.get('scale') || '1'),
+    alignH: params.get('alignH') === '1',
+    alignV: params.get('alignV') === '1',
+    noBg: params.get('noBg') === '1',
+
     duration: parseInt(params.get('duration') || '8', 10) * 1000,
     cardAnim: params.get('cardAnim') || 'anim-slide-left',
     avatarAnim: params.get('avatarAnim') || 'av-flip',
@@ -73,6 +76,7 @@ class GTAWalkOnOverlay {
 
     this.dom = {
       container:  document.getElementById('walkon-container'),
+      card:       document.querySelector('.walkon-card'),
       avatarWrap: document.getElementById('avatar-wrapper'),
       avatar:     document.getElementById('card-avatar'),
       username:   document.getElementById('card-username'),
@@ -88,10 +92,12 @@ class GTAWalkOnOverlay {
       };
     }
 
-    this.applyConfiguration();
     this.renderStatRows({});
+    this.applyConfiguration();
 
     if (this.config.previewMode) {
+      document.body.classList.add('preview-interactive');
+      this.initStudioInteractivity();
       this.setPreviewPinned(true);
     }
 
@@ -99,7 +105,6 @@ class GTAWalkOnOverlay {
     this.initPostMessageBridge();
   }
 
-  // Resolves relative paths cleanly against the HTML document root so css/ folder doesn't cause 404s
   resolveAssetUrl(rawPath) {
     if (!rawPath) return '';
     const trimmed = rawPath.trim();
@@ -113,7 +118,6 @@ class GTAWalkOnOverlay {
     }
   }
 
-  // Case-insensitive & alias-aware property lookup for Streamer.bot payloads
   getField(obj, key, aliases = []) {
     if (!obj || typeof obj !== 'object') return undefined;
     const candidates = [key, ...aliases].filter(Boolean);
@@ -139,11 +143,30 @@ class GTAWalkOnOverlay {
     return undefined;
   }
 
+  // Dynamically calculates centered X/Y based on current unscaled card dimensions and current scale
+  recalculateCenteredCoords() {
+    if (!this.dom.container) return;
+    const scale = parseFloat(this.config.scale) || 1;
+    const baseW = this.dom.container.offsetWidth || 340;
+    const baseH = this.dom.container.offsetHeight || 390;
+    const scaledW = baseW * scale;
+    const scaledH = baseH * scale;
+
+    if (this.config.alignH) {
+      this.config.posX = Math.round((1920 - scaledW) / 2);
+    }
+    if (this.config.alignV) {
+      this.config.posY = Math.round((1080 - scaledH) / 2);
+    }
+  }
+
   applyConfiguration() {
     const root = document.documentElement;
 
-    root.style.setProperty('--card-x', `${this.config.posX}px`);
-    root.style.setProperty('--card-y', `${this.config.posY}px`);
+    this.recalculateCenteredCoords();
+
+    root.style.setProperty('--card-x', `${Math.round(this.config.posX)}px`);
+    root.style.setProperty('--card-y', `${Math.round(this.config.posY)}px`);
     root.style.setProperty('--card-scale', this.config.scale);
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
     root.style.setProperty('--font-body', `'${this.config.fontBody}', sans-serif`);
@@ -156,9 +179,14 @@ class GTAWalkOnOverlay {
     root.style.setProperty('--gta-border', this.config.colors.border);
     root.style.setProperty('--gta-bg-fill', this.config.colors.bgFill);
 
-    if (this.config.bgUrl) {
-      const resolvedBg = this.resolveAssetUrl(this.config.bgUrl);
-      root.style.setProperty('--card-bg-image', `url("${resolvedBg}")`);
+    if (this.dom.card) {
+      if (this.config.noBg || !this.config.bgUrl) {
+        this.dom.card.classList.add('no-bg-image');
+      } else {
+        this.dom.card.classList.remove('no-bg-image');
+        const resolvedBg = this.resolveAssetUrl(this.config.bgUrl);
+        root.style.setProperty('--card-bg-image', `url("${resolvedBg}")`);
+      }
     }
 
     if (this.dom.container) {
@@ -170,6 +198,169 @@ class GTAWalkOnOverlay {
       this.dom.avatarWrap.classList.remove('av-flip', 'av-spin', 'av-pop');
       this.dom.avatarWrap.classList.add(this.config.avatarAnim);
     }
+
+    // Notify parent Setup Hub if alignment auto-adjusted X/Y
+    if (this.config.previewMode && window.parent !== window && (this.config.alignH || this.config.alignV)) {
+      window.parent.postMessage({
+        type: 'CARD_CENTER_SYNC',
+        x: Math.round(this.config.posX),
+        y: Math.round(this.config.posY),
+        scale: this.config.scale
+      }, '*');
+    }
+  }
+
+  // Injects interactive Drag & Corner-Resize handles inside Studio Preview Mode
+  initStudioInteractivity() {
+    if (!this.dom.container) return;
+
+    // 1. Snap Guide Lines on Canvas
+    const guideV = document.createElement('div');
+    guideV.className = 'snap-guide vertical';
+    guideV.style.left = '960px';
+    document.body.appendChild(guideV);
+
+    const guideH = document.createElement('div');
+    guideH.className = 'snap-guide horizontal';
+    guideH.style.top = '540px';
+    document.body.appendChild(guideH);
+
+    // 2. Drag Header Pill
+    const dragPill = document.createElement('div');
+    dragPill.className = 'studio-drag-pill';
+    dragPill.innerHTML = '<i class="fa-solid fa-up-down-left-right"></i> Drag to Move • Drag Corner to Scale';
+    this.dom.container.appendChild(dragPill);
+
+    // 3. Top-Right Corner Resize Handle (since transform-origin is bottom-left)
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'studio-resize-handle';
+    resizeHandle.title = 'Drag corner to scale card';
+    this.dom.container.appendChild(resizeHandle);
+
+    let isDragging = false;
+    let isResizing = false;
+    let startClientX = 0;
+    let startClientY = 0;
+    let startPosX = 0;
+    let startPosY = 0;
+    let startScale = 1;
+    let baseW = 340;
+    let baseH = 390;
+    const SNAP_THRESHOLD = 14;
+
+    // Drag Start
+    this.dom.container.addEventListener('mousedown', (e) => {
+      if (e.target === resizeHandle || !this.config.previewMode || this.isAnimating) return;
+      e.preventDefault();
+      isDragging = true;
+      startClientX = e.clientX;
+      startClientY = e.clientY;
+      startPosX = parseFloat(this.config.posX) || 0;
+      startPosY = parseFloat(this.config.posY) || 0;
+      baseW = this.dom.container.offsetWidth || 340;
+      baseH = this.dom.container.offsetHeight || 390;
+      this.dom.container.classList.add('is-manipulating');
+    });
+
+    // Resize Start
+    resizeHandle.addEventListener('mousedown', (e) => {
+      if (!this.config.previewMode || this.isAnimating) return;
+      e.stopPropagation();
+      e.preventDefault();
+      isResizing = true;
+      startClientX = e.clientX;
+      startClientY = e.clientY;
+      startScale = parseFloat(this.config.scale) || 1;
+      baseW = this.dom.container.offsetWidth || 340;
+      baseH = this.dom.container.offsetHeight || 390;
+      this.dom.container.classList.add('is-manipulating');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging && !isResizing) return;
+
+      // Inside the iframe, clientX/clientY are already in 1920x1080 CSS pixel space
+      const dx = e.clientX - startClientX;
+      const dy = e.clientY - startClientY;
+
+      if (isDragging) {
+        const scale = parseFloat(this.config.scale) || 1;
+        const scaledW = baseW * scale;
+        const scaledH = baseH * scale;
+
+        let nextX = Math.round(Math.max(0, Math.min(1920 - scaledW, startPosX + dx)));
+        // Since bottom is used for Y, moving mouse up (-dy) increases bottom Y
+        let nextY = Math.round(Math.max(0, Math.min(1080 - scaledH, startPosY - dy)));
+
+        guideV.style.display = 'none';
+        guideH.style.display = 'none';
+
+        // Magnetic Center Snapping (unless holding Alt)
+        if (!e.altKey) {
+          const centerX = Math.round((1920 - scaledW) / 2);
+          const centerY = Math.round((1080 - scaledH) / 2);
+
+          if (Math.abs(nextX - centerX) <= SNAP_THRESHOLD) {
+            nextX = centerX;
+            guideV.style.display = 'block';
+          }
+          if (Math.abs(nextY - centerY) <= SNAP_THRESHOLD) {
+            nextY = centerY;
+            guideH.style.display = 'block';
+          }
+        }
+
+        // Manual drag releases automatic center lock toggles unless snapped to center
+        this.config.alignH = false;
+        this.config.alignV = false;
+        this.config.posX = nextX;
+        this.config.posY = nextY;
+
+        document.documentElement.style.setProperty('--card-x', `${nextX}px`);
+        document.documentElement.style.setProperty('--card-y', `${nextY}px`);
+
+        window.parent.postMessage({
+          type: 'CARD_MANIPULATED',
+          x: nextX,
+          y: nextY,
+          scale: this.config.scale,
+          alignH: false,
+          alignV: false
+        }, '*');
+      } else if (isResizing) {
+        const startScaledW = baseW * startScale;
+        // Dragging right (+dx) or up (-dy) increases scale
+        const delta = Math.max(dx, -dy);
+        const rawScale = startScale * ((startScaledW + delta) / startScaledW);
+        const newScale = Math.round(Math.max(0.5, Math.min(2.0, rawScale)) * 20) / 20;
+
+        this.config.scale = newScale;
+        this.recalculateCenteredCoords();
+
+        document.documentElement.style.setProperty('--card-scale', newScale);
+        document.documentElement.style.setProperty('--card-x', `${Math.round(this.config.posX)}px`);
+        document.documentElement.style.setProperty('--card-y', `${Math.round(this.config.posY)}px`);
+
+        window.parent.postMessage({
+          type: 'CARD_MANIPULATED',
+          x: Math.round(this.config.posX),
+          y: Math.round(this.config.posY),
+          scale: newScale,
+          alignH: this.config.alignH,
+          alignV: this.config.alignV
+        }, '*');
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging || isResizing) {
+        isDragging = false;
+        isResizing = false;
+        guideV.style.display = 'none';
+        guideH.style.display = 'none';
+        this.dom.container.classList.remove('is-manipulating');
+      }
+    });
   }
 
   setPreviewPinned(pinned) {
@@ -177,6 +368,7 @@ class GTAWalkOnOverlay {
     if (this.isAnimating) return;
 
     if (pinned) {
+      document.body.classList.add('preview-interactive');
       this.dom.container.classList.remove('animate-out');
       this.dom.container.classList.add('animate-in');
     } else {
@@ -220,7 +412,6 @@ class GTAWalkOnOverlay {
   }
 
   initWebSocket() {
-    // When running inside setup.html's preview iframe, setup.html handles WebSocket & forwards events via postMessage
     if (this.config.previewMode && window.parent !== window) {
       console.log('[GTA-Overlay] Preview mode active: receiving events via Setup Hub bridge.');
       return;
@@ -277,9 +468,12 @@ class GTAWalkOnOverlay {
         this.setPreviewPinned(Boolean(msg.pinned));
       } else if (msg.type === 'LIVE_CONFIG_UPDATE') {
         const s = msg.state;
-        this.config.posX = s.x;
-        this.config.posY = s.y;
-        this.config.scale = s.scale;
+        this.config.posX = parseFloat(s.x || '60');
+        this.config.posY = parseFloat(s.y || '60');
+        this.config.scale = parseFloat(s.scale || '1');
+        this.config.alignH = s.alignH === '1';
+        this.config.alignV = s.alignV === '1';
+        this.config.noBg = s.noBg === '1';
         this.config.duration = parseInt(s.duration || '8', 10) * 1000;
         this.config.cardAnim = s.cardAnim;
         this.config.avatarAnim = s.avatarAnim;
@@ -301,8 +495,8 @@ class GTAWalkOnOverlay {
           this.config.stats = JSON.parse(s.stats);
         } catch (e) {}
 
-        this.applyConfiguration();
         this.renderStatRows(this.lastData);
+        this.applyConfiguration();
       }
     });
   }
@@ -353,6 +547,7 @@ class GTAWalkOnOverlay {
     this.dom.tier.textContent = String(levelName).toUpperCase();
 
     this.renderStatRows(raw);
+    this.applyConfiguration();
 
     this.dom.container.classList.remove('animate-out', 'animate-in');
     void this.dom.container.offsetWidth;

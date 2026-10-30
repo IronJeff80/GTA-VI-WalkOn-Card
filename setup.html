@@ -188,6 +188,85 @@
       border-color: var(--gta-pink);
     }
 
+    input:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Studio Toggle Switch Styling (Inspired by Project 2 Reference) */
+    .toggle-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #14171f;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #282e3d;
+    }
+
+    .mini-switch-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #c0c8d6;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .inline-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #14171f;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid #282e3d;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #d0d7e2;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"].switch {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 36px;
+      height: 19px;
+      background: #0f1116;
+      border: 1px solid #384152;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    input[type="checkbox"].switch::after {
+      content: "";
+      width: 13px;
+      height: 13px;
+      background: #8c96a6;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    input[type="checkbox"].switch:checked {
+      background: rgba(83, 216, 191, 0.22);
+      border-color: var(--gta-teal);
+    }
+
+    input[type="checkbox"].switch:checked::after {
+      transform: translateX(17px);
+      background: var(--gta-teal);
+    }
+
     .stat-row-editor {
       background: #151820;
       border: 1px solid #2d3340;
@@ -339,6 +418,7 @@
       transform-origin: center center;
       border: 2px dashed rgba(244, 172, 196, 0.35);
       position: relative;
+      flex-shrink: 0;
       background-image: 
         linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
@@ -408,12 +488,29 @@
 
       <div class="panel">
         <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Card Position & Timing</div>
+
+        <!-- 3 Alignment Toggles -->
+        <div class="toggle-strip">
+          <label class="mini-switch-card">
+            <span>Center Horizontal</span>
+            <input type="checkbox" class="switch" id="chk-align-h">
+          </label>
+          <label class="mini-switch-card">
+            <span>Center Vertical</span>
+            <input type="checkbox" class="switch" id="chk-align-v">
+          </label>
+          <label class="mini-switch-card">
+            <span>Center to Screen</span>
+            <input type="checkbox" class="switch" id="chk-align-screen">
+          </label>
+        </div>
+
         <div class="grid-2">
           <label>Left Offset (X px)
-            <input type="number" id="cfg-x" value="60" min="0" max="1600" step="10">
+            <input type="number" id="cfg-x" value="60" min="0" max="1800" step="5">
           </label>
           <label>Bottom Offset (Y px)
-            <input type="number" id="cfg-y" value="60" min="0" max="900" step="10">
+            <input type="number" id="cfg-y" value="60" min="0" max="1000" step="5">
           </label>
         </div>
         <div class="grid-2">
@@ -461,6 +558,13 @@
             </select>
           </label>
         </div>
+
+        <!-- No Background Image Toggle -->
+        <label class="inline-toggle-row">
+          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> No Background Image (Solid Card Fill)</span>
+          <input type="checkbox" class="switch" id="chk-no-bg">
+        </label>
+
         <label>Card Background Image URL / Path
           <input type="text" id="cfg-bg" value="assets/gta6-bg.webp">
         </label>
@@ -599,7 +703,7 @@
     <div class="preview-toolbar">
       <label class="pin-toggle-label">
         <input type="checkbox" id="chk-pin-preview" checked>
-        <span><i class="fa-solid fa-thumbtack"></i> Pin Card Visible (Setup Mode) — Stay visible while moving & styling</span>
+        <span><i class="fa-solid fa-thumbtack"></i> Pin Card Visible (Setup Mode) — Drag card to move • Drag top-right corner to scale</span>
       </label>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-teal" id="btn-quick-test" style="padding:6px 12px; font-size:0.75rem;">
@@ -608,8 +712,8 @@
       </div>
     </div>
 
-    <div class="preview-wrapper">
-      <div class="canvas-scaler">
+    <div class="preview-wrapper" id="preview-wrapper">
+      <div class="canvas-scaler" id="canvas-scaler">
         <iframe id="preview-frame" src="walkon-vi-card.html?preview=1"></iframe>
       </div>
     </div>
@@ -624,6 +728,29 @@
     const pinCheckbox = document.getElementById('chk-pin-preview');
     const testStatusLog = document.getElementById('test-status-log');
 
+    const chkAlignH = document.getElementById('chk-align-h');
+    const chkAlignV = document.getElementById('chk-align-v');
+    const chkAlignScreen = document.getElementById('chk-align-screen');
+    const chkNoBg = document.getElementById('chk-no-bg');
+    const inputX = document.getElementById('cfg-x');
+    const inputY = document.getElementById('cfg-y');
+    const inputScale = document.getElementById('cfg-scale');
+    const inputBg = document.getElementById('cfg-bg');
+
+    // Responsive Stage Scaling (Inspired by Project 2 Reference)
+    function fitPreviewCanvas() {
+      const wrapper = document.getElementById('preview-wrapper');
+      const scaler = document.getElementById('canvas-scaler');
+      if (!wrapper || !scaler) return;
+      const pad = 36;
+      const scaleX = (wrapper.clientWidth - pad) / 1920;
+      const scaleY = (wrapper.clientHeight - pad) / 1080;
+      const zoom = Math.min(scaleX, scaleY, 1);
+      scaler.style.transform = `scale(${zoom})`;
+    }
+    window.addEventListener('resize', fitPreviewCanvas);
+
+    // Tab Navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -638,6 +765,51 @@
         type: 'SET_PREVIEW_PINNED',
         pinned: pinCheckbox.checked
       }, '*');
+    });
+
+    // Alignment Toggles Logic (Center Horizontal, Center Vertical, Center to Screen)
+    function updateAlignmentTogglesUI() {
+      chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
+      inputX.disabled = chkAlignH.checked;
+      inputY.disabled = chkAlignV.checked;
+      syncLiveConfig();
+    }
+
+    chkAlignH.addEventListener('change', updateAlignmentTogglesUI);
+    chkAlignV.addEventListener('change', updateAlignmentTogglesUI);
+
+    chkAlignScreen.addEventListener('change', () => {
+      chkAlignH.checked = chkAlignScreen.checked;
+      chkAlignV.checked = chkAlignScreen.checked;
+      updateAlignmentTogglesUI();
+    });
+
+    // No Background Image Toggle Logic
+    chkNoBg.addEventListener('change', () => {
+      inputBg.disabled = chkNoBg.checked;
+      syncLiveConfig();
+    });
+
+    // Listen for Drag / Resize & Centering Coordinate Syncs from Preview Iframe
+    window.addEventListener('message', (event) => {
+      const msg = event.data;
+      if (!msg || !msg.type) return;
+
+      if (msg.type === 'CARD_MANIPULATED') {
+        inputX.value = msg.x;
+        inputY.value = msg.y;
+        inputScale.value = msg.scale;
+        chkAlignH.checked = Boolean(msg.alignH);
+        chkAlignV.checked = Boolean(msg.alignV);
+        chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
+        inputX.disabled = chkAlignH.checked;
+        inputY.disabled = chkAlignV.checked;
+        updateGeneratedUrlOnly();
+      } else if (msg.type === 'CARD_CENTER_SYNC') {
+        inputX.value = msg.x;
+        inputY.value = msg.y;
+        updateGeneratedUrlOnly();
+      }
     });
 
     const DEFAULT_COLORS = {
@@ -776,15 +948,23 @@
         if (id === 'password' && !val) return;
         state[id] = val;
       });
+      if (chkAlignH.checked) state.alignH = '1';
+      if (chkAlignV.checked) state.alignV = '1';
+      if (chkNoBg.checked) state.noBg = '1';
       state.stats = JSON.stringify(statRows);
       return state;
     }
 
-    function syncLiveConfig() {
+    function updateGeneratedUrlOnly() {
       const state = getSetupState();
       const params = new URLSearchParams(state);
       const basePath = window.location.href.replace(/setup\.html.*$/, 'walkon-vi-card.html');
       urlOutput.value = `${basePath}?${params.toString()}`;
+    }
+
+    function syncLiveConfig() {
+      const state = getSetupState();
+      updateGeneratedUrlOnly();
 
       if (previewFrame.contentWindow) {
         previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
@@ -793,9 +973,7 @@
 
     function initialLoadIframe() {
       const state = getSetupState();
-      const params = new URLSearchParams(state);
-      const basePath = window.location.href.replace(/setup\.html.*$/, 'walkon-vi-card.html');
-      urlOutput.value = `${basePath}?${params.toString()}`;
+      updateGeneratedUrlOnly();
 
       const previewParams = new URLSearchParams(state);
       if (pinCheckbox.checked) previewParams.set('preview', '1');
@@ -844,8 +1022,6 @@
       sbAdminClient = new StreamerbotClient(clientOptions);
 
       sbAdminClient.on('General.Custom', (payload) => {
-        console.log('[Setup] Received General.Custom payload:', payload);
-
         let data = payload?.data ?? payload;
         if (typeof data === 'string') {
           try { data = JSON.parse(data); } catch (e) {}
@@ -946,6 +1122,7 @@
       previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload }, '*');
     }
 
+    fitPreviewCanvas();
     renderStatRowEditors();
     initialLoadIframe();
     connectSetupToSB();
