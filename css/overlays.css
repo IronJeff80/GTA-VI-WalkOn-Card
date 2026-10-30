@@ -1,5 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - MASTER STYLESHEET (css/overlays.css)
+   v0.0.3 - Modules Update
    ========================================================================== */
 
 :root {
@@ -27,9 +28,13 @@
   --card-x: 60px;
   --card-y: 60px;
   --card-scale: 1;
+  --alert-x: 960px;
+  --alert-y: 100px;
+  --alert-scale: 1;
+  
   --font-heading: 'Bebas Neue', sans-serif;
   --font-body: 'Inter', sans-serif;
-  --card-bg-image: url('../assets/gta6-bg.webp');
+  --card-bg-image: url('assets/gta6-bg.webp');
 }
 
 * {
@@ -50,7 +55,7 @@ body.obs-canvas {
 }
 
 /* ==========================================================================
-   WALK-ON CARD COMPONENT
+   MODULE 1: WALK-ON CARD
    ========================================================================== */
 
 .walkon-container {
@@ -65,7 +70,8 @@ body.obs-canvas {
 }
 
 /* Studio Preview Interactive Mode */
-body.preview-interactive .walkon-container.animate-in {
+body.preview-interactive .walkon-container.animate-in,
+body.preview-interactive .alert-container.animate-in {
   pointer-events: auto;
   cursor: grab;
   outline: 2px dashed rgba(244, 172, 196, 0.55);
@@ -74,12 +80,15 @@ body.preview-interactive .walkon-container.animate-in {
 }
 
 body.preview-interactive .walkon-container.animate-in:hover,
-body.preview-interactive .walkon-container.is-manipulating {
+body.preview-interactive .walkon-container.is-manipulating,
+body.preview-interactive .alert-container.animate-in:hover,
+body.preview-interactive .alert-container.is-manipulating {
   outline-color: var(--gta-teal);
   background: rgba(83, 216, 191, 0.04);
 }
 
-body.preview-interactive .walkon-container.is-manipulating {
+body.preview-interactive .walkon-container.is-manipulating,
+body.preview-interactive .alert-container.is-manipulating {
   cursor: grabbing;
   transition: none !important;
 }
@@ -91,7 +100,7 @@ body.preview-interactive .walkon-container.is-manipulating {
   display: none;
 }
 
-body.preview-interactive .walkon-container.animate-in .studio-drag-pill {
+body.preview-interactive .animate-in .studio-drag-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -111,7 +120,7 @@ body.preview-interactive .walkon-container.animate-in .studio-drag-pill {
   white-space: nowrap;
 }
 
-body.preview-interactive .walkon-container.animate-in .studio-resize-handle {
+body.preview-interactive .animate-in .studio-resize-handle {
   display: block;
   position: absolute;
   width: 18px;
@@ -127,7 +136,7 @@ body.preview-interactive .walkon-container.animate-in .studio-resize-handle {
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
-body.preview-interactive .walkon-container.animate-in .studio-resize-handle:hover {
+body.preview-interactive .animate-in .studio-resize-handle:hover {
   transform: scale(1.25);
   background: var(--gta-teal);
 }
@@ -140,48 +149,17 @@ body.preview-interactive .snap-guide {
   pointer-events: none;
   z-index: 90;
 }
+body.preview-interactive .snap-guide.vertical { top: 0; bottom: 0; width: 2px; }
+body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px; }
 
-body.preview-interactive .snap-guide.vertical {
-  top: 0;
-  bottom: 0;
-  width: 2px;
-}
+/* Walk-On Card Entrance Variations */
+.walkon-container.anim-slide-left { transform: scale(var(--card-scale)) translateX(-520px); transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease; }
+.walkon-container.anim-slide-right { transform: scale(var(--card-scale)) translateX(520px); transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease; }
+.walkon-container.anim-slide-up { transform: scale(var(--card-scale)) translateY(400px); transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease; }
+.walkon-container.anim-zoom { transform: scale(0.3); transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
 
-body.preview-interactive .snap-guide.horizontal {
-  left: 0;
-  right: 0;
-  height: 2px;
-}
-
-/* Card Entrance Variations */
-.walkon-container.anim-slide-left {
-  transform: scale(var(--card-scale)) translateX(-520px);
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
-}
-.walkon-container.anim-slide-right {
-  transform: scale(var(--card-scale)) translateX(520px);
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
-}
-.walkon-container.anim-slide-up {
-  transform: scale(var(--card-scale)) translateY(400px);
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
-}
-.walkon-container.anim-zoom {
-  transform: scale(0.3);
-  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-}
-
-/* Active State */
-.walkon-container.animate-in {
-  transform: scale(var(--card-scale)) translate(0, 0) !important;
-  opacity: 1;
-}
-
-/* Exit State */
-.walkon-container.animate-out {
-  opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.35s ease !important;
-}
+.walkon-container.animate-in { transform: scale(var(--card-scale)) translate(0, 0) !important; opacity: 1; }
+.walkon-container.animate-out { opacity: 0; transition: transform 0.5s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.35s ease !important; }
 
 /* Main Card Shell */
 .walkon-card {
@@ -195,10 +173,7 @@ body.preview-interactive .snap-guide.horizontal {
   border-top: 5px solid var(--gta-teal);
   border-radius: 18px;
   padding: 1.8rem 1.4rem;
-  box-shadow: 
-    0 12px 36px rgba(11, 35, 40, 0.85),
-    0 0 24px var(--glow-teal),
-    inset 0 0 0 2px var(--gta-icon-stroke);
+  box-shadow: 0 12px 36px rgba(11, 35, 40, 0.85), 0 0 24px var(--glow-teal), inset 0 0 0 2px var(--gta-icon-stroke);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,19 +181,11 @@ body.preview-interactive .snap-guide.horizontal {
   backdrop-filter: blur(10px);
 }
 
-/* Solid Background Mode when "No Background Image" is toggled on */
 .walkon-card.no-bg-image {
-  background-image: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--gta-bg-fill) 96%, #000000) 0%,
-    color-mix(in srgb, var(--gta-bg-fill) 88%, transparent) 100%
-  ) !important;
+  background-image: linear-gradient(160deg, color-mix(in srgb, var(--gta-bg-fill) 96%, #000000) 0%, color-mix(in srgb, var(--gta-bg-fill) 88%, transparent) 100%) !important;
 }
 
-/* ==========================================================================
-   AVATAR & ANIMATIONS
-   ========================================================================== */
-
+/* Walk-On Avatar */
 .avatar-wrapper {
   position: relative;
   width: 124px;
@@ -234,40 +201,16 @@ body.preview-interactive .snap-guide.horizontal {
   transform-style: preserve-3d;
 }
 
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
-}
+.avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
 
-.animate-in .avatar-wrapper.av-flip {
-  animation: gtaAvatarFlip 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
-}
-.animate-in .avatar-wrapper.av-spin {
-  animation: gtaAvatarSpin 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
-}
-.animate-in .avatar-wrapper.av-pop {
-  animation: gtaStatPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
-}
+.animate-in .avatar-wrapper.av-flip { animation: gtaAvatarFlip 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both; }
+.animate-in .avatar-wrapper.av-spin { animation: gtaAvatarSpin 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.animate-in .avatar-wrapper.av-pop { animation: gtaStatPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both; }
 
-@keyframes gtaAvatarFlip {
-  0% { transform: perspective(600px) rotateY(-180deg) scale(0.5); opacity: 0; }
-  60% { transform: perspective(600px) rotateY(20deg) scale(1.08); opacity: 1; }
-  100% { transform: perspective(600px) rotateY(0deg) scale(1); opacity: 1; }
-}
+@keyframes gtaAvatarFlip { 0% { transform: perspective(600px) rotateY(-180deg) scale(0.5); opacity: 0; } 60% { transform: perspective(600px) rotateY(20deg) scale(1.08); opacity: 1; } 100% { transform: perspective(600px) rotateY(0deg) scale(1); opacity: 1; } }
+@keyframes gtaAvatarSpin { 0% { transform: rotate(-360deg) scale(0); opacity: 0; } 70% { transform: rotate(15deg) scale(1.08); opacity: 1; } 100% { transform: rotate(0deg) scale(1); opacity: 1; } }
 
-@keyframes gtaAvatarSpin {
-  0% { transform: rotate(-360deg) scale(0); opacity: 0; }
-  70% { transform: rotate(15deg) scale(1.08); opacity: 1; }
-  100% { transform: rotate(0deg) scale(1); opacity: 1; }
-}
-
-/* ==========================================================================
-   TYPOGRAPHY & BADGES
-   ========================================================================== */
-
+/* Typography */
 .user-name {
   font-family: var(--font-heading);
   font-size: 2.35rem;
@@ -298,10 +241,7 @@ body.preview-interactive .snap-guide.horizontal {
   margin-bottom: 1.15rem;
 }
 
-/* ==========================================================================
-   STATS META BOX & DYNAMIC POP ANIMATIONS
-   ========================================================================== */
-
+/* Meta Stats */
 .meta-box {
   width: 100%;
   background: color-mix(in srgb, var(--gta-bg-fill) 85%, transparent);
@@ -315,67 +255,166 @@ body.preview-interactive .snap-guide.horizontal {
   text-align: left;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
 }
+.meta-box.empty-stats { display: none; }
+.meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; opacity: 0; transform: scale(0.6) translateY(12px); }
+.animate-in .meta-row { animation: gtaStatPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) var(--row-delay, 0.35s) forwards; }
 
-.meta-box.empty-stats {
-  display: none;
+@keyframes gtaStatPop { 0% { opacity: 0; transform: scale(0.5) translateY(15px); } 70% { opacity: 1; transform: scale(1.06) translateY(-2px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+.meta-label { color: #ffffff; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 8px; }
+.hud-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--gta-bg-fill); border: 2px solid var(--gta-border); display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+.hud-icon.icon-pink { color: var(--gta-pink); } .hud-icon.icon-teal { color: var(--gta-teal); } .hud-icon.icon-purple { color: var(--gta-purple); } .hud-icon.icon-yellow { color: var(--gta-yellow); }
+.meta-val { font-weight: 800; font-size: 0.92rem; letter-spacing: 0.4px; text-shadow: 0 2px 0 var(--gta-icon-stroke); }
+.meta-val.val-yellow { color: var(--gta-yellow); } .meta-val.val-pink { color: var(--gta-pink); } .meta-val.val-teal { color: var(--gta-teal); } .meta-val.val-purple { color: var(--gta-purple); }
+
+
+/* ==========================================================================
+   MODULE 2: YOUTUBE ALERTS
+   ========================================================================== */
+
+.alert-container {
+  position: absolute;
+  left: var(--alert-x);
+  top: var(--alert-y);
+  width: 460px;
+  transform-origin: top center;
+  z-index: 150;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-50px) scale(var(--alert-scale));
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
 }
 
-.meta-row {
+.alert-container.animate-in {
+  transform: translateX(-50%) translateY(0) scale(var(--alert-scale)) !important;
+  opacity: 1;
+}
+
+.alert-container.animate-out {
+  transform: translateX(-50%) translateY(50px) scale(var(--alert-scale)) !important;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.4s ease !important;
+}
+
+.alert-box {
+  background: color-mix(in srgb, var(--gta-bg-fill) 90%, transparent);
+  border: 3px solid var(--gta-border);
+  border-top: 6px solid var(--gta-pink);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--glow-pink), inset 0 0 0 2px var(--gta-icon-stroke);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dynamic Top Border Colors per Alert Type */
+.alert-box.alert-sub { border-top-color: var(--gta-teal); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-teal), inset 0 0 0 2px var(--gta-icon-stroke); }
+.alert-box.alert-member, .alert-box.alert-milestone { border-top-color: var(--gta-purple); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-purple), inset 0 0 0 2px var(--gta-icon-stroke); }
+.alert-box.alert-superchat, .alert-box.alert-jewels { border-top-color: var(--gta-yellow); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-yellow), inset 0 0 0 2px var(--gta-icon-stroke); }
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid var(--gta-border);
+  gap: 16px;
+}
+
+.alert-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  border: 3px solid var(--gta-border);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--gta-bg-fill);
+}
+
+.alert-titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.alert-event-name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.alert-user-name {
+  font-family: var(--font-heading);
+  font-size: 2.1rem;
+  letter-spacing: 1.5px;
+  color: var(--gta-yellow);
+  -webkit-text-stroke: 1px var(--gta-icon-stroke);
+  text-shadow: 0 2px 0 var(--gta-border);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alert-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-body);
+}
+
+.alert-detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.88rem;
-  opacity: 0;
-  transform: scale(0.6) translateY(12px);
-}
-
-.animate-in .meta-row {
-  animation: gtaStatPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) var(--row-delay, 0.35s) forwards;
-}
-
-@keyframes gtaStatPop {
-  0% { opacity: 0; transform: scale(0.5) translateY(15px); }
-  70% { opacity: 1; transform: scale(1.06) translateY(-2px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.meta-label {
-  color: #ffffff;
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  color: #fff;
 }
 
-.hud-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--gta-bg-fill);
-  border: 2px solid var(--gta-border);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.72rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-}
-
-.hud-icon.icon-pink   { color: var(--gta-pink); }
-.hud-icon.icon-teal   { color: var(--gta-teal); }
-.hud-icon.icon-purple { color: var(--gta-purple); }
-.hud-icon.icon-yellow { color: var(--gta-yellow); }
-
-.meta-val {
+.alert-highlight {
+  font-size: 1.25rem;
   font-weight: 800;
-  font-size: 0.92rem;
-  letter-spacing: 0.4px;
-  text-shadow: 0 2px 0 var(--gta-icon-stroke);
+  color: var(--gta-pink);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.meta-val.val-yellow { color: var(--gta-yellow); }
-.meta-val.val-pink   { color: var(--gta-pink); }
-.meta-val.val-teal   { color: var(--gta-teal); }
-.meta-val.val-purple { color: var(--gta-purple); }
+.alert-highlight.amount {
+  color: var(--gta-teal);
+  font-size: 1.4rem;
+}
+
+.alert-message {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  font-style: italic;
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 4px solid var(--gta-purple);
+  padding: 10px 14px;
+  border-radius: 4px 8px 8px 4px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.alert-media {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.alert-media img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+}

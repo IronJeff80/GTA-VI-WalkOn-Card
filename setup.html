@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GTA VI Overlays - Universal Setup & Testing</title>
+  <title>GTA VI Overlays - Universal Setup v0.0.3</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,439 +11,67 @@
 
   <style>
     :root {
-      --gta-pink: #f4acc4;
-      --gta-teal: #53d8bf;
-      --gta-purple: #a688ff;
-      --gta-yellow: #fede9a;
-      --gta-icon-stroke: #171a21;
-      --gta-border: #0b2328;
-      --gta-bg-fill: #303030;
+      --gta-pink: #f4acc4; --gta-teal: #53d8bf; --gta-purple: #a688ff; --gta-yellow: #fede9a;
+      --gta-icon-stroke: #171a21; --gta-border: #0b2328; --gta-bg-fill: #303030;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #12151a;
-      color: #f0f4f8;
-      font-family: 'Inter', sans-serif;
-      display: grid;
-      grid-template-columns: 480px 1fr;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      background: #171a21;
-      border-right: 3px solid var(--gta-border);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .brand-header {
-      padding: 18px 20px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #232834;
-    }
-
-    .brand-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 1.5px;
-      color: var(--gta-pink);
-      text-shadow: 0 2px 0 var(--gta-border);
-    }
-
-    .sb-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 12px;
-      background: #2b1d28;
-      color: var(--gta-pink);
-      border: 1px solid var(--gta-pink);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .sb-badge.connected {
-      background: #132a28;
-      color: var(--gta-teal);
-      border-color: var(--gta-teal);
-    }
-
-    .tab-nav {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: #12151a;
-      border-bottom: 2px solid #232834;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: #8c96a6;
-      padding: 12px 6px;
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-
-    .tab-btn:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .tab-btn.active {
-      color: var(--gta-teal);
-      border-bottom-color: var(--gta-teal);
-      background: #171a21;
-    }
-
-    .tab-content {
-      display: none;
-      padding: 18px 20px;
-      overflow-y: auto;
-      flex: 1;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .tab-content.active {
-      display: flex;
-    }
-
-    .panel {
-      background: #1e222b;
-      border: 2px solid var(--gta-border);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .panel-title {
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--gta-teal);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-    }
-
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      font-size: 0.73rem;
-      color: #b0b8c4;
-      font-weight: 600;
-    }
-
-    input, select {
-      background: #12151a;
-      border: 1px solid #303642;
-      color: #fff;
-      padding: 7px 9px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-family: inherit;
-      width: 100%;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--gta-pink);
-    }
-
-    input:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    /* Studio Toggle Switch Styling (Inspired by Project 2 Reference) */
-    .toggle-strip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      background: #14171f;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #282e3d;
-    }
-
-    .mini-switch-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      text-align: center;
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: #c0c8d6;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .inline-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #14171f;
-      padding: 7px 10px;
-      border-radius: 8px;
-      border: 1px solid #282e3d;
-      font-size: 0.74rem;
-      font-weight: 700;
-      color: #d0d7e2;
-      cursor: pointer;
-    }
-
-    input[type="checkbox"].switch {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 36px;
-      height: 19px;
-      background: #0f1116;
-      border: 1px solid #384152;
-      border-radius: 20px;
-      position: relative;
-      cursor: pointer;
-      flex-shrink: 0;
-      padding: 0;
-    }
-
-    input[type="checkbox"].switch::after {
-      content: "";
-      width: 13px;
-      height: 13px;
-      background: #8c96a6;
-      border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: transform 0.18s ease, background 0.18s ease;
-    }
-
-    input[type="checkbox"].switch:checked {
-      background: rgba(83, 216, 191, 0.22);
-      border-color: var(--gta-teal);
-    }
-
-    input[type="checkbox"].switch:checked::after {
-      transform: translateX(17px);
-      background: var(--gta-teal);
-    }
-
-    .stat-row-editor {
-      background: #151820;
-      border: 1px solid #2d3340;
-      border-left: 4px solid var(--gta-pink);
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .stat-row-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--gta-yellow);
-    }
-
-    .btn-icon-remove {
-      background: #3a1c24;
-      color: #ff6b81;
-      border: 1px solid #ff6b81;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.72rem;
-      cursor: pointer;
-    }
-    .btn-icon-remove:hover {
-      background: #ff6b81;
-      color: #12151a;
-    }
-
-    .color-picker-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    input[type="color"] {
-      width: 38px;
-      height: 34px;
-      padding: 2px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .btn {
-      cursor: pointer;
-      border: 2px solid var(--gta-border);
-      border-radius: 8px;
-      padding: 9px 14px;
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: transform 0.1s ease, filter 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+    body { background: #12151a; color: #f0f4f8; font-family: 'Inter', sans-serif; display: grid; grid-template-columns: 480px 1fr; height: 100vh; overflow: hidden; }
+    .sidebar { background: #171a21; border-right: 3px solid var(--gta-border); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .brand-header { padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #232834; }
+    .brand-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1.5px; color: var(--gta-pink); text-shadow: 0 2px 0 var(--gta-border); }
+    .sb-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: #2b1d28; color: var(--gta-pink); border: 1px solid var(--gta-pink); display: flex; align-items: center; gap: 6px; }
+    .sb-badge.connected { background: #132a28; color: var(--gta-teal); border-color: var(--gta-teal); }
+    
+    .tab-nav { display: grid; grid-template-columns: repeat(5, 1fr); background: #12151a; border-bottom: 2px solid #232834; }
+    .tab-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: #8c96a6; padding: 12px 2px; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.15s ease; white-space: nowrap; }
+    .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .tab-btn.active { color: var(--gta-teal); border-bottom-color: var(--gta-teal); background: #171a21; }
+    .tab-content { display: none; padding: 18px 20px; overflow-y: auto; flex: 1; flex-direction: column; gap: 16px; }
+    .tab-content.active { display: flex; }
+    
+    .panel { background: #1e222b; border: 2px solid var(--gta-border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--gta-teal); display: flex; align-items: center; gap: 8px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    label { display: flex; flex-direction: column; gap: 5px; font-size: 0.73rem; color: #b0b8c4; font-weight: 600; }
+    input, select { background: #12151a; border: 1px solid #303642; color: #fff; padding: 7px 9px; border-radius: 6px; font-size: 0.8rem; font-family: inherit; width: 100%; }
+    input:focus, select:focus { outline: none; border-color: var(--gta-pink); }
+    input:disabled { opacity: 0.45; cursor: not-allowed; }
+    
+    .toggle-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #14171f; padding: 8px 10px; border-radius: 8px; border: 1px solid #282e3d; }
+    .mini-switch-card { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; font-size: 0.68rem; font-weight: 700; color: #c0c8d6; cursor: pointer; user-select: none; }
+    .inline-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #14171f; padding: 7px 10px; border-radius: 8px; border: 1px solid #282e3d; font-size: 0.74rem; font-weight: 700; color: #d0d7e2; cursor: pointer; margin-bottom: 4px; }
+    input[type="checkbox"].switch { appearance: none; -webkit-appearance: none; width: 36px; height: 19px; background: #0f1116; border: 1px solid #384152; border-radius: 20px; position: relative; cursor: pointer; flex-shrink: 0; padding: 0; }
+    input[type="checkbox"].switch::after { content: ""; width: 13px; height: 13px; background: #8c96a6; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.18s ease, background 0.18s ease; }
+    input[type="checkbox"].switch:checked { background: rgba(83, 216, 191, 0.22); border-color: var(--gta-teal); }
+    input[type="checkbox"].switch:checked::after { transform: translateX(17px); background: var(--gta-teal); }
+    
+    .color-picker-group { display: flex; align-items: center; gap: 8px; }
+    input[type="color"] { width: 38px; height: 34px; padding: 2px; cursor: pointer; flex-shrink: 0; }
+    
+    .btn { cursor: pointer; border: 2px solid var(--gta-border); border-radius: 8px; padding: 9px 14px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.1s ease, filter 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .btn:active { transform: translateY(1px); }
     .btn-teal { background: var(--gta-teal); color: var(--gta-icon-stroke); }
     .btn-pink { background: var(--gta-pink); color: var(--gta-icon-stroke); }
     .btn-purple { background: var(--gta-purple); color: var(--gta-icon-stroke); }
     .btn-yellow { background: var(--gta-yellow); color: var(--gta-icon-stroke); }
     .btn-dark { background: #262b36; color: #e2e8f0; border-color: #384050; }
-
-    .workspace {
-      display: flex;
-      flex-direction: column;
-      padding: 20px 24px;
-      gap: 16px;
-      overflow-y: auto;
-    }
-
-    .url-box {
-      background: #171a21;
-      border: 2px solid var(--gta-teal);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .url-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .url-input {
-      flex: 1;
-      font-family: monospace;
-      font-size: 0.8rem;
-      background: #0e1014;
-      color: var(--gta-yellow);
-    }
-
-    .preview-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #171a21;
-      border: 2px solid #262c3a;
-      border-radius: 10px;
-      padding: 10px 16px;
-    }
-
-    .pin-toggle-label {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--gta-yellow);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .pin-toggle-label input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--gta-teal);
-      cursor: pointer;
-    }
-
-    .preview-wrapper {
-      flex: 1;
-      background: radial-gradient(circle at center, #222733 0%, #0e1015 100%);
-      border: 3px solid var(--gta-border);
-      border-radius: 14px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 480px;
-    }
-
-    .canvas-scaler {
-      width: 1920px;
-      height: 1080px;
-      transform: scale(0.55);
-      transform-origin: center center;
-      border: 2px dashed rgba(244, 172, 196, 0.35);
-      position: relative;
-      flex-shrink: 0;
-      background-image: 
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-
-    iframe {
-      width: 1920px;
-      height: 1080px;
-      border: none;
-    }
-
-    .status-log {
-      font-size: 0.74rem;
-      padding: 8px 10px;
-      border-radius: 6px;
-      background: #12151a;
-      border: 1px solid #2b313e;
-      color: #9aa4b2;
-      min-height: 46px;
-      display: flex;
-      align-items: center;
-      line-height: 1.35;
-      word-break: break-word;
-    }
+    
+    .workspace { display: flex; flex-direction: column; padding: 20px 24px; gap: 16px; overflow-y: auto; }
+    .url-box { background: #171a21; border: 2px solid var(--gta-teal); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .url-row { display: flex; gap: 10px; align-items: center; }
+    .url-input { flex: 1; font-family: monospace; font-size: 0.8rem; background: #0e1014; color: var(--gta-yellow); }
+    
+    .preview-toolbar { display: flex; justify-content: space-between; align-items: center; background: #171a21; border: 2px solid #262c3a; border-radius: 10px; padding: 10px 16px; }
+    .pin-toggle-label { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 700; color: var(--gta-yellow); cursor: pointer; user-select: none; }
+    .pin-toggle-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gta-teal); cursor: pointer; }
+    
+    .preview-wrapper { flex: 1; background: radial-gradient(circle at center, #222733 0%, #0e1015 100%); border: 3px solid var(--gta-border); border-radius: 14px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 480px; }
+    .canvas-scaler { width: 1920px; height: 1080px; transform: scale(0.55); transform-origin: center center; border: 2px dashed rgba(244, 172, 196, 0.35); position: relative; flex-shrink: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px; }
+    iframe { width: 1920px; height: 1080px; border: none; }
+    
+    .status-log { font-size: 0.74rem; padding: 8px 10px; border-radius: 6px; background: #12151a; border: 1px solid #2b313e; color: #9aa4b2; min-height: 46px; display: flex; align-items: center; line-height: 1.35; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -456,7 +84,8 @@
 
     <nav class="tab-nav">
       <button class="tab-btn active" data-tab="tab-general"><i class="fa-solid fa-sliders"></i> General</button>
-      <button class="tab-btn" data-tab="tab-vars"><i class="fa-solid fa-list-check"></i> Variables</button>
+      <button class="tab-btn" data-tab="tab-walkon"><i class="fa-solid fa-id-card"></i> Card</button>
+      <button class="tab-btn" data-tab="tab-alerts"><i class="fa-solid fa-bell"></i> Alerts</button>
       <button class="tab-btn" data-tab="tab-colors"><i class="fa-solid fa-palette"></i> Colors</button>
       <button class="tab-btn" data-tab="tab-test"><i class="fa-solid fa-flask"></i> Test</button>
     </nav>
@@ -466,65 +95,51 @@
       <div class="panel">
         <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection (YouTube)</div>
         <div class="grid-2">
-          <label>WebSocket IP / Host
-            <input type="text" id="cfg-host" value="127.0.0.1">
-          </label>
-          <label>Port
-            <input type="number" id="cfg-port" value="8080">
-          </label>
+          <label>WebSocket IP / Host <input type="text" id="cfg-host" value="127.0.0.1"></label>
+          <label>Port <input type="number" id="cfg-port" value="8080"></label>
         </div>
-        <label style="margin-top:4px;">WebSocket Password (If Enabled in SB)
-          <input type="password" id="cfg-password" placeholder="Leave blank if no auth required">
-        </label>
-        <div class="grid-2" style="margin-top:4px;">
-          <label>Custom Event Name
-            <input type="text" id="cfg-event" value="MemberWalkOn">
-          </label>
-          <label>Reconnect
-            <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:auto;">Connect SB</button>
-          </label>
-        </div>
+        <label style="margin-top:4px;">WebSocket Password (If Enabled) <input type="password" id="cfg-password" placeholder="Leave blank if no auth"></label>
+        <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:8px;">Connect SB</button>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Card Position & Timing</div>
+        <div class="panel-title"><i class="fa-solid fa-font"></i> Global Typography</div>
+        <div class="grid-2">
+          <label>Heading Font
+            <select id="cfg-fontHeading">
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Anton">Anton</option>
+              <option value="Changa One">Changa One</option>
+            </select>
+          </label>
+          <label>Body Font
+            <select id="cfg-fontBody">
+              <option value="Inter">Inter</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Outfit">Outfit</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
 
-        <!-- 3 Alignment Toggles -->
+    <!-- TAB 2: WALK-ON CARD -->
+    <div id="tab-walkon" class="tab-content">
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-id-card"></i> Card Position & Timing</div>
         <div class="toggle-strip">
-          <label class="mini-switch-card">
-            <span>Center Horizontal</span>
-            <input type="checkbox" class="switch" id="chk-align-h">
-          </label>
-          <label class="mini-switch-card">
-            <span>Center Vertical</span>
-            <input type="checkbox" class="switch" id="chk-align-v">
-          </label>
-          <label class="mini-switch-card">
-            <span>Center to Screen</span>
-            <input type="checkbox" class="switch" id="chk-align-screen">
-          </label>
-        </div>
-
-        <div class="grid-2">
-          <label>Left Offset (X px)
-            <input type="number" id="cfg-x" value="60" min="0" max="1800" step="5">
-          </label>
-          <label>Bottom Offset (Y px)
-            <input type="number" id="cfg-y" value="60" min="0" max="1000" step="5">
-          </label>
+          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-align-h"></label>
+          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-align-v"></label>
+          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-align-screen"></label>
         </div>
         <div class="grid-2">
-          <label>Card Scale (0.5 - 2.0)
-            <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0">
-          </label>
-          <label>Display Duration (sec)
-            <input type="number" id="cfg-duration" value="8" min="3" max="30">
-          </label>
+          <label>Left Offset (X px) <input type="number" id="cfg-x" value="60" min="0" max="1800" step="5"></label>
+          <label>Bottom Offset (Y px) <input type="number" id="cfg-y" value="60" min="0" max="1000" step="5"></label>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Animations & Aesthetics</div>
+        <div class="grid-2">
+          <label>Scale (0.5 - 2.0) <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0"></label>
+          <label>Duration (sec) <input type="number" id="cfg-duration" value="8" min="3" max="30"></label>
+        </div>
         <div class="grid-2">
           <label>Card Transition
             <select id="cfg-cardAnim">
@@ -542,179 +157,136 @@
             </select>
           </label>
         </div>
-        <div class="grid-2">
-          <label>Heading Font
-            <select id="cfg-fontHeading">
-              <option value="Bebas Neue">Bebas Neue</option>
-              <option value="Anton">Anton</option>
-              <option value="Changa One">Changa One</option>
-            </select>
-          </label>
-          <label>Body Font
-            <select id="cfg-fontBody">
-              <option value="Inter">Inter</option>
-              <option value="Montserrat">Montserrat</option>
-              <option value="Outfit">Outfit</option>
-            </select>
-          </label>
-        </div>
-
-        <!-- No Background Image Toggle -->
+        <label>SB Custom Event Name <input type="text" id="cfg-event" value="MemberWalkOn"></label>
         <label class="inline-toggle-row">
-          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> No Background Image (Solid Card Fill)</span>
+          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> Solid Fill (No Image)</span>
           <input type="checkbox" class="switch" id="chk-no-bg">
         </label>
-
-        <label>Card Background Image URL / Path
-          <input type="text" id="cfg-bg" value="assets/gta6-bg.webp">
-        </label>
+        <label>Background Image URL <input type="text" id="cfg-bg" value="assets/gta6-bg.webp"></label>
       </div>
-    </div>
-
-    <!-- TAB 2: VARIABLES -->
-    <div id="tab-vars" class="tab-content">
-      <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-id-badge"></i> Header Variables</div>
-        <div class="grid-2">
-          <label>Avatar SB Variable
-            <input type="text" id="cfg-vAvatar" value="avatarUrl">
-          </label>
-          <label>Tier Badge SB Variable
-            <input type="text" id="cfg-vTier" value="levelName">
-          </label>
-        </div>
-      </div>
-
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><i class="fa-solid fa-layer-group"></i> Stat Rows (Add / Remove)</div>
-          <button class="btn btn-teal" id="btn-add-stat" style="padding: 5px 10px; font-size: 0.72rem;">
-            <i class="fa-solid fa-plus"></i> Add Stat
-          </button>
+          <div class="panel-title"><i class="fa-solid fa-layer-group"></i> Card Variables (Dynamic Rows)</div>
+          <button class="btn btn-teal" id="btn-add-stat" style="padding: 4px 8px; font-size: 0.65rem;">+ Add Row</button>
         </div>
         <div id="stats-list-container" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
     </div>
 
-    <!-- TAB 3: COLORS -->
+    <!-- TAB 3: ALERTS -->
+    <div id="tab-alerts" class="tab-content">
+      <div class="panel">
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube Events</div>
+        <p style="font-size:0.75rem; color:#9aa4b2;">Toggle which events display in the Alerts module.</p>
+        <label class="inline-toggle-row"><span>New Subscriber</span><input type="checkbox" class="switch" id="al_sub" checked></label>
+        <label class="inline-toggle-row"><span>New Member</span><input type="checkbox" class="switch" id="al_mem" checked></label>
+        <label class="inline-toggle-row"><span>Membership Milestone</span><input type="checkbox" class="switch" id="al_ms" checked></label>
+        <label class="inline-toggle-row"><span>Membership Gift Sent</span><input type="checkbox" class="switch" id="al_gft" checked></label>
+        <label class="inline-toggle-row"><span>Gift Membership Received</span><input type="checkbox" class="switch" id="al_grc" checked></label>
+        <label class="inline-toggle-row"><span>Super Chat</span><input type="checkbox" class="switch" id="al_sc" checked></label>
+        <label class="inline-toggle-row"><span>Super Sticker</span><input type="checkbox" class="switch" id="al_stk" checked></label>
+        <label class="inline-toggle-row"><span>Jewels Gifted</span><input type="checkbox" class="switch" id="al_jwl" checked></label>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Alerts Position & Timing</div>
+        <div class="toggle-strip">
+          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-a-align-h" checked></label>
+          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-a-align-v"></label>
+        </div>
+        <div class="grid-2">
+          <label>Top Offset (Y px) <input type="number" id="cfg-ay" value="100" min="0" max="1000" step="5"></label>
+          <label>Left Offset (X px) <input type="number" id="cfg-ax" value="960" disabled></label>
+        </div>
+        <div class="grid-2">
+          <label>Scale <input type="number" id="cfg-ascale" value="1" step="0.05" min="0.5" max="2.0"></label>
+          <label>Duration (sec) <input type="number" id="cfg-aDur" value="6" min="3" max="30"></label>
+        </div>
+        <label>SB Custom Alert Event (Optional Fallback) <input type="text" id="cfg-alertEvent" value="GTA_Alert"></label>
+      </div>
+    </div>
+
+    <!-- TAB 4: COLORS -->
     <div id="tab-colors" class="tab-content">
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title"><i class="fa-solid fa-eye-dropper"></i> GTA VI Palette Overrides</div>
-          <button class="btn btn-dark" id="btn-reset-colors" style="padding: 5px 10px; font-size: 0.72rem;">
-            <i class="fa-solid fa-rotate-left"></i> Reset Defaults
-          </button>
+          <button class="btn btn-dark" id="btn-reset-colors" style="padding: 5px 10px; font-size: 0.72rem;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
         </div>
-
         <div class="grid-2">
-          <label>Primary Pink
-            <div class="color-picker-group">
-              <input type="color" id="picker-cPink" value="#f4acc4">
-              <input type="text" id="cfg-cPink" value="#f4acc4">
-            </div>
-          </label>
-          <label>Primary Teal
-            <div class="color-picker-group">
-              <input type="color" id="picker-cTeal" value="#53d8bf">
-              <input type="text" id="cfg-cTeal" value="#53d8bf">
-            </div>
-          </label>
+          <label>Primary Pink <div class="color-picker-group"><input type="color" id="picker-cPink" value="#f4acc4"><input type="text" id="cfg-cPink" value="#f4acc4"></div></label>
+          <label>Primary Teal <div class="color-picker-group"><input type="color" id="picker-cTeal" value="#53d8bf"><input type="text" id="cfg-cTeal" value="#53d8bf"></div></label>
         </div>
-
         <div class="grid-2">
-          <label>Primary Purple
-            <div class="color-picker-group">
-              <input type="color" id="picker-cPurple" value="#a688ff">
-              <input type="text" id="cfg-cPurple" value="#a688ff">
-            </div>
-          </label>
-          <label>Primary Yellow
-            <div class="color-picker-group">
-              <input type="color" id="picker-cYellow" value="#fede9a">
-              <input type="text" id="cfg-cYellow" value="#fede9a">
-            </div>
-          </label>
+          <label>Primary Purple <div class="color-picker-group"><input type="color" id="picker-cPurple" value="#a688ff"><input type="text" id="cfg-cPurple" value="#a688ff"></div></label>
+          <label>Primary Yellow <div class="color-picker-group"><input type="color" id="picker-cYellow" value="#fede9a"><input type="text" id="cfg-cYellow" value="#fede9a"></div></label>
         </div>
-
         <div class="grid-2">
-          <label>Icon / Text Stroke
-            <div class="color-picker-group">
-              <input type="color" id="picker-cStroke" value="#171a21">
-              <input type="text" id="cfg-cStroke" value="#171a21">
-            </div>
-          </label>
-          <label>Card Outer Border
-            <div class="color-picker-group">
-              <input type="color" id="picker-cBorder" value="#0b2328">
-              <input type="text" id="cfg-cBorder" value="#0b2328">
-            </div>
-          </label>
+          <label>Icon / Text Stroke <div class="color-picker-group"><input type="color" id="picker-cStroke" value="#171a21"><input type="text" id="cfg-cStroke" value="#171a21"></div></label>
+          <label>Card Outer Border <div class="color-picker-group"><input type="color" id="picker-cBorder" value="#0b2328"><input type="text" id="cfg-cBorder" value="#0b2328"></div></label>
         </div>
-
-        <label>Card Base Background Fill
-          <div class="color-picker-group">
-            <input type="color" id="picker-cBg" value="#303030">
-            <input type="text" id="cfg-cBg" value="#303030">
-          </div>
-        </label>
+        <label>Card Base Fill <div class="color-picker-group"><input type="color" id="picker-cBg" value="#303030"><input type="text" id="cfg-cBg" value="#303030"></div></label>
       </div>
     </div>
 
-    <!-- TAB 4: TEST -->
+    <!-- TAB 5: TEST -->
     <div id="tab-test" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-dice"></i> Instant Walk-On Simulator</div>
-        <p style="font-size:0.75rem; color:#9aa4b2; line-height:1.4;">
-          Hides the pinned card (if visible) and runs the full entrance animation, avatar flip/spin, and stat pop sequence with random data.
-        </p>
-        <button class="btn btn-pink" id="btn-sim-random">
-          <i class="fa-solid fa-play"></i> Simulate Random YouTube Walk-On
-        </button>
+        <div class="panel-title"><i class="fa-solid fa-dice"></i> Module Simulators</div>
+        <div class="grid-2" style="margin-bottom: 8px;">
+          <button class="btn btn-teal" id="btn-sim-walkon"><i class="fa-solid fa-id-card"></i> Test Walk-On</button>
+          <button class="btn btn-purple" id="btn-sim-alert"><i class="fa-solid fa-bell"></i> Test Alert</button>
+        </div>
+        <label>Alert Type to Simulate
+          <select id="sim-alert-type">
+            <option value="sub">New Subscriber</option>
+            <option value="member">New Member</option>
+            <option value="milestone">Membership Milestone</option>
+            <option value="gift">Membership Gift</option>
+            <option value="giftRec">Gift Received</option>
+            <option value="superchat">Super Chat</option>
+            <option value="supersticker">Super Sticker</option>
+            <option value="jewels">Jewels Gifted</option>
+          </select>
+        </label>
       </div>
-
       <div class="panel">
-        <div class="panel-title"><i class="fa-brands fa-youtube"></i> Live Streamer.bot YouTube User Test</div>
-        <p style="font-size:0.74rem; color:#9aa4b2; line-height:1.4;">
-          Queries Streamer.bot for this user's real persisted YouTube User Variables.
-        </p>
-        <label>YouTube Channel ID (e.g. UC...) or Username
-          <input type="text" id="test-user-input" placeholder="e.g. UCVu2Tib4ZyK3FzwnCjPBHGw">
-        </label>
-        <label>SB Lookup Action Name
-          <input type="text" id="cfg-lookupAction" value="GTA_LookupYouTubeUser">
-        </label>
-        <button class="btn btn-purple" id="btn-test-user">
-          <i class="fa-solid fa-database"></i> Pull User Vars from SB & Play Walk-On
-        </button>
-        <div id="test-status-log" class="status-log">Ready to test user variables...</div>
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> Live SB User Test (Walk-On)</div>
+        <label>Channel ID or Username <input type="text" id="test-user-input" placeholder="e.g. UC..."></label>
+        <label>SB Lookup Action <input type="text" id="cfg-lookupAction" value="GTA_LookupYouTubeUser"></label>
+        <button class="btn btn-pink" id="btn-test-user"><i class="fa-solid fa-database"></i> Pull Vars & Test</button>
+        <div id="test-status-log" class="status-log">Ready...</div>
       </div>
     </div>
   </aside>
 
   <main class="workspace">
     <div class="url-box">
-      <div class="panel-title"><i class="fa-solid fa-link"></i> Generated OBS Browser Source URL (1920x1080)</div>
+      <div class="panel-header">
+        <div class="panel-title"><i class="fa-solid fa-link"></i> OBS Browser Source URL</div>
+        <label style="flex-direction:row; align-items:center; font-size:11px; color:#fff; gap:8px;">Include Modules:
+          <select id="cfg-modules" style="width:auto; padding:4px; font-size:11px;">
+            <option value="all">All Modules (Global)</option>
+            <option value="walkon">Walk-On Card Only</option>
+            <option value="alerts">Alerts Box Only</option>
+          </select>
+        </label>
+      </div>
       <div class="url-row">
         <input type="text" id="obs-url-output" class="url-input" readonly>
-        <button class="btn btn-yellow" id="btn-copy-url"><i class="fa-solid fa-copy"></i> Copy URL</button>
+        <button class="btn btn-yellow" id="btn-copy-url"><i class="fa-solid fa-copy"></i> Copy</button>
       </div>
     </div>
 
     <div class="preview-toolbar">
       <label class="pin-toggle-label">
         <input type="checkbox" id="chk-pin-preview" checked>
-        <span><i class="fa-solid fa-thumbtack"></i> Pin Card Visible (Setup Mode) — Drag card to move • Drag top-right corner to scale</span>
+        <span><i class="fa-solid fa-thumbtack"></i> Pin Visible (Setup Mode) — Drag to move • Corner to scale</span>
       </label>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-teal" id="btn-quick-test" style="padding:6px 12px; font-size:0.75rem;">
-          <i class="fa-solid fa-bolt"></i> Quick Test Animation
-        </button>
-      </div>
     </div>
 
     <div class="preview-wrapper" id="preview-wrapper">
       <div class="canvas-scaler" id="canvas-scaler">
-        <iframe id="preview-frame" src="walkon-vi-card.html?preview=1"></iframe>
+        <iframe id="preview-frame" src="gta-overlay.html?preview=1"></iframe>
       </div>
     </div>
   </main>
@@ -727,6 +299,7 @@
     const statsListContainer = document.getElementById('stats-list-container');
     const pinCheckbox = document.getElementById('chk-pin-preview');
     const testStatusLog = document.getElementById('test-status-log');
+    const selModules = document.getElementById('cfg-modules');
 
     const chkAlignH = document.getElementById('chk-align-h');
     const chkAlignV = document.getElementById('chk-align-v');
@@ -735,22 +308,22 @@
     const inputX = document.getElementById('cfg-x');
     const inputY = document.getElementById('cfg-y');
     const inputScale = document.getElementById('cfg-scale');
-    const inputBg = document.getElementById('cfg-bg');
+    
+    const chkAAlignH = document.getElementById('chk-a-align-h');
+    const chkAAlignV = document.getElementById('chk-a-align-v');
+    const inputAX = document.getElementById('cfg-ax');
+    const inputAY = document.getElementById('cfg-ay');
 
-    // Responsive Stage Scaling (Inspired by Project 2 Reference)
     function fitPreviewCanvas() {
       const wrapper = document.getElementById('preview-wrapper');
       const scaler = document.getElementById('canvas-scaler');
       if (!wrapper || !scaler) return;
       const pad = 36;
-      const scaleX = (wrapper.clientWidth - pad) / 1920;
-      const scaleY = (wrapper.clientHeight - pad) / 1080;
-      const zoom = Math.min(scaleX, scaleY, 1);
+      const zoom = Math.min((wrapper.clientWidth - pad) / 1920, (wrapper.clientHeight - pad) / 1080, 1);
       scaler.style.transform = `scale(${zoom})`;
     }
     window.addEventListener('resize', fitPreviewCanvas);
 
-    // Tab Navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -760,372 +333,167 @@
       });
     });
 
-    pinCheckbox.addEventListener('change', () => {
-      previewFrame.contentWindow.postMessage({
-        type: 'SET_PREVIEW_PINNED',
-        pinned: pinCheckbox.checked
-      }, '*');
-    });
+    pinCheckbox.addEventListener('change', () => previewFrame.contentWindow.postMessage({ type: 'SET_PREVIEW_PINNED', pinned: pinCheckbox.checked }, '*'));
 
-    // Alignment Toggles Logic (Center Horizontal, Center Vertical, Center to Screen)
-    function updateAlignmentTogglesUI() {
+    // Toggles logic
+    function updateAlignUI() {
       chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
-      inputX.disabled = chkAlignH.checked;
-      inputY.disabled = chkAlignV.checked;
+      inputX.disabled = chkAlignH.checked; inputY.disabled = chkAlignV.checked;
       syncLiveConfig();
     }
+    chkAlignH.addEventListener('change', updateAlignUI); chkAlignV.addEventListener('change', updateAlignUI);
+    chkAlignScreen.addEventListener('change', () => { chkAlignH.checked = chkAlignScreen.checked; chkAlignV.checked = chkAlignScreen.checked; updateAlignUI(); });
+    chkNoBg.addEventListener('change', () => { document.getElementById('cfg-bg').disabled = chkNoBg.checked; syncLiveConfig(); });
+    
+    function updateAAlignUI() { inputAX.disabled = chkAAlignH.checked; inputAY.disabled = chkAAlignV.checked; syncLiveConfig(); }
+    chkAAlignH.addEventListener('change', updateAAlignUI); chkAAlignV.addEventListener('change', updateAAlignUI);
 
-    chkAlignH.addEventListener('change', updateAlignmentTogglesUI);
-    chkAlignV.addEventListener('change', updateAlignmentTogglesUI);
-
-    chkAlignScreen.addEventListener('change', () => {
-      chkAlignH.checked = chkAlignScreen.checked;
-      chkAlignV.checked = chkAlignScreen.checked;
-      updateAlignmentTogglesUI();
-    });
-
-    // No Background Image Toggle Logic
-    chkNoBg.addEventListener('change', () => {
-      inputBg.disabled = chkNoBg.checked;
-      syncLiveConfig();
-    });
-
-    // Listen for Drag / Resize & Centering Coordinate Syncs from Preview Iframe
-    window.addEventListener('message', (event) => {
-      const msg = event.data;
-      if (!msg || !msg.type) return;
-
-      if (msg.type === 'CARD_MANIPULATED') {
-        inputX.value = msg.x;
-        inputY.value = msg.y;
-        inputScale.value = msg.scale;
-        chkAlignH.checked = Boolean(msg.alignH);
-        chkAlignV.checked = Boolean(msg.alignV);
+    window.addEventListener('message', (msg) => {
+      if (!msg || !msg.data) return;
+      if (msg.data.type === 'CARD_MANIPULATED') {
+        inputX.value = msg.data.x; inputY.value = msg.data.y; inputScale.value = msg.data.scale;
+        chkAlignH.checked = Boolean(msg.data.alignH); chkAlignV.checked = Boolean(msg.data.alignV);
         chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
-        inputX.disabled = chkAlignH.checked;
-        inputY.disabled = chkAlignV.checked;
+        inputX.disabled = chkAlignH.checked; inputY.disabled = chkAlignV.checked;
         updateGeneratedUrlOnly();
-      } else if (msg.type === 'CARD_CENTER_SYNC') {
-        inputX.value = msg.x;
-        inputY.value = msg.y;
+      } else if (msg.data.type === 'ALERT_MANIPULATED') {
+        inputAX.value = msg.data.ax; inputAY.value = msg.data.ay; document.getElementById('cfg-ascale').value = msg.data.ascale;
+        chkAAlignH.checked = Boolean(msg.data.aAlignH); chkAAlignV.checked = Boolean(msg.data.aAlignV);
+        inputAX.disabled = chkAAlignH.checked; inputAY.disabled = chkAAlignV.checked;
         updateGeneratedUrlOnly();
       }
     });
 
-    const DEFAULT_COLORS = {
-      cPink:   '#f4acc4',
-      cTeal:   '#53d8bf',
-      cPurple: '#a688ff',
-      cYellow: '#fede9a',
-      cStroke: '#171a21',
-      cBorder: '#0b2328',
-      cBg:     '#303030'
-    };
-
+    const DEFAULT_COLORS = { cPink: '#f4acc4', cTeal: '#53d8bf', cPurple: '#a688ff', cYellow: '#fede9a', cStroke: '#171a21', cBorder: '#0b2328', cBg: '#303030' };
     let statRows = [
-      { label: 'Tenure',  varName: 'months',       suffix: ' Months', icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow' },
-      { label: 'Joined',  varName: 'memberSince',  suffix: '',        icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink' },
-      { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '',        icon: 'fa-eye',            iconColor: 'purple', valColor: 'teal' }
+      { label: 'Tenure', varName: 'months', suffix: ' Months', icon: 'fa-heart', iconColor: 'pink', valColor: 'yellow' },
+      { label: 'Joined', varName: 'memberSince', suffix: '', icon: 'fa-calendar-check', iconColor: 'teal', valColor: 'pink' },
+      { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '', icon: 'fa-eye', iconColor: 'purple', valColor: 'teal' }
     ];
-
-    const availableIcons = [
-      { value: 'fa-heart',          label: 'Heart (Health)' },
-      { value: 'fa-calendar-check', label: 'Calendar (Joined)' },
-      { value: 'fa-eye',            label: 'Eye (Focus)' },
-      { value: 'fa-crown',          label: 'Crown (Loyalty)' },
-      { value: 'fa-medal',          label: 'Medal (Tenure)' },
-      { value: 'fa-skull',          label: 'Skull (Bad Deed)' },
-      { value: 'fa-bolt',           label: 'Bolt (Stamina)' },
-      { value: 'fa-sack-dollar',    label: 'Cash (BuckMe)' },
-      { value: 'fa-star',           label: 'Star (Wanted)' }
-    ];
-
-    const availableColors = ['pink', 'teal', 'purple', 'yellow'];
+    const availIcons = [{v:'fa-heart',l:'Heart'}, {v:'fa-calendar-check',l:'Calendar'}, {v:'fa-eye',l:'Eye'}, {v:'fa-crown',l:'Crown'}, {v:'fa-medal',l:'Medal'}, {v:'fa-skull',l:'Skull'}, {v:'fa-bolt',l:'Bolt'}, {v:'fa-sack-dollar',l:'Cash'}, {v:'fa-star',l:'Star'}];
+    const availColors = ['pink', 'teal', 'purple', 'yellow'];
 
     function renderStatRowEditors() {
       statsListContainer.innerHTML = '';
       statRows.forEach((row, idx) => {
-        const card = document.createElement('div');
-        card.className = 'stat-row-editor';
-
-        const iconOptions = availableIcons.map(ic =>
-          `<option value="${ic.value}" ${row.icon === ic.value ? 'selected' : ''}>${ic.label}</option>`
-        ).join('');
-        const iconColorOptions = availableColors.map(c =>
-          `<option value="${c}" ${row.iconColor === c ? 'selected' : ''}>${c.toUpperCase()}</option>`
-        ).join('');
-        const valColorOptions = availableColors.map(c =>
-          `<option value="${c}" ${row.valColor === c ? 'selected' : ''}>${c.toUpperCase()}</option>`
-        ).join('');
-
-        card.innerHTML = `
-          <div class="stat-row-top">
-            <span>ROW #${idx + 1}</span>
-            <button class="btn-icon-remove" data-idx="${idx}" title="Remove Stat Row">
-              <i class="fa-solid fa-trash-can"></i> Remove
-            </button>
+        const d = document.createElement('div'); d.className = 'stat-row-editor';
+        d.innerHTML = `
+          <div class="stat-row-top"><span>ROW #${idx+1}</span><button class="btn-icon-remove" data-idx="${idx}"><i class="fa-solid fa-trash-can"></i></button></div>
+          <div class="grid-3">
+            <label>Label <input type="text" data-idx="${idx}" data-field="label" value="${row.label}"></label>
+            <label>SB Var <input type="text" data-idx="${idx}" data-field="varName" value="${row.varName}"></label>
+            <label>Suffix <input type="text" data-idx="${idx}" data-field="suffix" value="${row.suffix}"></label>
           </div>
           <div class="grid-3">
-            <label>Label
-              <input type="text" data-idx="${idx}" data-field="label" value="${row.label}">
-            </label>
-            <label>SB Variable
-              <input type="text" data-idx="${idx}" data-field="varName" value="${row.varName}">
-            </label>
-            <label>Suffix (Optional)
-              <input type="text" data-idx="${idx}" data-field="suffix" value="${row.suffix}" placeholder="e.g.  Months">
-            </label>
-          </div>
-          <div class="grid-3">
-            <label>HUD Icon
-              <select data-idx="${idx}" data-field="icon">${iconOptions}</select>
-            </label>
-            <label>Icon Color
-              <select data-idx="${idx}" data-field="iconColor">${iconColorOptions}</select>
-            </label>
-            <label>Value Color
-              <select data-idx="${idx}" data-field="valColor">${valColorOptions}</select>
-            </label>
-          </div>
-        `;
-        statsListContainer.appendChild(card);
+            <label>Icon <select data-idx="${idx}" data-field="icon">${availIcons.map(i=>`<option value="${i.v}" ${row.icon===i.v?'selected':''}>${i.l}</option>`).join('')}</select></label>
+            <label>I-Color <select data-idx="${idx}" data-field="iconColor">${availColors.map(c=>`<option value="${c}" ${row.iconColor===c?'selected':''}>${c}</option>`).join('')}</select></label>
+            <label>V-Color <select data-idx="${idx}" data-field="valColor">${availColors.map(c=>`<option value="${c}" ${row.valColor===c?'selected':''}>${c}</option>`).join('')}</select></label>
+          </div>`;
+        statsListContainer.appendChild(d);
       });
-
-      statsListContainer.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', (e) => {
-          const i = parseInt(e.target.dataset.idx, 10);
-          const field = e.target.dataset.field;
-          statRows[i][field] = e.target.value;
-          syncLiveConfig();
-        });
-      });
-
-      statsListContainer.querySelectorAll('.btn-icon-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const i = parseInt(e.currentTarget.dataset.idx, 10);
-          statRows.splice(i, 1);
-          renderStatRowEditors();
-          syncLiveConfig();
-        });
-      });
+      statsListContainer.querySelectorAll('input, select').forEach(el => el.addEventListener('input', e => { statRows[e.target.dataset.idx][e.target.dataset.field] = e.target.value; syncLiveConfig(); }));
+      statsListContainer.querySelectorAll('.btn-icon-remove').forEach(btn => btn.addEventListener('click', e => { statRows.splice(e.currentTarget.dataset.idx, 1); renderStatRowEditors(); syncLiveConfig(); }));
     }
-
-    document.getElementById('btn-add-stat').addEventListener('click', () => {
-      statRows.push({ label: 'Watch Time', varName: 'watchHours', suffix: ' hrs', icon: 'fa-bolt', iconColor: 'yellow', valColor: 'purple' });
-      renderStatRowEditors();
-      syncLiveConfig();
+    document.getElementById('btn-add-stat').addEventListener('click', () => { statRows.push({ label: 'New', varName: 'newVar', suffix: '', icon: 'fa-star', iconColor: 'yellow', valColor: 'yellow' }); renderStatRowEditors(); syncLiveConfig(); });
+    Object.keys(DEFAULT_COLORS).forEach(k => {
+      document.getElementById(`picker-${k}`).addEventListener('input', e => { document.getElementById(`cfg-${k}`).value = e.target.value; syncLiveConfig(); });
+      document.getElementById(`cfg-${k}`).addEventListener('input', e => { if(/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) document.getElementById(`picker-${k}`).value = e.target.value; syncLiveConfig(); });
     });
+    document.getElementById('btn-reset-colors').addEventListener('click', () => { Object.entries(DEFAULT_COLORS).forEach(([k, h]) => { document.getElementById(`picker-${k}`).value = h; document.getElementById(`cfg-${k}`).value = h; }); syncLiveConfig(); });
 
-    Object.keys(DEFAULT_COLORS).forEach(key => {
-      const picker = document.getElementById(`picker-${key}`);
-      const textInput = document.getElementById(`cfg-${key}`);
-      picker.addEventListener('input', () => { textInput.value = picker.value; syncLiveConfig(); });
-      textInput.addEventListener('input', () => {
-        if (/^#[0-9A-Fa-f]{6}$/.test(textInput.value.trim())) picker.value = textInput.value.trim();
-        syncLiveConfig();
-      });
-    });
-
-    document.getElementById('btn-reset-colors').addEventListener('click', () => {
-      Object.entries(DEFAULT_COLORS).forEach(([key, hex]) => {
-        document.getElementById(`picker-${key}`).value = hex;
-        document.getElementById(`cfg-${key}`).value = hex;
-      });
-      syncLiveConfig();
-    });
-
-    const baseConfigIds = [
-      'host', 'port', 'password', 'event', 'x', 'y', 'scale', 'duration',
-      'cardAnim', 'avatarAnim', 'fontHeading', 'fontBody', 'bg',
-      'vAvatar', 'vTier',
-      'cPink', 'cTeal', 'cPurple', 'cYellow', 'cStroke', 'cBorder', 'cBg'
-    ];
-
+    const baseInputs = ['host','port','password','event','x','y','scale','duration','cardAnim','avatarAnim','fontHeading','fontBody','bg','vAvatar','vTier','cPink','cTeal','cPurple','cYellow','cStroke','cBorder','cBg','alertEvent','ax','ay','ascale','aDur'];
+    const alertToggles = ['al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl'];
+    
     function getSetupState() {
-      const state = {};
-      baseConfigIds.forEach(id => {
-        const val = document.getElementById(`cfg-${id}`).value.trim();
-        if (id === 'password' && !val) return;
-        state[id] = val;
-      });
-      if (chkAlignH.checked) state.alignH = '1';
-      if (chkAlignV.checked) state.alignV = '1';
-      if (chkNoBg.checked) state.noBg = '1';
-      state.stats = JSON.stringify(statRows);
-      return state;
+      const s = {};
+      baseInputs.forEach(id => { const val = document.getElementById(`cfg-${id}`).value.trim(); if(val || id!=='password') s[id] = val; });
+      alertToggles.forEach(id => { if(!document.getElementById(id).checked) s[id] = '0'; });
+      if (chkAlignH.checked) s.alignH = '1'; if (chkAlignV.checked) s.alignV = '1'; if (chkNoBg.checked) s.noBg = '1';
+      if (chkAAlignH.checked) s.aAlignH = '1'; else s.aAlignH = '0'; 
+      if (chkAAlignV.checked) s.aAlignV = '1';
+      s.modules = selModules.value;
+      s.stats = JSON.stringify(statRows);
+      return s;
     }
 
     function updateGeneratedUrlOnly() {
-      const state = getSetupState();
-      const params = new URLSearchParams(state);
-      const basePath = window.location.href.replace(/setup\.html.*$/, 'walkon-vi-card.html');
-      urlOutput.value = `${basePath}?${params.toString()}`;
+      const p = new URLSearchParams(getSetupState());
+      urlOutput.value = window.location.href.replace(/setup\.html.*$/, 'gta-overlay.html') + '?' + p.toString();
     }
 
     function syncLiveConfig() {
       const state = getSetupState();
       updateGeneratedUrlOnly();
-
-      if (previewFrame.contentWindow) {
-        previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
-      }
+      if (previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
     }
 
     function initialLoadIframe() {
-      const state = getSetupState();
       updateGeneratedUrlOnly();
-
-      const previewParams = new URLSearchParams(state);
-      if (pinCheckbox.checked) previewParams.set('preview', '1');
-      previewFrame.src = `walkon-vi-card.html?${previewParams.toString()}`;
+      const p = new URLSearchParams(getSetupState());
+      if (pinCheckbox.checked) p.set('preview', '1');
+      previewFrame.src = 'gta-overlay.html?' + p.toString();
     }
 
-    baseConfigIds.forEach(id => {
-      document.getElementById(`cfg-${id}`).addEventListener('input', syncLiveConfig);
-      document.getElementById(`cfg-${id}`).addEventListener('change', syncLiveConfig);
-    });
+    baseInputs.forEach(id => { document.getElementById(`cfg-${id}`).addEventListener('change', syncLiveConfig); });
+    alertToggles.forEach(id => { document.getElementById(id).addEventListener('change', syncLiveConfig); });
+    selModules.addEventListener('change', initialLoadIframe);
 
-    document.getElementById('btn-copy-url').addEventListener('click', () => {
-      navigator.clipboard.writeText(urlOutput.value);
-      const btn = document.getElementById('btn-copy-url');
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-      setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy URL'; }, 2000);
-    });
+    document.getElementById('btn-copy-url').addEventListener('click', () => { navigator.clipboard.writeText(urlOutput.value); });
 
     function connectSetupToSB() {
       const state = getSetupState();
-      if (sbAdminClient) {
-        try { sbAdminClient.disconnect(); } catch (e) {}
-      }
-
-      const clientOptions = {
-        host: state.host,
-        port: parseInt(state.port, 10),
-        endpoint: '/',
-        subscribe: {
-          General: ['Custom']
-        },
-        onConnect: () => {
-          sbStatusBadge.classList.add('connected');
-          sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected';
-        },
-        onDisconnect: () => {
-          sbStatusBadge.classList.remove('connected');
-          sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected';
-        }
-      };
-
-      if (state.password) {
-        clientOptions.password = state.password;
-      }
-
-      sbAdminClient = new StreamerbotClient(clientOptions);
-
-      sbAdminClient.on('General.Custom', (payload) => {
-        let data = payload?.data ?? payload;
-        if (typeof data === 'string') {
-          try { data = JSON.parse(data); } catch (e) {}
-        }
-        if (data && data.data && typeof data.data === 'object' && !data.event) {
-          data = data.data;
-        } else if (data && typeof data.data === 'string') {
-          try { data = JSON.parse(data.data); } catch (e) {}
-        }
-
-        const currentState = getSetupState();
-        if (data && (
-          data.event === 'GTA_UserLookupResult' ||
-          data.type === 'GTA_UserLookupResult' ||
-          data.event === currentState.event ||
-          data.type === currentState.event
-        )) {
-          const loadedKeys = Object.keys(data).filter(k => !['event', 'type', 'targetUser'].includes(k));
-          testStatusLog.style.color = '#53d8bf';
-          testStatusLog.textContent = `Loaded [${loadedKeys.join(', ')}] for ${data.userName || data.targetUser}! Playing...`;
-          triggerWalkOnTest(data);
+      if (sbAdminClient) try { sbAdminClient.disconnect(); } catch (e) {}
+      const opts = { host: state.host, port: parseInt(state.port, 10), endpoint: '/', subscribe: { General: ['Custom'] } };
+      if (state.password) opts.password = state.password;
+      sbAdminClient = new StreamerbotClient(opts);
+      sbAdminClient.on('Connect', () => { sbStatusBadge.classList.add('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; });
+      sbAdminClient.on('Disconnect', () => { sbStatusBadge.classList.remove('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; });
+      sbAdminClient.on('General.Custom', (p) => {
+        let d = p?.data ?? p;
+        if(typeof d === 'string') try{d=JSON.parse(d)}catch(e){}
+        if(d?.data && !d.event) d=d.data; else if(typeof d?.data==='string') try{d=JSON.parse(d.data)}catch(e){}
+        if (d && (d.event === 'GTA_UserLookupResult' || d.type === 'GTA_UserLookupResult')) {
+          testStatusLog.style.color = '#53d8bf'; testStatusLog.textContent = `Loaded real SB vars for ${d.userName || d.targetUser}!`;
+          previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: d }, '*');
         }
       });
     }
-
     document.getElementById('btn-connect-sb').addEventListener('click', connectSetupToSB);
 
-    function attachDynamicMockValues(baseMock) {
-      const enriched = { ...baseMock };
-      statRows.forEach((r, idx) => {
-        if (enriched[r.varName] === undefined) {
-          enriched[r.varName] = (idx + 1) * 15;
-        }
-      });
-      return enriched;
-    }
+    // Mock Simulators
+    const mocks = [ { userName: 'Lucia_Caminos', levelName: 'Vice City Syndicate', months: 24, avatarUrl: 'https://i.pravatar.cc/300?img=47' } ];
+    document.getElementById('btn-sim-walkon').addEventListener('click', () => {
+      let p = {...mocks[0]}; statRows.forEach((r,i) => p[r.varName] = (i+1)*10);
+      previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: p }, '*');
+    });
 
-    const mockUsers = [
-      { userName: 'Lucia_Caminos', levelName: 'Vice City Syndicate', months: 24, memberSince: '10/2024', loyaltyLevel: 'Level 9', avatarUrl: 'https://i.pravatar.cc/300?img=47' },
-      { userName: 'Jason_Leonida', levelName: 'Leonida Enforcer', months: 14, memberSince: '08/2025', loyaltyLevel: 'Level 6', avatarUrl: 'https://i.pravatar.cc/300?img=12' },
-      { userName: 'TommyV_86', levelName: 'Starfish Island VIP', months: 36, memberSince: '10/2023', loyaltyLevel: 'Level 10', avatarUrl: 'https://i.pravatar.cc/300?img=68' },
-      { userName: 'PortGellhornDrift', levelName: 'Street Crew', months: 5, memberSince: '05/2026', loyaltyLevel: 'Level 3', avatarUrl: 'https://i.pravatar.cc/300?img=33' }
-    ];
-
-    function runRandomSimulation() {
-      const pick = mockUsers[Math.floor(Math.random() * mockUsers.length)];
-      triggerWalkOnTest(attachDynamicMockValues(pick));
-    }
-
-    document.getElementById('btn-sim-random').addEventListener('click', runRandomSimulation);
-    document.getElementById('btn-quick-test').addEventListener('click', runRandomSimulation);
+    document.getElementById('btn-sim-alert').addEventListener('click', () => {
+      const type = document.getElementById('sim-alert-type').value;
+      const p = { alertType: type, userName: 'Lucia_Caminos', userProfileUrl: 'https://i.pravatar.cc/300?img=47' };
+      if (type==='sub') p.triggerName = "New Subscriber";
+      if (type==='member') { p.triggerName = "New Member"; p.levelName = "Leonida VIP"; }
+      if (type==='milestone') { p.triggerName = "Milestone"; p.months = 12; p.levelName = "Leonida VIP"; p.message = "Keep up the great streams!"; }
+      if (type==='gift') { p.triggerName = "Membership Gift"; p.count = 5; }
+      if (type==='giftRec') { p.triggerName = "Gift Received"; p.gifterUser = "TommyV_86"; }
+      if (type==='superchat') { p.triggerName = "Super Chat"; p.amount = "$20.00"; p.message = "Love the stream!"; }
+      if (type==='supersticker') { p.triggerName = "Super Sticker"; p.amount = "$5.00"; p.stickerImageUrl = "https://i.pravatar.cc/120?img=1"; p.message="Awesome!"; }
+      if (type==='jewels') { p.triggerName = "Jewels Gifted"; p.jewelsAmount = 150; p.jewelsName = "Diamond"; p.jewelsUrl = "https://i.pravatar.cc/120?img=5"; }
+      previewFrame.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: p }, '*');
+    });
 
     document.getElementById('btn-test-user').addEventListener('click', async () => {
       const targetUser = document.getElementById('test-user-input').value.trim();
-      const lookupActionName = document.getElementById('cfg-lookupAction').value.trim() || 'GTA_LookupYouTubeUser';
-      const state = getSetupState();
-
-      if (!targetUser) {
-        testStatusLog.style.color = '#f4acc4';
-        testStatusLog.textContent = 'Please enter a YouTube Username or Channel ID first.';
-        return;
-      }
-
-      if (!sbAdminClient || !sbStatusBadge.classList.contains('connected')) {
-        testStatusLog.style.color = '#f4acc4';
-        testStatusLog.textContent = 'Not connected to Streamer.bot! Running simulated fallback...';
-        triggerWalkOnTest(attachDynamicMockValues({ userName: targetUser }));
-        return;
-      }
-
-      const requestedVars = [state.vAvatar, state.vTier, ...statRows.map(r => r.varName)].filter(Boolean);
-
-      testStatusLog.style.color = '#fede9a';
-      testStatusLog.textContent = `Querying Streamer.bot action "${lookupActionName}" for "${targetUser}"...`;
-
+      const actionName = document.getElementById('cfg-lookupAction').value.trim() || 'GTA_LookupYouTubeUser';
+      if (!targetUser) return (testStatusLog.style.color = '#f4acc4', testStatusLog.textContent = 'Enter a Channel ID.');
+      if (!sbAdminClient || !sbStatusBadge.classList.contains('connected')) return;
       try {
-        const actionsRes = await sbAdminClient.getActions();
-        const matchedAction = (actionsRes.actions || []).find(a => a.name.toLowerCase() === lookupActionName.toLowerCase());
-
-        if (matchedAction) {
-          await sbAdminClient.doAction(matchedAction.id, {
-            targetUser: targetUser,
-            requestedVars: requestedVars.join(','),
-            eventName: state.event
-          });
-          return;
-        }
-
-        testStatusLog.style.color = '#f4acc4';
-        testStatusLog.textContent = `Action "${lookupActionName}" not found in SB.`;
-      } catch (err) {
-        testStatusLog.style.color = '#f4acc4';
-        testStatusLog.textContent = 'Error querying Streamer.bot.';
-      }
+        const res = await sbAdminClient.getActions();
+        const action = (res.actions || []).find(a => a.name.toLowerCase() === actionName.toLowerCase());
+        if (action) await sbAdminClient.doAction(action.id, { targetUser, requestedVars: [document.getElementById('cfg-vAvatar').value, document.getElementById('cfg-vTier').value, ...statRows.map(r=>r.varName)].join(','), eventName: document.getElementById('cfg-event').value });
+      } catch (err) { testStatusLog.textContent = 'Error querying SB.'; }
     });
 
-    function triggerWalkOnTest(payload) {
-      previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload }, '*');
-    }
-
-    fitPreviewCanvas();
-    renderStatRowEditors();
-    initialLoadIframe();
-    connectSetupToSB();
+    fitPreviewCanvas(); renderStatRowEditors(); initialLoadIframe(); connectSetupToSB();
   </script>
 </body>
 </html>

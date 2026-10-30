@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GTA VI - Overlay Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Changa+One&family=Inter:wght@400;600;700;800&family=Montserrat:wght@500;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/overlays.css">
+  <script src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
+</head>
+<body class="obs-canvas">
+
+  <!-- MODULE 1: WALK-ON CARD -->
+  <div id="walkon-container" class="walkon-container anim-slide-left">
+    <div class="walkon-card">
+      <div id="avatar-wrapper" class="avatar-wrapper av-flip">
+        <img id="card-avatar" class="avatar-img" src="" alt="Avatar" />
+      </div>
+      <div id="card-username" class="user-name">LUCIA_VI</div>
+      <div id="card-tier" class="tier-badge">LEONIDA VIP</div>
+      <div id="meta-box" class="meta-box"></div>
+    </div>
+  </div>
+
+  <!-- MODULE 2: ALERTS -->
+  <div id="alert-container" class="alert-container">
+    <div id="alert-box" class="alert-box alert-sub">
+      <div class="alert-header">
+        <img id="alert-avatar" class="alert-avatar" src="" />
+        <div class="alert-titles">
+          <div id="alert-event-name" class="alert-event-name">New Subscriber</div>
+          <div id="alert-user-name" class="alert-user-name">Username</div>
+        </div>
+      </div>
+      <div id="alert-body" class="alert-body">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/overlays.js"></script>
+</body>
+</html>
