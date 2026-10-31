@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GTA VI Overlays - Universal Setup v0.0.4</title>
+  <title>GTA VI Overlays - Universal Setup v0.0.4.2</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
       --gta-icon-stroke: #171a21; --gta-border: #0b2328; --gta-bg-fill: #303030;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #12151a; color: #f0f4f8; font-family: 'Inter', sans-serif; display: grid; grid-template-columns: 490px 1fr; height: 100vh; overflow: hidden; }
+    body { background: #12151a; color: #f0f4f8; font-family: 'Inter', sans-serif; display: grid; grid-template-columns: 495px 1fr; height: 100vh; overflow: hidden; }
     .sidebar { background: #171a21; border-right: 3px solid var(--gta-border); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     .brand-header { padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #232834; }
     .brand-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.95rem; letter-spacing: 1.5px; color: var(--gta-pink); text-shadow: 0 2px 0 var(--gta-border); display: flex; align-items: center; gap: 10px; }
@@ -43,6 +43,33 @@
     .toggle-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #14171f; padding: 8px 10px; border-radius: 8px; border: 1px solid #282e3d; }
     .mini-switch-card { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; font-size: 0.68rem; font-weight: 700; color: #c0c8d6; cursor: pointer; user-select: none; }
     .inline-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #14171f; padding: 7px 10px; border-radius: 8px; border: 1px solid #282e3d; font-size: 0.74rem; font-weight: 700; color: #d0d7e2; cursor: pointer; margin-bottom: 4px; }
+
+    /* Alert Event Row with Independent Accent Color Selector */
+    .alert-config-row {
+      display: grid;
+      grid-template-columns: 1fr 118px 42px;
+      align-items: center;
+      gap: 8px;
+      background: #14171f;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #282e3d;
+    }
+    .alert-config-row span {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #d0d7e2;
+    }
+    .alert-config-row select {
+      padding: 4px 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .alert-config-row .switch-cell {
+      display: flex;
+      justify-content: flex-end;
+    }
+
     input[type="checkbox"].switch { appearance: none; -webkit-appearance: none; width: 36px; height: 19px; background: #0f1116; border: 1px solid #384152; border-radius: 20px; position: relative; cursor: pointer; flex-shrink: 0; padding: 0; }
     input[type="checkbox"].switch::after { content: ""; width: 13px; height: 13px; background: #8c96a6; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.18s ease, background 0.18s ease; }
     input[type="checkbox"].switch:checked { background: rgba(83, 216, 191, 0.22); border-color: var(--gta-teal); }
@@ -84,7 +111,7 @@
 
   <aside class="sidebar">
     <div class="brand-header">
-      <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.0.4</span></div>
+      <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.0.4.2</span></div>
       <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> Disconnected</div>
     </div>
 
@@ -192,17 +219,98 @@
     <!-- TAB 3: ALERTS -->
     <div id="tab-alerts" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube Events</div>
-        <p style="font-size:0.75rem; color:#9aa4b2;">Toggle which events display in the Alerts module.</p>
-        <label class="inline-toggle-row"><span>New Subscriber</span><input type="checkbox" class="switch" id="chk-al_sub" checked></label>
-        <label class="inline-toggle-row"><span>New Member</span><input type="checkbox" class="switch" id="chk-al_mem" checked></label>
-        <label class="inline-toggle-row"><span>Membership Milestone</span><input type="checkbox" class="switch" id="chk-al_ms" checked></label>
-        <label class="inline-toggle-row"><span>Membership Gift Sent</span><input type="checkbox" class="switch" id="chk-al_gft" checked></label>
-        <label class="inline-toggle-row"><span>Gift Membership Received</span><input type="checkbox" class="switch" id="chk-al_grc" checked></label>
-        <label class="inline-toggle-row"><span>Super Chat</span><input type="checkbox" class="switch" id="chk-al_sc" checked></label>
-        <label class="inline-toggle-row"><span>Super Sticker</span><input type="checkbox" class="switch" id="chk-al_stk" checked></label>
-        <label class="inline-toggle-row"><span>Jewels Gifted</span><input type="checkbox" class="switch" id="chk-al_jwl" checked></label>
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube Events & Accent Colors</div>
+        <p style="font-size:0.73rem; color:#9aa4b2;">Choose an independent accent color and toggle visibility for each alert type.</p>
+
+        <div class="alert-config-row">
+          <span>New Subscriber</span>
+          <select id="cfg-ac_sub">
+            <option value="teal" selected>TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow">YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sub" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>New Member</span>
+          <select id="cfg-ac_mem">
+            <option value="teal">TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple" selected>PURPLE</option>
+            <option value="yellow">YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_mem" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Membership Milestone</span>
+          <select id="cfg-ac_ms">
+            <option value="teal">TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple" selected>PURPLE</option>
+            <option value="yellow">YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_ms" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Membership Gift Sent</span>
+          <select id="cfg-ac_gft">
+            <option value="teal">TEAL</option>
+            <option value="pink" selected>PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow">YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_gft" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Gift Membership Received</span>
+          <select id="cfg-ac_grc">
+            <option value="teal" selected>TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow">YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_grc" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Super Chat</span>
+          <select id="cfg-ac_sc">
+            <option value="teal">TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow" selected>YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sc" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Super Sticker</span>
+          <select id="cfg-ac_stk">
+            <option value="teal">TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow" selected>YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_stk" checked></div>
+        </div>
+
+        <div class="alert-config-row">
+          <span>Jewels Gifted</span>
+          <select id="cfg-ac_jwl">
+            <option value="teal">TEAL</option>
+            <option value="pink">PINK</option>
+            <option value="purple">PURPLE</option>
+            <option value="yellow" selected>YELLOW</option>
+          </select>
+          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_jwl" checked></div>
+        </div>
       </div>
+
       <div class="panel">
         <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Alerts Position & Timing</div>
         <div class="toggle-strip">
@@ -243,19 +351,27 @@
 
       <div class="panel">
         <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Shoutout Aesthetics & SB Trigger</div>
-        <div class="grid-2">
+        <div class="grid-3">
           <label>Toast Animation
             <select id="cfg-soAnim">
-              <option value="so-roll">Roll & Pop (Classic)</option>
-              <option value="so-slide-right">Slide In (Right)</option>
-              <option value="so-slide-left">Slide In (Left)</option>
-              <option value="so-zoom">Vice Zoom Pop</option>
+              <option value="so-roll">Roll & Pop</option>
+              <option value="so-slide-right">Slide Right</option>
+              <option value="so-slide-left">Slide Left</option>
+              <option value="so-zoom">Vice Zoom</option>
             </select>
           </label>
           <label>Avatar Side
             <select id="cfg-soLayout">
-              <option value="right">Right Side (Classic)</option>
+              <option value="right">Right Side</option>
               <option value="left">Left Side</option>
+            </select>
+          </label>
+          <label>Accent Color
+            <select id="cfg-soColor">
+              <option value="pink" selected>PINK</option>
+              <option value="teal">TEAL</option>
+              <option value="purple">PURPLE</option>
+              <option value="yellow">YELLOW</option>
             </select>
           </label>
         </div>
@@ -351,7 +467,7 @@
     <div class="preview-toolbar">
       <label class="pin-toggle-label">
         <input type="checkbox" id="chk-pin-preview" checked>
-        <span><i class="fa-solid fa-thumbtack"></i> Pin Visible (Setup Mode) — Drag any module to move • Drag top-right corner to scale</span>
+        <span><i class="fa-solid fa-thumbtack"></i> Pin Visible (Setup Mode) — Drag any module to move • Drag corner handle to scale</span>
       </label>
     </div>
 
@@ -364,7 +480,7 @@
 
   <script>
     let sbAdminClient = null;
-    let pendingLookupTargetModule = 'walkon'; // 'walkon' or 'shoutout'
+    let pendingLookupTargetModule = 'walkon';
     const previewFrame = document.getElementById('preview-frame');
     const urlOutput = document.getElementById('obs-url-output');
     const sbStatusBadge = document.getElementById('sb-status');
@@ -561,7 +677,8 @@
       'fontHeading','fontBody','bg','vAvatar','vTier',
       'cPink','cTeal','cPurple','cYellow','cStroke','cBorder','cBg',
       'alertEvent','ax','ay','ascale','aDur',
-      'soX','soY','soScale','soDur','soAnim','soLayout','soTitle','soVar','soEvent'
+      'ac_sub','ac_mem','ac_ms','ac_gft','ac_grc','ac_sc','ac_stk','ac_jwl',
+      'soX','soY','soScale','soDur','soAnim','soLayout','soColor','soTitle','soVar','soEvent'
     ];
     const checkboxToggles = [
       'al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl',
@@ -688,7 +805,6 @@
         }
       });
 
-      // Forward live viShoutOuts global variable updates directly into the Setup Preview Canvas!
       sbAdminClient.on('Misc.GlobalVariableUpdated', (payload) => {
         const cur = getSetupState();
         const varName = payload?.data?.name;

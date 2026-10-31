@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
-   v0.0.4 - Shoutout Toast Module + Walk-On Card + YouTube Alerts
+   v0.0.4.2 - Unified Shoutout Card Shape & Independent Alert Accent Colors
    ========================================================================== */
 
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -55,7 +55,7 @@ const GTAOverlayConfig = (() => {
     showTier: params.get('showTier') !== '0',
     noBg: params.get('noBg') === '1',
 
-    // Module 2: Alerts Config
+    // Module 2: Alerts Config & Independent Accent Colors
     alertEvent: params.get('alertEvent') || 'GTA_Alert',
     alertX: parseFloat(params.get('ax') || '960'), 
     alertY: parseFloat(params.get('ay') || '100'), 
@@ -64,14 +64,24 @@ const GTAOverlayConfig = (() => {
     alertAlignV: params.get('aAlignV') === '1',
     alertDuration: parseInt(params.get('aDur') || '6', 10) * 1000,
     alertsConfig: {
-      sub: params.get('al_sub') !== '0',
-      member: params.get('al_mem') !== '0',
-      milestone: params.get('al_ms') !== '0',
-      gift: params.get('al_gft') !== '0',
-      giftRec: params.get('al_grc') !== '0',
-      superchat: params.get('al_sc') !== '0',
+      sub:          params.get('al_sub') !== '0',
+      member:       params.get('al_mem') !== '0',
+      milestone:    params.get('al_ms')  !== '0',
+      gift:         params.get('al_gft') !== '0',
+      giftRec:      params.get('al_grc') !== '0',
+      superchat:    params.get('al_sc')  !== '0',
       supersticker: params.get('al_stk') !== '0',
-      jewels: params.get('al_jwl') !== '0',
+      jewels:       params.get('al_jwl') !== '0'
+    },
+    alertColors: {
+      sub:          params.get('ac_sub') || 'teal',
+      member:       params.get('ac_mem') || 'purple',
+      milestone:    params.get('ac_ms')  || 'purple',
+      gift:         params.get('ac_gft') || 'pink',
+      giftRec:      params.get('ac_grc') || 'teal',
+      superchat:    params.get('ac_sc')  || 'yellow',
+      supersticker: params.get('ac_stk') || 'yellow',
+      jewels:       params.get('ac_jwl') || 'yellow'
     },
 
     // Module 3: Shoutout Toast Config
@@ -86,6 +96,7 @@ const GTAOverlayConfig = (() => {
     soDuration: parseInt(params.get('soDur') || '5', 10) * 1000,
     soAnim: params.get('soAnim') || 'so-roll',
     soLayout: params.get('soLayout') || 'right',
+    soColor: params.get('soColor') || 'pink',
     soNoBg: params.get('soNoBg') === '1',
 
     // Shared Aesthetics & Colors
@@ -125,6 +136,7 @@ class GTAOverlayEngine {
     this.lastShoutoutTs = 0;
     
     this.lastWalkonData = {};
+    this.lastAlertType = 'sub';
 
     this.dom = {
       walkonContainer:   document.getElementById('walkon-container'),
@@ -200,6 +212,39 @@ class GTAOverlayEngine {
     return undefined;
   }
 
+  // Maps a color key ('pink', 'teal', 'purple', 'yellow') or hex value to CSS variables
+  resolveAccentTokens(colorVal) {
+    const map = {
+      pink:   { accent: 'var(--gta-pink)',   glow: 'var(--glow-pink)' },
+      teal:   { accent: 'var(--gta-teal)',   glow: 'var(--glow-teal)' },
+      purple: { accent: 'var(--gta-purple)', glow: 'var(--glow-purple)' },
+      yellow: { accent: 'var(--gta-yellow)', glow: 'var(--glow-yellow)' }
+    };
+    if (map[colorVal]) return map[colorVal];
+    if (typeof colorVal === 'string' && colorVal.startsWith('#')) {
+      return {
+        accent: colorVal,
+        glow: `color-mix(in srgb, ${colorVal} 45%, transparent)`
+      };
+    }
+    return map.teal;
+  }
+
+  applyAlertAccentColor(alertType) {
+    if (!this.dom.alertBox) return;
+    const chosenKey = (this.config.alertColors && this.config.alertColors[alertType]) || 'teal';
+    const tokens = this.resolveAccentTokens(chosenKey);
+    this.dom.alertBox.style.setProperty('--alert-accent', tokens.accent);
+    this.dom.alertBox.style.setProperty('--alert-glow', tokens.glow);
+  }
+
+  applyShoutoutAccentColor() {
+    if (!this.dom.shoutoutWrapper) return;
+    const tokens = this.resolveAccentTokens(this.config.soColor || 'pink');
+    this.dom.shoutoutWrapper.style.setProperty('--so-accent', tokens.accent);
+    this.dom.shoutoutWrapper.style.setProperty('--so-glow', tokens.glow);
+  }
+
   applyGlobalStyles() {
     const root = document.documentElement;
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
@@ -235,6 +280,7 @@ class GTAOverlayEngine {
 
     // Module 2: Alerts Styling
     if (this.config.modules.alerts) {
+      this.applyAlertAccentColor(this.lastAlertType || 'sub');
       this.recalculateAlertCoords();
     }
 
@@ -249,6 +295,7 @@ class GTAOverlayEngine {
         root.style.setProperty('--so-bg-image', resolvedBg);
       }
       this.dom.shoutoutWrapper.classList.toggle('avatar-left', this.config.soLayout === 'left');
+      this.applyShoutoutAccentColor();
       if (this.dom.shoutoutTitle) {
         this.dom.shoutoutTitle.innerHTML = `<i class="fa-solid fa-bullhorn"></i> ${this.config.soTitle || 'SHOUTOUT'}`;
       }
@@ -266,16 +313,25 @@ class GTAOverlayEngine {
     const scale = this.config.scale || 1;
     const w = this.dom.walkonContainer.offsetWidth || 340;
     const h = this.dom.walkonContainer.offsetHeight || 390;
-    if (this.config.alignH) this.config.posX = Math.round((1920 - (w * scale)) / 2);
-    if (this.config.alignV) this.config.posY = Math.round((1080 - (h * scale)) / 2);
+    const maxX = Math.max(0, 1920 - (w * scale));
+    const maxY = Math.max(0, 1080 - (h * scale));
+    if (this.config.alignH) this.config.posX = Math.round(maxX / 2);
+    else this.config.posX = Math.round(Math.max(0, Math.min(maxX, this.config.posX)));
+    if (this.config.alignV) this.config.posY = Math.round(maxY / 2);
+    else this.config.posY = Math.round(Math.max(0, Math.min(maxY, this.config.posY)));
   }
 
   recalculateAlertCoords() {
     if (!this.dom.alertContainer) return;
     const scale = this.config.alertScale || 1;
+    const w = this.dom.alertContainer.offsetWidth || 460;
     const h = this.dom.alertContainer.offsetHeight || 140;
-    if (this.config.alertAlignH) this.config.alertX = 960; 
-    if (this.config.alertAlignV) this.config.alertY = Math.round((1080 - (h * scale)) / 2);
+    const halfW = (w * scale) / 2;
+    const maxY = Math.max(0, 1080 - (h * scale));
+    if (this.config.alertAlignH) this.config.alertX = 960;
+    else this.config.alertX = Math.round(Math.max(halfW, Math.min(1920 - halfW, this.config.alertX)));
+    if (this.config.alertAlignV) this.config.alertY = Math.round(maxY / 2);
+    else this.config.alertY = Math.round(Math.max(0, Math.min(maxY, this.config.alertY)));
   }
 
   recalculateShoutoutCoords() {
@@ -283,8 +339,12 @@ class GTAOverlayEngine {
     const scale = this.config.soScale || 1;
     const w = this.dom.shoutoutContainer.offsetWidth || 360;
     const h = this.dom.shoutoutContainer.offsetHeight || 104;
-    if (this.config.soAlignH) this.config.soX = Math.round((1920 - (w * scale)) / 2);
-    if (this.config.soAlignV) this.config.soY = Math.round((1080 - (h * scale)) / 2);
+    const maxX = Math.max(0, 1920 - (w * scale));
+    const maxY = Math.max(0, 1080 - (h * scale));
+    if (this.config.soAlignH) this.config.soX = Math.round(maxX / 2);
+    else this.config.soX = Math.round(Math.max(0, Math.min(maxX, this.config.soX)));
+    if (this.config.soAlignV) this.config.soY = Math.round(maxY / 2);
+    else this.config.soY = Math.round(Math.max(0, Math.min(maxY, this.config.soY)));
   }
 
   updateDomCoords() {
@@ -459,8 +519,16 @@ class GTAOverlayEngine {
         this.broadcastManipulate(modType);
 
       } else if (isResizing) {
-        const delta = Math.max(dx, (modType === 'walkon' ? -dy : dy));
-        const rawScale = startScale * (((baseW * startScale) + delta) / (baseW * startScale));
+        // Outward vertical delta: Walk-On Card is anchored bottom-left (top-right handle: up is -dy),
+        // while Alert & Shoutout are anchored top (bottom-right handle: down is +dy).
+        const vDelta = (modType === 'walkon') ? -dy : dy;
+        // For Alert Box, transform-origin is top-center (translateX(-50%)), so dragging the right edge by dx changes total width by 2 * dx
+        const hDelta = (modType === 'alert') ? (dx * 2) : dx;
+        // Use whichever axis the user is actively dragging more (preserves negative sign when shrinking!)
+        const delta = Math.abs(hDelta) >= Math.abs(vDelta) ? hDelta : vDelta;
+
+        const startScaledW = Math.max(80, baseW * startScale);
+        const rawScale = startScale * ((startScaledW + delta) / startScaledW);
         const newScale = Math.round(Math.max(0.5, Math.min(2.0, rawScale)) * 20) / 20;
         
         if (modType === 'walkon') {
@@ -551,38 +619,6 @@ class GTAOverlayEngine {
         }
       }
     });
-
-// 3. Native YouTube Event Hooks (Disabled to prevent duplicate alerts)
-    /*
-    if (this.config.modules.alerts) {
-      this.client.on('YouTube.NewSubscriber', (p) => this.handleNativeAlert('sub', 'New Subscriber', p.data));
-      this.client.on('YouTube.NewSponsor', (p) => this.handleNativeAlert('member', 'New Member', p.data));
-      this.client.on('YouTube.MemberMilestone', (p) => this.handleNativeAlert('milestone', 'Milestone', p.data));
-      this.client.on('YouTube.GiftMembership', (p) => this.handleNativeAlert('gift', 'Membership Gift', p.data));
-      this.client.on('YouTube.GiftMembershipReceived', (p) => this.handleNativeAlert('giftRec', 'Gift Received', p.data));
-      this.client.on('YouTube.SuperChat', (p) => this.handleNativeAlert('superchat', 'Super Chat', p.data));
-      this.client.on('YouTube.SuperSticker', (p) => this.handleNativeAlert('supersticker', 'Super Sticker', p.data));
-    }
-    */
-  }
-
-  handleNativeAlert(type, title, data) {
-    if (!this.config.alertsConfig[type]) return; 
-    const alertData = { alertType: type, triggerName: title };
-    
-    if (data.user) {
-      alertData.userName = data.user.name || data.user.id;
-      alertData.userProfileUrl = data.user.profileImageUrl;
-    }
-    
-    if (type === 'member') alertData.levelName = data.tierName || 'Member';
-    if (type === 'milestone') { alertData.levelName = data.tierName; alertData.months = data.months; alertData.message = data.message; }
-    if (type === 'gift') alertData.count = data.count;
-    if (type === 'giftRec') alertData.gifterUser = data.sender?.name;
-    if (type === 'superchat') { alertData.amount = data.amount; alertData.message = data.message; }
-    if (type === 'supersticker') { alertData.amount = data.amount; alertData.message = data.message; alertData.stickerImageUrl = data.stickerUrl; }
-
-    this.enqueueAlert(alertData);
   }
 
   initPostMessageBridge() {
@@ -611,6 +647,26 @@ class GTAOverlayEngine {
         this.config.alertX = parseFloat(s.ax); this.config.alertY = parseFloat(s.ay); this.config.alertScale = parseFloat(s.ascale);
         this.config.alertAlignH = s.aAlignH === '1'; this.config.alertAlignV = s.aAlignV === '1';
         this.config.alertDuration = parseInt(s.aDur, 10) * 1000;
+        this.config.alertsConfig = {
+          sub:          s.al_sub !== '0',
+          member:       s.al_mem !== '0',
+          milestone:    s.al_ms  !== '0',
+          gift:         s.al_gft !== '0',
+          giftRec:      s.al_grc !== '0',
+          superchat:    s.al_sc  !== '0',
+          supersticker: s.al_stk !== '0',
+          jewels:       s.al_jwl !== '0'
+        };
+        this.config.alertColors = {
+          sub:          s.ac_sub || 'teal',
+          member:       s.ac_mem || 'purple',
+          milestone:    s.ac_ms  || 'purple',
+          gift:         s.ac_gft || 'pink',
+          giftRec:      s.al_grc_c || s.ac_grc || 'teal',
+          superchat:    s.ac_sc  || 'yellow',
+          supersticker: s.ac_stk || 'yellow',
+          jewels:       s.ac_jwl || 'yellow'
+        };
 
         this.config.soGlobalVar = s.soVar || 'viShoutOuts';
         this.config.soEvent = s.soEvent || 'GTA_Shoutout';
@@ -623,6 +679,7 @@ class GTAOverlayEngine {
         this.config.soDuration = parseInt(s.soDur || '5', 10) * 1000;
         this.config.soAnim = s.soAnim || 'so-roll';
         this.config.soLayout = s.soLayout || 'right';
+        this.config.soColor = s.soColor || 'pink';
         this.config.soNoBg = s.soNoBg === '1';
         
         this.config.fontHeading = s.fontHeading; this.config.fontBody = s.fontBody; this.config.bgUrl = s.bg;
@@ -632,7 +689,6 @@ class GTAOverlayEngine {
         this.renderStatRows(this.lastWalkonData);
         this.applyGlobalStyles();
 
-        // Sync any centered coordinates back to setup.html inputs
         if (this.config.previewMode && window.parent !== window) {
           if (this.config.alignH || this.config.alignV) {
             window.parent.postMessage({ type: 'CARD_MANIPULATED', x: this.config.posX, y: this.config.posY, scale: this.config.scale, alignH: this.config.alignH, alignV: this.config.alignV }, '*');
@@ -732,7 +788,9 @@ class GTAOverlayEngine {
     if (!this.dom.alertContainer) return;
 
     const type = raw.alertType || 'sub';
+    this.lastAlertType = type;
     this.dom.alertBox.className = `alert-box alert-${type}`;
+    this.applyAlertAccentColor(type);
 
     const triggerName = this.getField(raw, 'triggerName') || 'New Event';
     const userName = this.getField(raw, 'userName', ['user']) || 'Username';
@@ -796,7 +854,6 @@ class GTAOverlayEngine {
   // MODULE 3: SHOUTOUT TOAST PLAYBACK
   // =====================================
   enqueueShoutout(data) {
-    // Prevent duplicate triggers if both GlobalVariableUpdated and Custom Broadcast fire for the same timestamp
     if (data && data.timestamp && data.timestamp === this.lastShoutoutTs) return;
     if (data && data.timestamp) this.lastShoutoutTs = data.timestamp;
 
@@ -832,6 +889,7 @@ class GTAOverlayEngine {
     const userName = this.getField(raw, 'user', ['userName', 'targetUser', 'displayName']) || 'LEONIDA_CREATOR';
     const avatarUrl = this.getField(raw, 'avatar', ['avatarUrl', 'userProfileUrl']) || DEFAULT_AVATAR_SVG;
 
+    this.applyShoutoutAccentColor();
     if (this.dom.shoutoutTitle) {
       this.dom.shoutoutTitle.innerHTML = `<i class="fa-solid fa-bullhorn"></i> ${this.config.soTitle || 'SHOUTOUT'}`;
     }
@@ -843,7 +901,7 @@ class GTAOverlayEngine {
     }
 
     this.dom.shoutoutContainer.classList.remove('animate-out', 'animate-in');
-    void this.dom.shoutoutContainer.offsetWidth; // Force reflow so roll-in animations replay
+    void this.dom.shoutoutContainer.offsetWidth;
     this.dom.shoutoutContainer.classList.add('animate-in');
 
     await this.wait(this.config.soDuration);

@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - MASTER STYLESHEET (css/overlays.css)
-   v0.0.4 - Shoutout Toast Module + Walk-On Card + YouTube Alerts
+   v0.0.4.2 - Unified Shoutout Card Shape & Independent Alert Accent Colors
    ========================================================================== */
 
 :root {
@@ -32,10 +32,14 @@
   --alert-x: 960px;
   --alert-y: 100px;
   --alert-scale: 1;
+  --alert-accent: var(--gta-teal);
+  --alert-glow: var(--glow-teal);
 
   --so-x: 1380px;
   --so-y: 80px;
   --so-scale: 1;
+  --so-accent: var(--gta-pink);
+  --so-glow: var(--glow-pink);
   
   --font-heading: 'Bebas Neue', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -133,6 +137,14 @@ body.preview-interactive .animate-in .studio-resize-handle {
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
+/* Top-anchored modules (Alert Box & Shoutout Toast) put their resize handle on the bottom-right corner */
+body.preview-interactive .alert-container.animate-in .studio-resize-handle,
+body.preview-interactive .shoutout-container.animate-in .studio-resize-handle {
+  top: auto;
+  bottom: -10px;
+  cursor: nwse-resize;
+}
+
 body.preview-interactive .animate-in .studio-resize-handle:hover {
   transform: scale(1.25);
   background: var(--gta-teal);
@@ -190,7 +202,6 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   backdrop-filter: blur(10px);
 }
 
-/* Strictly remove background image when Solid Fill (No Image) is enabled */
 .walkon-card.no-bg-image {
   background-image: none !important;
   background-color: var(--gta-bg-fill) !important;
@@ -277,7 +288,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
 
 
 /* ==========================================================================
-   MODULE 2: YOUTUBE ALERTS
+   MODULE 2: YOUTUBE ALERTS (WITH INDEPENDENT ACCENT COLORS)
    ========================================================================== */
 
 .alert-container {
@@ -307,18 +318,15 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
 .alert-box {
   background: color-mix(in srgb, var(--gta-bg-fill) 90%, transparent);
   border: 3px solid var(--gta-border);
-  border-top: 6px solid var(--gta-pink);
+  border-top: 6px solid var(--alert-accent, var(--gta-teal));
   border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--glow-pink), inset 0 0 0 2px var(--gta-icon-stroke);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--alert-glow, var(--glow-teal)), inset 0 0 0 2px var(--gta-icon-stroke);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-
-.alert-box.alert-sub { border-top-color: var(--gta-teal); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-teal), inset 0 0 0 2px var(--gta-icon-stroke); }
-.alert-box.alert-member, .alert-box.alert-milestone { border-top-color: var(--gta-purple); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-purple), inset 0 0 0 2px var(--gta-icon-stroke); }
-.alert-box.alert-superchat, .alert-box.alert-jewels { border-top-color: var(--gta-yellow); box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px var(--glow-yellow), inset 0 0 0 2px var(--gta-icon-stroke); }
 
 .alert-header {
   display: flex;
@@ -334,6 +342,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   height: 64px;
   border-radius: 12px;
   border: 3px solid var(--gta-border);
+  outline: 2px solid var(--alert-accent, var(--gta-teal));
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   object-fit: cover;
   flex-shrink: 0;
@@ -353,8 +362,8 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #fff;
-  opacity: 0.8;
+  color: var(--alert-accent, #ffffff);
+  text-shadow: 0 2px 0 var(--gta-icon-stroke);
   margin-bottom: 2px;
 }
 
@@ -391,12 +400,12 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
 .alert-highlight {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--gta-pink);
+  color: var(--alert-accent, var(--gta-pink));
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .alert-highlight.amount {
-  color: var(--gta-teal);
+  color: var(--alert-accent, var(--gta-teal));
   font-size: 1.4rem;
 }
 
@@ -406,7 +415,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   color: #e2e8f0;
   font-style: italic;
   background: rgba(0, 0, 0, 0.25);
-  border-left: 4px solid var(--gta-purple);
+  border-left: 4px solid var(--alert-accent, var(--gta-purple));
   padding: 10px 14px;
   border-radius: 4px 8px 8px 4px;
   line-height: 1.4;
@@ -428,7 +437,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
 
 
 /* ==========================================================================
-   MODULE 3: SHOUTOUT TOAST
+   MODULE 3: SHOUTOUT TOAST (MATCHING CARD / ALERT BOX GEOMETRY)
    ========================================================================== */
 
 .shoutout-container {
@@ -470,33 +479,31 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   transition: transform 0.55s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.35s ease !important;
 }
 
+/* Rounded-Rectangle Box Shell (Consistent with Walk-On Card & Alerts Box) */
 .shoutout-wrapper {
   display: inline-flex;
   align-items: center;
   gap: 16px;
   background-color: var(--gta-bg-fill);
   background-image:
-    linear-gradient(135deg, rgba(23, 26, 33, 0.72) 0%, color-mix(in srgb, var(--gta-bg-fill) 92%, transparent) 100%),
+    linear-gradient(160deg, rgba(23, 26, 33, 0.68) 0%, color-mix(in srgb, var(--gta-bg-fill) 92%, transparent) 100%),
     var(--so-bg-image);
   background-size: cover;
   background-position: center;
   border: 3px solid var(--gta-border);
-  border-left: 6px solid var(--gta-pink);
-  border-radius: 56px;
-  padding: 10px 14px 10px 26px;
-  min-width: 340px;
+  border-top: 6px solid var(--so-accent, var(--gta-pink));
+  border-radius: 16px;
+  padding: 14px 20px;
+  min-width: 360px;
   box-shadow:
-    0 12px 32px rgba(11, 35, 40, 0.85),
-    0 0 22px var(--glow-pink),
+    0 16px 40px rgba(0, 0, 0, 0.8),
+    0 0 25px var(--so-glow, var(--glow-pink)),
     inset 0 0 0 2px var(--gta-icon-stroke);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
 }
 
 .shoutout-wrapper.avatar-left {
   flex-direction: row-reverse;
-  padding: 10px 26px 10px 14px;
-  border-left: 3px solid var(--gta-border);
-  border-right: 6px solid var(--gta-pink);
 }
 
 .shoutout-wrapper.no-bg-image {
@@ -510,7 +517,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   justify-content: center;
   flex: 1;
   text-align: left;
-  min-width: 170px;
+  min-width: 180px;
 }
 
 .shoutout-wrapper.avatar-left .shoutout-text-box {
@@ -522,13 +529,13 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   align-items: center;
   gap: 6px;
   font-family: var(--font-body);
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--gta-teal);
+  letter-spacing: 1.2px;
+  color: var(--so-accent, var(--gta-teal));
   text-shadow: 0 2px 0 var(--gta-icon-stroke);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .shoutout-wrapper.avatar-left .shoutout-title {
@@ -537,25 +544,26 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
 
 .shoutout-name {
   font-family: var(--font-heading);
-  font-size: 2.25rem;
-  letter-spacing: 2px;
+  font-size: 2.2rem;
+  letter-spacing: 1.8px;
   color: var(--gta-yellow);
-  -webkit-text-stroke: 1.3px var(--gta-icon-stroke);
+  -webkit-text-stroke: 1.2px var(--gta-icon-stroke);
   text-shadow: 0 3px 0 var(--gta-border), 0 0 12px var(--glow-yellow);
-  line-height: 1.05;
+  line-height: 1.02;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 280px;
 }
 
+/* Rounded-Square Avatar matching Alerts Box (with optional spin animation) */
 .shoutout-avatar {
-  width: 78px;
-  height: 78px;
-  border-radius: 50%;
-  border: 4px solid var(--gta-border);
-  outline: 3px solid var(--gta-teal);
-  box-shadow: 0 0 16px var(--glow-teal), inset 0 0 10px var(--gta-icon-stroke);
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  border: 3px solid var(--gta-border);
+  outline: 2px solid var(--so-accent, var(--gta-teal));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), 0 0 14px var(--so-glow, var(--glow-teal));
   object-fit: cover;
   flex-shrink: 0;
   background: var(--gta-bg-fill);
