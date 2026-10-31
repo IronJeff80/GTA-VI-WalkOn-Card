@@ -552,8 +552,9 @@ class GTAOverlayEngine {
       }
     });
 
-    // 3. Native YouTube Event Hooks
-    /*if (this.config.modules.alerts) {
+// 3. Native YouTube Event Hooks (Disabled to prevent duplicate alerts)
+    /*
+    if (this.config.modules.alerts) {
       this.client.on('YouTube.NewSubscriber', (p) => this.handleNativeAlert('sub', 'New Subscriber', p.data));
       this.client.on('YouTube.NewSponsor', (p) => this.handleNativeAlert('member', 'New Member', p.data));
       this.client.on('YouTube.MemberMilestone', (p) => this.handleNativeAlert('milestone', 'Milestone', p.data));
@@ -562,7 +563,8 @@ class GTAOverlayEngine {
       this.client.on('YouTube.SuperChat', (p) => this.handleNativeAlert('superchat', 'Super Chat', p.data));
       this.client.on('YouTube.SuperSticker', (p) => this.handleNativeAlert('supersticker', 'Super Sticker', p.data));
     }
-  }*/
+    */
+  }
 
   handleNativeAlert(type, title, data) {
     if (!this.config.alertsConfig[type]) return; 
