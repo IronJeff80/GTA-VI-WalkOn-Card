@@ -1019,12 +1019,22 @@
       s.qaAlignV    = (qa_alignV && qa_alignV.checked) ? '1' : '0';
       
       const mods = [];
-      if(document.getElementById('mod-walkon').checked) mods.push('walkon');
-      if(document.getElementById('mod-alerts').checked) mods.push('alerts');
-      if(document.getElementById('mod-shoutout').checked) mods.push('shoutout');
-      if(document.getElementById('mod-chat').checked) mods.push('chat');
-      if(document.getElementById('mod-qa').checked) mods.push('qa');
-      s.modules = mods.join(',') || 'none';
+      const mSel = document.getElementById('cfg-modules');
+      if (mSel && mSel.value === 'all') {
+        s.modules = 'all';
+      } else {
+        if(document.getElementById('mod-walkon') && document.getElementById('mod-walkon').checked) mods.push('walkon');
+        if(document.getElementById('mod-alerts') && document.getElementById('mod-alerts').checked) mods.push('alerts');
+        if(document.getElementById('mod-shoutout') && document.getElementById('mod-shoutout').checked) mods.push('shoutout');
+        if(document.getElementById('mod-chat') && document.getElementById('mod-chat').checked) mods.push('chat');
+        if(document.getElementById('mod-qa') && document.getElementById('mod-qa').checked) mods.push('qa');
+        
+        if (mSel && mSel.value !== 'all') {
+           s.modules = mSel.value; // Single module dropdown logic fallback
+        } else {
+           s.modules = mods.length > 0 ? mods.join(',') : 'none';
+        }
+      }
       
       s.stats = JSON.stringify(statRows);
       return s;
@@ -1052,11 +1062,13 @@
       if (frameHoriz) {
         const ph = new URLSearchParams(getSetupState('horiz'));
         if (pinCheckbox && pinCheckbox.checked) ph.set('preview', '1');
+        ph.set('layout', 'horizontal'); // explicitly define layout
         frameHoriz.src = 'gta-overlay.html?' + ph.toString();
       }
       if (frameVert) {
         const pv = new URLSearchParams(getSetupState('vert'));
         if (pinCheckbox && pinCheckbox.checked) pv.set('preview', '1');
+        pv.set('layout', 'vertical'); // explicitly define layout
         frameVert.src = 'gta-overlay.html?' + pv.toString();
       }
     }

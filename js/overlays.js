@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
-   v0.1.0 - Multi-Canvas, Multi-Language, Multi-Module Suite
+   v0.1.2 - Multi-Canvas, Multi-Language, Multi-Module Suite
    ========================================================================== */
 
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -945,6 +945,10 @@ class GTAOverlayEngine {
       } else if (msg.type === 'LIVE_CONFIG_UPDATE') {
         const s = msg.state;
         const isVert = this.config.layout === 'vertical';
+
+        // Update language & translations dynamically
+        this.config.lang = s.lang || 'en';
+        this.config.t = i18nDict[this.config.lang] || i18nDict['en'];
 
         // Update resolution scale in real-time
         this.config.res = parseInt(s.res || '1080', 10);
