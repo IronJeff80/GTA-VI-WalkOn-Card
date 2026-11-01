@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GTA VI - Walk-On Card Overlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Changa+One&family=Inter:wght@400;600;700;800&family=Montserrat:wght@500;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Shared GTA VI Stylesheet -->
+  <link rel="stylesheet" href="css/overlays.css">
+
+  <!-- Streamer.bot Client Library -->
+  <script src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
+</head>
+<body class="obs-canvas">
+
+  <div id="walkon-container" class="walkon-container anim-slide-left">
+    <div class="walkon-card">
+      <div id="avatar-wrapper" class="avatar-wrapper av-flip">
+        <img id="card-avatar" class="avatar-img" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23171a21%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2244%22%20r%3D%2222%22%20fill%3D%22%23f4acc4%22%2F%3E%3Cpath%20d%3D%22M22%20108%20C22%2078%2C%2098%2078%2C%2098%20108%20Z%22%20fill%3D%22%2353d8bf%22%2F%3E%3C%2Fsvg%3E" alt="Avatar" />
+      </div>
+
+      <div id="card-username" class="user-name">LUCIA_VI</div>
+      <div id="card-tier" class="tier-badge">LEONIDA VIP</div>
+
+      <!-- Dynamically populated by js/overlays.js -->
+      <div id="meta-box" class="meta-box"></div>
+    </div>
+  </div>
+
+  <!-- Shared GTA VI Overlay Engine -->
+  <script src="js/overlays.js"></script>
+</body>
+</html>
