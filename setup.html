@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GTA VI Overlays - Universal Setup v0.1.0</title>
+  <title>GTA VI Overlays - Universal Setup v0.1.3</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -119,7 +119,7 @@
   <aside class="sidebar">
     <div class="brand-header">
       <div class="brand-top">
-        <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.1.0</span></div>
+        <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.1.3</span></div>
         <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> Disconnected</div>
       </div>
       <div class="global-controls">
@@ -766,20 +766,36 @@
         const zoomV = Math.min(availableW / 1080, stageH / 1920, 1);
         
         document.getElementById('scaler-horiz').style.transform = `scale(${zoomH})`;
+        document.getElementById('scaler-horiz').style.width = '1920px';
+        document.getElementById('scaler-horiz').style.height = '1080px';
+        document.getElementById('frame-horiz').style.width = '1920px';
+        document.getElementById('frame-horiz').style.height = '1080px';
         wrapHoriz.style.width = `${1920 * zoomH}px`;
         wrapHoriz.style.height = `${1080 * zoomH}px`;
         
         document.getElementById('scaler-vert').style.transform = `scale(${zoomV})`;
+        document.getElementById('scaler-vert').style.width = '1080px';
+        document.getElementById('scaler-vert').style.height = '1920px';
+        document.getElementById('frame-vert').style.width = '1080px';
+        document.getElementById('frame-vert').style.height = '1920px';
         wrapVert.style.width = `${1080 * zoomV}px`;
         wrapVert.style.height = `${1920 * zoomV}px`;
       } else if (currentPreviewMode === 'horiz') {
         const zoomH = Math.min(stageW / 1920, stageH / 1080, 1);
         document.getElementById('scaler-horiz').style.transform = `scale(${zoomH})`;
+        document.getElementById('scaler-horiz').style.width = '1920px';
+        document.getElementById('scaler-horiz').style.height = '1080px';
+        document.getElementById('frame-horiz').style.width = '1920px';
+        document.getElementById('frame-horiz').style.height = '1080px';
         wrapHoriz.style.width = `${1920 * zoomH}px`;
         wrapHoriz.style.height = `${1080 * zoomH}px`;
       } else if (currentPreviewMode === 'vert') {
         const zoomV = Math.min(stageW / 1080, stageH / 1920, 1);
         document.getElementById('scaler-vert').style.transform = `scale(${zoomV})`;
+        document.getElementById('scaler-vert').style.width = '1080px';
+        document.getElementById('scaler-vert').style.height = '1920px';
+        document.getElementById('frame-vert').style.width = '1080px';
+        document.getElementById('frame-vert').style.height = '1920px';
         wrapVert.style.width = `${1080 * zoomV}px`;
         wrapVert.style.height = `${1920 * zoomV}px`;
       }
@@ -908,11 +924,45 @@
     const DEFAULT_COLORS = { cPink: '#f4acc4', cTeal: '#53d8bf', cPurple: '#a688ff', cYellow: '#fede9a', cStroke: '#171a21', cBorder: '#0b2328', cBg: '#303030' };
     const CHAT_COLOR_KEYS = ['cMem', 'cMod', 'cView', 'cMsg', 'cChatBg'];
 
+    const i18nDict = {
+      en: { tenure: "Tenure", joined: "Joined", loyalty: "Loyalty", months: " Months", shoutout: "SHOUTOUT", qa: "Q&A HIGHLIGHT" },
+      'pt-br': { tenure: "Tempo", joined: "Membro", loyalty: "Lealdade", months: " Meses", shoutout: "DESTAQUE", qa: "PERGUNTAS" },
+      es: { tenure: "Antigüedad", joined: "Unió", loyalty: "Lealtad", months: " Meses", shoutout: "DESTACADO", qa: "PREGUNTAS" },
+      fr: { tenure: "Ancienneté", joined: "Rejoint", loyalty: "Fidélité", months: " Mois", shoutout: "DÉDICACE", qa: "Q&R" },
+      de: { tenure: "Dauer", joined: "Dabei", loyalty: "Treue", months: " Monate", shoutout: "SHOUTOUT", qa: "F&A" }
+    };
+    let currentLang = 'en';
+
     let statRows = [
       { label: 'Tenure', varName: 'months', suffix: ' Months', icon: 'fa-heart', iconColor: 'pink', valColor: 'yellow' },
       { label: 'Joined', varName: 'memberSince', suffix: '', icon: 'fa-calendar-check', iconColor: 'teal', valColor: 'pink' },
       { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '', icon: 'fa-eye', iconColor: 'purple', valColor: 'teal' }
     ];
+
+    function applyLanguageTranslation() {
+      const newLang = document.getElementById('cfg-lang').value;
+      if (newLang === currentLang) return;
+      
+      const oldT = i18nDict[currentLang];
+      const newT = i18nDict[newLang];
+      
+      document.getElementById('cfg-soTitle').placeholder = newT.shoutout;
+      document.getElementById('cfg-qaTitle').placeholder = newT.qa;
+      
+      // Update default stat rows safely
+      statRows.forEach(row => {
+         if (row.label === oldT.tenure) row.label = newT.tenure;
+         if (row.label === oldT.joined) row.label = newT.joined;
+         if (row.label === oldT.loyalty) row.label = newT.loyalty;
+         if (row.suffix === oldT.months) row.suffix = newT.months;
+      });
+      
+      currentLang = newLang;
+      renderStatRowEditors();
+      syncLiveConfig();
+    }
+    document.getElementById('cfg-lang').addEventListener('change', applyLanguageTranslation);
+
     const availIcons = [{v:'fa-heart',l:'Heart'}, {v:'fa-calendar-check',l:'Calendar'}, {v:'fa-eye',l:'Eye'}, {v:'fa-crown',l:'Crown'}, {v:'fa-medal',l:'Medal'}, {v:'fa-skull',l:'Skull'}, {v:'fa-bolt',l:'Bolt'}, {v:'fa-sack-dollar',l:'Cash'}, {v:'fa-star',l:'Star'}];
     const availColors = ['pink', 'teal', 'purple', 'yellow'];
 
