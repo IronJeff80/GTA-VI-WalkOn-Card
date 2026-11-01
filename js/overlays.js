@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - CORE ENGINE (js/overlays.js)
-   v0.0.5 - 5-Module Suite (Walk-On Card, Alerts, Shoutout, Horizontal Chat, Q&A)
+   v0.1.4 - Multi-Canvas, Multi-Language, Multi-Module Suite
    ========================================================================== */
 
 const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -11,14 +11,70 @@ const DEFAULT_AVATAR_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
   '</svg>'
 );
 
-const DEFAULT_STAT_ROWS = [
-  { label: 'Tenure',  varName: 'months',       suffix: ' Months', icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow', fallback: '12' },
-  { label: 'Joined',  varName: 'memberSince',  suffix: '',        icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink',   fallback: '05/2025' },
-  { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '',        icon: 'fa-eye',            iconColor: 'purple', valColor: 'teal',   fallback: 'Level 5' }
-];
+const i18nDict = {
+  en: {
+    tenure: "Tenure", joined: "Joined", loyalty: "Loyalty", months: "Months",
+    shoutout: "SHOUTOUT", qa: "Q&A HIGHLIGHT",
+    tier: "Tier", gifted: "Gifted", memberships: "Memberships", from: "From",
+    anonymous: "Anonymous", amount: "Amount", sent: "Sent", jewels: "Jewels", gift: "Gift",
+    newSub: "New Subscriber",
+    defaultQaMsg: "Welcome to Leonida! Drop your questions in chat!",
+    dragWalkon: "Walk-On Card", dragAlert: "Alert Box", dragShoutout: "Shoutout Toast",
+    dragChat: "Horizontal Chat Bar", dragQA: "Q&A Highlight Toast"
+  },
+  'pt-br': {
+    tenure: "Tempo", joined: "Membro", loyalty: "Lealdade", months: "Meses",
+    shoutout: "DESTAQUE", qa: "PERGUNTAS",
+    tier: "Nível", gifted: "Presenteou", memberships: "Membros", from: "De",
+    anonymous: "Anônimo", amount: "Valor", sent: "Enviou", jewels: "Joias", gift: "Presente",
+    newSub: "Novo Inscrito",
+    defaultQaMsg: "Bem-vindo a Leonida! Mande suas perguntas no chat!",
+    dragWalkon: "Card de Entrada", dragAlert: "Caixa de Alerta", dragShoutout: "Destaque (Shoutout)",
+    dragChat: "Barra de Chat Horizontal", dragQA: "Destaque de P&R"
+  },
+  es: {
+    tenure: "Antigüedad", joined: "Unió", loyalty: "Lealtad", months: "Meses",
+    shoutout: "DESTACADO", qa: "PREGUNTAS",
+    tier: "Nivel", gifted: "Regaló", memberships: "Membresías", from: "De",
+    anonymous: "Anónimo", amount: "Monto", sent: "Envió", jewels: "Joyas", gift: "Regalo",
+    newSub: "Nuevo Suscriptor",
+    defaultQaMsg: "¡Bienvenido a Leonida! ¡Deja tus preguntas en el chat!",
+    dragWalkon: "Tarjeta de Entrada", dragAlert: "Caja de Alertas", dragShoutout: "Destacado (Shoutout)",
+    dragChat: "Barra de Chat Horizontal", dragQA: "Destacado de P&R"
+  },
+  fr: {
+    tenure: "Ancienneté", joined: "Rejoint", loyalty: "Fidélité", months: "Mois",
+    shoutout: "DÉDICACE", qa: "Q&R",
+    tier: "Niveau", gifted: "Offert", memberships: "Adhésions", from: "De",
+    anonymous: "Anonyme", amount: "Montant", sent: "Envoyé", jewels: "Joyaux", gift: "Cadeau",
+    newSub: "Nouvel Abonné",
+    defaultQaMsg: "Bienvenue à Leonida ! Posez vos questions dans le chat !",
+    dragWalkon: "Carte d'Entrée", dragAlert: "Boîte d'Alerte", dragShoutout: "Toast Dédicace",
+    dragChat: "Barre de Chat Horizontale", dragQA: "Toast Q&R"
+  },
+  de: {
+    tenure: "Dauer", joined: "Dabei", loyalty: "Treue", months: "Monate",
+    shoutout: "SHOUTOUT", qa: "F&A",
+    tier: "Stufe", gifted: "Verschenkt", memberships: "Mitgliedschaften", from: "Von",
+    anonymous: "Anonym", amount: "Betrag", sent: "Gesendet", jewels: "Juwelen", gift: "Geschenk",
+    newSub: "Neuer Abonnent",
+    defaultQaMsg: "Willkommen in Leonida! Stellt eure Fragen im Chat!",
+    dragWalkon: "Walk-On-Karte", dragAlert: "Alert-Box", dragShoutout: "Shoutout-Toast",
+    dragChat: "Horizontale Chatleiste", dragQA: "F&A-Highlight-Toast"
+  }
+};
 
 const GTAOverlayConfig = (() => {
   const params = new URLSearchParams(window.location.search);
+
+  const lang = params.get('lang') || 'en';
+  const t = i18nDict[lang] || i18nDict['en'];
+
+  const DEFAULT_STAT_ROWS = [
+    { label: t.tenure,  varName: 'months',       suffix: ' ' + t.months, icon: 'fa-heart',          iconColor: 'pink',   valColor: 'yellow', fallback: '12' },
+    { label: t.joined,  varName: 'memberSince',  suffix: '',             icon: 'fa-calendar-check', iconColor: 'teal',   valColor: 'pink',   fallback: '05/2025' },
+    { label: t.loyalty, varName: 'loyaltyLevel', suffix: '',             icon: 'fa-eye',            iconColor: 'purple', valColor: 'teal',   fallback: 'Level 5' }
+  ];
 
   let parsedStats = DEFAULT_STAT_ROWS;
   if (params.has('stats')) {
@@ -33,6 +89,12 @@ const GTAOverlayConfig = (() => {
   const enableChat     = modulesParam === 'all' || modulesParam.includes('chat');
   const enableQA       = modulesParam === 'all' || modulesParam.includes('qa');
 
+  const layout = params.get('layout') || 'horizontal';
+  const isVert = layout === 'vertical';
+
+  const getPos = (key, vKey, def) => parseFloat(params.get(isVert ? vKey : key) || def);
+  const getBool = (key, vKey, defStr) => (params.get(isVert ? vKey : key) || defStr) === '1';
+
   return {
     previewMode: params.get('preview') === '1',
     modules: {
@@ -42,6 +104,11 @@ const GTAOverlayConfig = (() => {
       chat:     enableChat,
       qa:       enableQA
     },
+    
+    layout: layout,
+    res: parseInt(params.get('res') || '1080', 10),
+    lang: lang,
+    t: t,
 
     host: params.get('host') || '127.0.0.1',
     port: parseInt(params.get('port') || '8080', 10),
@@ -50,11 +117,11 @@ const GTAOverlayConfig = (() => {
     
     // Module 1: Walk-on Card Config
     walkonEvent: params.get('event') || 'MemberWalkOn',
-    posX: parseFloat(params.get('x') || '60'),
-    posY: parseFloat(params.get('y') || '60'),
-    scale: parseFloat(params.get('scale') || '1'),
-    alignH: params.get('alignH') === '1',
-    alignV: params.get('alignV') === '1',
+    posX: getPos('x', 'v_x', '60'),
+    posY: getPos('y', 'v_y', '60'),
+    scale: getPos('scale', 'v_scale', '1'),
+    alignH: getBool('alignH', 'v_alignH', '0'),
+    alignV: getBool('alignV', 'v_alignV', '0'),
     duration: parseInt(params.get('duration') || '8', 10) * 1000,
     cardAnim: params.get('cardAnim') || 'anim-slide-left',
     avatarAnim: params.get('avatarAnim') || 'av-flip',
@@ -63,13 +130,13 @@ const GTAOverlayConfig = (() => {
     showTier: params.get('showTier') !== '0',
     noBg: params.get('noBg') === '1',
 
-    // Module 2: Alerts Config & Independent Accent Colors
+    // Module 2: Alerts Config
     alertEvent: params.get('alertEvent') || 'GTA_Alert',
-    alertX: parseFloat(params.get('ax') || '960'), 
-    alertY: parseFloat(params.get('ay') || '100'), 
-    alertScale: parseFloat(params.get('ascale') || '1'),
-    alertAlignH: params.get('aAlignH') !== '0', 
-    alertAlignV: params.get('aAlignV') === '1',
+    alertX: getPos('ax', 'v_ax', '960'),
+    alertY: getPos('ay', 'v_ay', '100'),
+    alertScale: getPos('ascale', 'v_ascale', '1'),
+    alertAlignH: (params.get(isVert ? 'v_aAlignH' : 'aAlignH') || '1') !== '0',
+    alertAlignV: getBool('aAlignV', 'v_aAlignV', '0'),
     alertDuration: parseInt(params.get('aDur') || '6', 10) * 1000,
     alertsConfig: {
       sub:          params.get('al_sub') !== '0',
@@ -95,12 +162,12 @@ const GTAOverlayConfig = (() => {
     // Module 3: Shoutout Toast Config
     soGlobalVar: params.get('soVar') || 'viShoutOuts',
     soEvent: params.get('soEvent') || 'GTA_Shoutout',
-    soTitle: params.get('soTitle') || 'SHOUTOUT',
-    soX: parseFloat(params.get('soX') || '1380'),
-    soY: parseFloat(params.get('soY') || '80'),
-    soScale: parseFloat(params.get('soScale') || '1'),
-    soAlignH: params.get('soAlignH') === '1',
-    soAlignV: params.get('soAlignV') === '1',
+    soTitle: params.get('soTitle') || t.shoutout,
+    soX: getPos('soX', 'v_soX', '1380'),
+    soY: getPos('soY', 'v_soY', '80'),
+    soScale: getPos('soScale', 'v_soScale', '1'),
+    soAlignH: getBool('soAlignH', 'v_soAlignH', '0'),
+    soAlignV: getBool('soAlignV', 'v_soAlignV', '0'),
     soDuration: parseInt(params.get('soDur') || '5', 10) * 1000,
     soAnim: params.get('soAnim') || 'so-roll',
     soLayout: params.get('soLayout') || 'right',
@@ -109,18 +176,18 @@ const GTAOverlayConfig = (() => {
 
     // Module 4: Horizontal Chat Bar Config
     chatEvent:        params.get('chatEvent') || 'GTA_Chat',
-    chatX:            parseFloat(params.get('chatX') || '0'),
-    chatY:            parseFloat(params.get('chatY') || '0'),
-    chatW:            parseFloat(params.get('chatW') || '1920'),
-    chatScale:        parseFloat(params.get('chatScale') || '1'),
-    chatAlignH:       params.get('chatAlignH') === '1',
-    chatAlignV:       params.get('chatAlignV') === '1',
+    chatX:            getPos('chatX', 'v_chatX', '0'),
+    chatY:            getPos('chatY', 'v_chatY', '0'),
+    chatW:            getPos('chatW', 'v_chatW', isVert ? '1080' : '1920'),
+    chatScale:        getPos('chatScale', 'v_chatScale', '1'),
+    chatAlignH:       getBool('chatAlignH', 'v_chatAlignH', '0'),
+    chatAlignV:       getBool('chatAlignV', 'v_chatAlignV', '0'),
     chatFontSize:     parseInt(params.get('chatFS') || '20', 10),
     chatMaxMsgs:      parseInt(params.get('chatMax') || '15', 10),
-    chatHideAfter:    parseInt(params.get('chatHide') || '0', 10), // 0 = never auto-hide
-    chatColorMember:  params.get('cMem') || '#53d8bf',   // Default Teal
-    chatColorMod:     params.get('cMod') || '#a688ff',   // Default Purple
-    chatColorViewer:  params.get('cView') || '#fede9a',  // Default Yellow
+    chatHideAfter:    parseInt(params.get('chatHide') || '0', 10),
+    chatColorMember:  params.get('cMem') || '#53d8bf',
+    chatColorMod:     params.get('cMod') || '#a688ff',
+    chatColorViewer:  params.get('cView') || '#fede9a',
     chatColorMsg:     params.get('cMsg') || '#f0f4f8',
     chatBgColor:      params.get('cChatBg') || (params.get('cBg') || '#303030'),
     chatBgOpacity:    parseInt(params.get('chatBgOp') || '88', 10),
@@ -134,15 +201,15 @@ const GTAOverlayConfig = (() => {
     chatIgnoreUsers:  params.get('chatIgUsers') || '',
     chatIgnoreGroups: params.get('chatIgGroups') || '',
 
-    // Module 5: Q&A / Chat Highlight Toast Config
+    // Module 5: Q&A Highlight Toast Config
     qaGlobalVar: params.get('qaVar') || 'viChatHighlight',
     qaEvent:     params.get('qaEvent') || 'GTA_QA',
-    qaTitle:     params.get('qaTitle') || 'Q&A HIGHLIGHT',
-    qaX:         parseFloat(params.get('qaX') || '960'),
-    qaY:         parseFloat(params.get('qaY') || '60'),
-    qaScale:     parseFloat(params.get('qaScale') || '1'),
-    qaAlignH:    params.get('qaAlignH') !== '0', // Default centered horizontally
-    qaAlignV:    params.get('qaAlignV') === '1',
+    qaTitle:     params.get('qaTitle') || t.qa,
+    qaX:         getPos('qaX', 'v_qaX', '960'),
+    qaY:         getPos('qaY', 'v_qaY', '60'),
+    qaScale:     getPos('qaScale', 'v_qaScale', '1'),
+    qaAlignH:    (params.get(isVert ? 'v_qaAlignH' : 'qaAlignH') || '1') !== '0',
+    qaAlignV:    getBool('qaAlignV', 'v_qaAlignV', '0'),
     qaDuration:  parseInt(params.get('qaDur') || '15', 10) * 1000,
     qaAnim:      params.get('qaAnim') || 'qa-slide-up',
     qaColor:     params.get('qaColor') || 'teal',
@@ -238,6 +305,7 @@ class GTAOverlayEngine {
     }
 
     this.applyGlobalStyles();
+    window.addEventListener('resize', () => this.applyGlobalStyles());
 
     if (this.config.previewMode) {
       document.body.classList.add('preview-interactive');
@@ -327,6 +395,22 @@ class GTAOverlayEngine {
 
   applyGlobalStyles() {
     const root = document.documentElement;
+    
+    // Canvas Scale & Dimensions
+    const isVert = this.config.layout === 'vertical';
+    const baseW = isVert ? 1080 : 1920;
+    const baseH = isVert ? 1920 : 1080;
+    const isStandaloneOBS = (window.parent === window);
+    const vpW = window.innerWidth;
+    const vpH = window.innerHeight;
+    const scaleFactor = (isStandaloneOBS && vpW > 0 && vpH > 0)
+      ? Math.min(vpW / baseW, vpH / baseH)
+      : (this.config.res / 1080); 
+
+    root.style.setProperty('--canvas-w', `${baseW}px`);
+    root.style.setProperty('--canvas-h', `${baseH}px`);
+    root.style.setProperty('--canvas-scale', scaleFactor);
+
     root.style.setProperty('--font-heading', `'${this.config.fontHeading}', sans-serif`);
     root.style.setProperty('--font-body', `'${this.config.fontBody}', sans-serif`);
     root.style.setProperty('--gta-pink', this.config.colors.pink);
@@ -355,13 +439,13 @@ class GTAOverlayEngine {
       if (this.dom.avatarWrap) this.dom.avatarWrap.style.display = this.config.showAvatar ? 'block' : 'none';
       if (this.dom.username) this.dom.username.style.display = this.config.showUser ? 'block' : 'none';
       if (this.dom.tier) this.dom.tier.style.display = this.config.showTier ? 'inline-block' : 'none';
-      this.recalculateWalkonCoords();
+      this.recalculateWalkonCoords(baseW, baseH);
     }
 
     // Module 2: Alerts Styling
     if (this.config.modules.alerts) {
       this.applyAlertAccentColor(this.lastAlertType || 'sub');
-      this.recalculateAlertCoords();
+      this.recalculateAlertCoords(baseW, baseH);
     }
 
     // Module 3: Shoutout Toast Styling
@@ -382,12 +466,12 @@ class GTAOverlayEngine {
       if (this.dom.shoutoutContainer) {
         this.dom.shoutoutContainer.className = `shoutout-container ${this.config.soAnim}` + (wasSoPinned ? ' animate-in' : '');
       }
-      this.recalculateShoutoutCoords();
+      this.recalculateShoutoutCoords(baseW, baseH);
     }
 
     // Module 4: Horizontal Chat Bar Styling
     if (this.config.modules.chat && this.dom.chatBar) {
-      root.style.setProperty('--chat-w', `${Math.round(this.config.chatW || 1920)}px`);
+      root.style.setProperty('--chat-w', `${Math.round(this.config.chatW || baseW)}px`);
       root.style.setProperty('--chat-font-size', `${this.config.chatFontSize || 20}px`);
       root.style.setProperty('--chat-color-member', this.config.chatColorMember || 'var(--gta-teal)');
       root.style.setProperty('--chat-color-mod', this.config.chatColorMod || 'var(--gta-purple)');
@@ -397,7 +481,7 @@ class GTAOverlayEngine {
       const chatTokens = this.resolveAccentTokens(this.config.chatAccent || 'teal');
       root.style.setProperty('--chat-accent', chatTokens.accent);
       this.dom.chatBar.classList.toggle('no-bg-fill', Boolean(this.config.chatNoBg));
-      this.recalculateChatCoords();
+      this.recalculateChatCoords(baseW, baseH);
     }
 
     // Module 5: Q&A Highlight Toast Styling
@@ -418,73 +502,99 @@ class GTAOverlayEngine {
       if (this.dom.qaContainer) {
         this.dom.qaContainer.className = `qa-container ${this.config.qaAnim}` + (wasQAPinned ? ' animate-in' : '');
       }
-      this.recalculateQACoords();
+      this.recalculateQACoords(baseW, baseH);
     }
     
+    this.updateLocalizedPreviewText();
     this.updateDomCoords();
   }
 
-  recalculateWalkonCoords() {
+  updateLocalizedPreviewText() {
+    const t = this.config.t || i18nDict.en;
+    const allDefaultSubs = Object.values(i18nDict).map(d => d.newSub);
+    const alertEvEl = document.getElementById('alert-event-name');
+    if (alertEvEl && !this.isAlertAnimating && allDefaultSubs.includes(alertEvEl.textContent.trim())) {
+      alertEvEl.textContent = t.newSub;
+    }
+    const allDefaultQaMsgs = Object.values(i18nDict).map(d => d.defaultQaMsg);
+    if (this.dom.qaMessage && !this.isQAAnimating && allDefaultQaMsgs.includes(this.dom.qaMessage.textContent.trim())) {
+      this.dom.qaMessage.textContent = t.defaultQaMsg;
+    }
+    const pillMap = {
+      walkon:   [this.dom.walkonContainer,   t.dragWalkon],
+      alert:    [this.dom.alertContainer,    t.dragAlert],
+      shoutout: [this.dom.shoutoutContainer, t.dragShoutout],
+      chat:     [this.dom.chatContainer,     t.dragChat],
+      qa:       [this.dom.qaContainer,       t.dragQA]
+    };
+    Object.values(pillMap).forEach(([cont, label]) => {
+      if (!cont || !label) return;
+      const pill = cont.querySelector('.studio-drag-pill');
+      if (pill) pill.innerHTML = `<i class="fa-solid fa-up-down-left-right"></i> ${label}`;
+    });
+  }
+
+  recalculateWalkonCoords(baseW, baseH) {
     if (!this.dom.walkonContainer) return;
     const scale = this.config.scale || 1;
     const w = this.dom.walkonContainer.offsetWidth || 340;
     const h = this.dom.walkonContainer.offsetHeight || 390;
-    const maxX = Math.max(0, 1920 - (w * scale));
-    const maxY = Math.max(0, 1080 - (h * scale));
+    const maxX = Math.max(0, baseW - (w * scale));
+    const maxY = Math.max(0, baseH - (h * scale));
     if (this.config.alignH) this.config.posX = Math.round(maxX / 2);
     else this.config.posX = Math.round(Math.max(0, Math.min(maxX, this.config.posX)));
     if (this.config.alignV) this.config.posY = Math.round(maxY / 2);
     else this.config.posY = Math.round(Math.max(0, Math.min(maxY, this.config.posY)));
   }
 
-  recalculateAlertCoords() {
+  recalculateAlertCoords(baseW, baseH) {
     if (!this.dom.alertContainer) return;
     const scale = this.config.alertScale || 1;
     const w = this.dom.alertContainer.offsetWidth || 460;
     const h = this.dom.alertContainer.offsetHeight || 140;
     const halfW = (w * scale) / 2;
-    const maxY = Math.max(0, 1080 - (h * scale));
-    if (this.config.alertAlignH) this.config.alertX = 960;
-    else this.config.alertX = Math.round(Math.max(halfW, Math.min(1920 - halfW, this.config.alertX)));
+    const maxY = Math.max(0, baseH - (h * scale));
+    if (this.config.alertAlignH) this.config.alertX = Math.round(baseW / 2);
+    else this.config.alertX = Math.round(Math.max(halfW, Math.min(baseW - halfW, this.config.alertX)));
     if (this.config.alertAlignV) this.config.alertY = Math.round(maxY / 2);
     else this.config.alertY = Math.round(Math.max(0, Math.min(maxY, this.config.alertY)));
   }
 
-  recalculateShoutoutCoords() {
+  recalculateShoutoutCoords(baseW, baseH) {
     if (!this.dom.shoutoutContainer) return;
     const scale = this.config.soScale || 1;
     const w = this.dom.shoutoutContainer.offsetWidth || 360;
     const h = this.dom.shoutoutContainer.offsetHeight || 104;
-    const maxX = Math.max(0, 1920 - (w * scale));
-    const maxY = Math.max(0, 1080 - (h * scale));
+    const maxX = Math.max(0, baseW - (w * scale));
+    const maxY = Math.max(0, baseH - (h * scale));
     if (this.config.soAlignH) this.config.soX = Math.round(maxX / 2);
     else this.config.soX = Math.round(Math.max(0, Math.min(maxX, this.config.soX)));
     if (this.config.soAlignV) this.config.soY = Math.round(maxY / 2);
     else this.config.soY = Math.round(Math.max(0, Math.min(maxY, this.config.soY)));
   }
 
-  recalculateChatCoords() {
+  recalculateChatCoords(baseW, baseH) {
     if (!this.dom.chatContainer) return;
     const scale = this.config.chatScale || 1;
-    const w = this.config.chatW || 1920;
+    const w = this.config.chatW || baseW;
     const h = this.dom.chatContainer.offsetHeight || 56;
-    const maxX = Math.max(0, 1920 - (w * scale));
-    const maxY = Math.max(0, 1080 - (h * scale));
+    const maxX = Math.max(0, baseW - (w * scale));
+    const maxY = Math.max(0, baseH - (h * scale));
     if (this.config.chatAlignH) this.config.chatX = Math.round(maxX / 2);
     else this.config.chatX = Math.round(Math.max(0, Math.min(maxX, this.config.chatX)));
     if (this.config.chatAlignV) this.config.chatY = Math.round(maxY / 2);
     else this.config.chatY = Math.round(Math.max(0, Math.min(maxY, this.config.chatY)));
   }
 
-  recalculateQACoords() {
+  recalculateQACoords(baseW, baseH) {
     if (!this.dom.qaContainer) return;
     const scale = this.config.qaScale || 1;
     const w = this.dom.qaContainer.offsetWidth || 600;
     const h = this.dom.qaContainer.offsetHeight || 120;
     const halfW = (w * scale) / 2;
-    const maxY = Math.max(0, 1080 - (h * scale));
-    if (this.config.qaAlignH) this.config.qaX = 960;
-    else this.config.qaX = Math.round(Math.max(halfW, Math.min(1920 - halfW, this.config.qaX)));
+    const maxY = Math.max(0, baseH - (h * scale));
+    if (this.config.qaAlignH) this.config.qaX = Math.round(baseW / 2);
+    else this.config.qaX = Math.round(Math.max(halfW, Math.min(baseW - halfW, this.config.qaX)));
     if (this.config.qaAlignV) this.config.qaY = Math.round(maxY / 2);
     else this.config.qaY = Math.round(Math.max(0, Math.min(maxY, this.config.qaY)));
   }
@@ -510,7 +620,6 @@ class GTAOverlayEngine {
       root.style.setProperty('--chat-scale', this.config.chatScale);
       root.style.setProperty('--chat-x', `${Math.round(this.config.chatX)}px`);
       root.style.setProperty('--chat-y', `${Math.round(this.config.chatY)}px`);
-      root.style.setProperty('--chat-w', `${Math.round(this.config.chatW)}px`);
     }
     if (this.config.modules.qa) {
       root.style.setProperty('--qa-scale', this.config.qaScale);
@@ -572,17 +681,21 @@ class GTAOverlayEngine {
   }
 
   initStudioInteractivity() {
-    const guideV = document.createElement('div'); guideV.className = 'snap-guide vertical'; guideV.style.left = '960px'; document.body.appendChild(guideV);
-    const guideH = document.createElement('div'); guideH.className = 'snap-guide horizontal'; guideH.style.top = '540px'; document.body.appendChild(guideH);
+    const isVert = this.config.layout === 'vertical';
+    const baseW = isVert ? 1080 : 1920;
+    const baseH = isVert ? 1920 : 1080;
 
-    this.setupDraggable(this.dom.walkonContainer, 'walkon', guideV, guideH);
-    this.setupDraggable(this.dom.alertContainer, 'alert', guideV, guideH);
-    this.setupDraggable(this.dom.shoutoutContainer, 'shoutout', guideV, guideH);
-    this.setupDraggable(this.dom.chatContainer, 'chat', guideV, guideH);
-    this.setupDraggable(this.dom.qaContainer, 'qa', guideV, guideH);
+    const guideV = document.createElement('div'); guideV.className = 'snap-guide vertical'; guideV.style.left = (baseW / 2) + 'px'; document.body.appendChild(guideV);
+    const guideH = document.createElement('div'); guideH.className = 'snap-guide horizontal'; guideH.style.top = (baseH / 2) + 'px'; document.body.appendChild(guideH);
+
+    this.setupDraggable(this.dom.walkonContainer, 'walkon', guideV, guideH, baseW, baseH);
+    this.setupDraggable(this.dom.alertContainer, 'alert', guideV, guideH, baseW, baseH);
+    this.setupDraggable(this.dom.shoutoutContainer, 'shoutout', guideV, guideH, baseW, baseH);
+    this.setupDraggable(this.dom.chatContainer, 'chat', guideV, guideH, baseW, baseH);
+    this.setupDraggable(this.dom.qaContainer, 'qa', guideV, guideH, baseW, baseH);
   }
 
-  setupDraggable(container, modType, guideV, guideH) {
+  setupDraggable(container, modType, guideV, guideH, baseW, baseH) {
     if (!container) return;
 
     const labels = {
@@ -603,7 +716,7 @@ class GTAOverlayEngine {
 
     let isDragging = false, isResizing = false;
     let startX = 0, startY = 0, startObjX = 0, startObjY = 0, startScale = 1;
-    let baseW = 0, baseH = 0;
+    let startBoxW = 0, startBoxH = 0;
     const SNAP = 14;
 
     container.addEventListener('mousedown', (e) => {
@@ -614,7 +727,9 @@ class GTAOverlayEngine {
           (modType === 'qa' && this.isQAAnimating)) return;
       e.preventDefault();
       isDragging = true;
-      startX = e.clientX; startY = e.clientY;
+      // Adjust pointer events for scaling frame
+      const canvasScale = parseFloat(document.documentElement.style.getPropertyValue('--canvas-scale') || '1');
+      startX = e.clientX / canvasScale; startY = e.clientY / canvasScale;
       startObjX = modType === 'walkon' ? this.config.posX :
                  (modType === 'alert' ? this.config.alertX :
                  (modType === 'shoutout' ? this.config.soX :
@@ -623,7 +738,7 @@ class GTAOverlayEngine {
                  (modType === 'alert' ? this.config.alertY :
                  (modType === 'shoutout' ? this.config.soY :
                  (modType === 'chat' ? this.config.chatY : this.config.qaY)));
-      baseW = container.offsetWidth; baseH = container.offsetHeight;
+      startBoxW = container.offsetWidth; startBoxH = container.offsetHeight;
       container.classList.add('is-manipulating');
     });
 
@@ -631,19 +746,21 @@ class GTAOverlayEngine {
       if (!this.config.previewMode) return;
       e.stopPropagation(); e.preventDefault();
       isResizing = true;
-      startX = e.clientX; startY = e.clientY;
+      const canvasScale = parseFloat(document.documentElement.style.getPropertyValue('--canvas-scale') || '1');
+      startX = e.clientX / canvasScale; startY = e.clientY / canvasScale;
       startScale = modType === 'walkon' ? this.config.scale :
                   (modType === 'alert' ? this.config.alertScale :
                   (modType === 'shoutout' ? this.config.soScale :
                   (modType === 'chat' ? this.config.chatScale : this.config.qaScale)));
-      baseW = container.offsetWidth; baseH = container.offsetHeight;
+      startBoxW = container.offsetWidth; startBoxH = container.offsetHeight;
       container.classList.add('is-manipulating');
     });
 
     window.addEventListener('mousemove', (e) => {
       if (!isDragging && !isResizing) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
+      const canvasScale = parseFloat(document.documentElement.style.getPropertyValue('--canvas-scale') || '1');
+      const dx = (e.clientX / canvasScale) - startX;
+      const dy = (e.clientY / canvasScale) - startY;
 
       if (isDragging) {
         const scale = modType === 'walkon' ? this.config.scale :
@@ -653,11 +770,11 @@ class GTAOverlayEngine {
         let nextX = 0, nextY = 0;
 
         if (modType === 'walkon') {
-          nextX = Math.round(Math.max(0, Math.min(1920 - (baseW * scale), startObjX + dx)));
-          nextY = Math.round(Math.max(0, Math.min(1080 - (baseH * scale), startObjY - dy))); // Bottom-left
+          nextX = Math.round(Math.max(0, Math.min(baseW - (startBoxW * scale), startObjX + dx)));
+          nextY = Math.round(Math.max(0, Math.min(baseH - (startBoxH * scale), startObjY - dy))); 
           if (!e.altKey) {
-            const cx = Math.round((1920 - (baseW * scale)) / 2);
-            const cy = Math.round((1080 - (baseH * scale)) / 2);
+            const cx = Math.round((baseW - (startBoxW * scale)) / 2);
+            const cy = Math.round((baseH - (startBoxH * scale)) / 2);
             guideV.style.display = Math.abs(nextX - cx) < SNAP ? 'block' : 'none';
             guideH.style.display = Math.abs(nextY - cy) < SNAP ? 'block' : 'none';
             if (guideV.style.display === 'block') nextX = cx;
@@ -666,11 +783,11 @@ class GTAOverlayEngine {
           this.config.alignH = false; this.config.alignV = false;
           this.config.posX = nextX; this.config.posY = nextY;
         } else if (modType === 'alert') {
-          nextX = Math.round(Math.max((baseW * scale)/2, Math.min(1920 - (baseW * scale)/2, startObjX + dx)));
-          nextY = Math.round(Math.max(0, Math.min(1080 - (baseH * scale), startObjY + dy))); // Top-center
+          nextX = Math.round(Math.max((startBoxW * scale)/2, Math.min(baseW - (startBoxW * scale)/2, startObjX + dx)));
+          nextY = Math.round(Math.max(0, Math.min(baseH - (startBoxH * scale), startObjY + dy))); 
           if (!e.altKey) {
-            const cx = 960;
-            const cy = Math.round((1080 - (baseH * scale)) / 2);
+            const cx = baseW / 2;
+            const cy = Math.round((baseH - (startBoxH * scale)) / 2);
             guideV.style.display = Math.abs(nextX - cx) < SNAP ? 'block' : 'none';
             guideH.style.display = Math.abs(nextY - cy) < SNAP ? 'block' : 'none';
             if (guideV.style.display === 'block') nextX = cx;
@@ -679,11 +796,11 @@ class GTAOverlayEngine {
           this.config.alertAlignH = false; this.config.alertAlignV = false;
           this.config.alertX = nextX; this.config.alertY = nextY;
         } else if (modType === 'shoutout') {
-          nextX = Math.round(Math.max(0, Math.min(1920 - (baseW * scale), startObjX + dx)));
-          nextY = Math.round(Math.max(0, Math.min(1080 - (baseH * scale), startObjY + dy))); // Top-left
+          nextX = Math.round(Math.max(0, Math.min(baseW - (startBoxW * scale), startObjX + dx)));
+          nextY = Math.round(Math.max(0, Math.min(baseH - (startBoxH * scale), startObjY + dy))); 
           if (!e.altKey) {
-            const cx = Math.round((1920 - (baseW * scale)) / 2);
-            const cy = Math.round((1080 - (baseH * scale)) / 2);
+            const cx = Math.round((baseW - (startBoxW * scale)) / 2);
+            const cy = Math.round((baseH - (startBoxH * scale)) / 2);
             guideV.style.display = Math.abs(nextX - cx) < SNAP ? 'block' : 'none';
             guideH.style.display = Math.abs(nextY - cy) < SNAP ? 'block' : 'none';
             if (guideV.style.display === 'block') nextX = cx;
@@ -692,11 +809,11 @@ class GTAOverlayEngine {
           this.config.soAlignH = false; this.config.soAlignV = false;
           this.config.soX = nextX; this.config.soY = nextY;
         } else if (modType === 'chat') {
-          nextX = Math.round(Math.max(0, Math.min(1920 - (baseW * scale), startObjX + dx)));
-          nextY = Math.round(Math.max(0, Math.min(1080 - (baseH * scale), startObjY - dy))); // Bottom-left
+          nextX = Math.round(Math.max(0, Math.min(baseW - (startBoxW * scale), startObjX + dx)));
+          nextY = Math.round(Math.max(0, Math.min(baseH - (startBoxH * scale), startObjY - dy))); 
           if (!e.altKey) {
-            const cx = Math.round((1920 - (baseW * scale)) / 2);
-            const cy = Math.round((1080 - (baseH * scale)) / 2);
+            const cx = Math.round((baseW - (startBoxW * scale)) / 2);
+            const cy = Math.round((baseH - (startBoxH * scale)) / 2);
             guideV.style.display = Math.abs(nextX - cx) < SNAP ? 'block' : 'none';
             guideH.style.display = Math.abs(nextY - cy) < SNAP ? 'block' : 'none';
             if (guideV.style.display === 'block') nextX = cx;
@@ -705,11 +822,11 @@ class GTAOverlayEngine {
           this.config.chatAlignH = false; this.config.chatAlignV = false;
           this.config.chatX = nextX; this.config.chatY = nextY;
         } else if (modType === 'qa') {
-          nextX = Math.round(Math.max((baseW * scale)/2, Math.min(1920 - (baseW * scale)/2, startObjX + dx)));
-          nextY = Math.round(Math.max(0, Math.min(1080 - (baseH * scale), startObjY - dy))); // Bottom-center
+          nextX = Math.round(Math.max((startBoxW * scale)/2, Math.min(baseW - (startBoxW * scale)/2, startObjX + dx)));
+          nextY = Math.round(Math.max(0, Math.min(baseH - (startBoxH * scale), startObjY - dy))); 
           if (!e.altKey) {
-            const cx = 960;
-            const cy = Math.round((1080 - (baseH * scale)) / 2);
+            const cx = baseW / 2;
+            const cy = Math.round((baseH - (startBoxH * scale)) / 2);
             guideV.style.display = Math.abs(nextX - cx) < SNAP ? 'block' : 'none';
             guideH.style.display = Math.abs(nextY - cy) < SNAP ? 'block' : 'none';
             if (guideV.style.display === 'block') nextX = cx;
@@ -729,25 +846,25 @@ class GTAOverlayEngine {
         const hDelta = isCenteredX ? (dx * 2) : dx;
         const delta = Math.abs(hDelta) >= Math.abs(vDelta) ? hDelta : vDelta;
 
-        const startScaledW = Math.max(80, baseW * startScale);
+        const startScaledW = Math.max(80, startBoxW * startScale);
         const rawScale = startScale * ((startScaledW + delta) / startScaledW);
         const newScale = Math.round(Math.max(0.5, Math.min(2.0, rawScale)) * 20) / 20;
         
         if (modType === 'walkon') {
           this.config.scale = newScale;
-          this.recalculateWalkonCoords();
+          this.recalculateWalkonCoords(baseW, baseH);
         } else if (modType === 'alert') {
           this.config.alertScale = newScale;
-          this.recalculateAlertCoords();
+          this.recalculateAlertCoords(baseW, baseH);
         } else if (modType === 'shoutout') {
           this.config.soScale = newScale;
-          this.recalculateShoutoutCoords();
+          this.recalculateShoutoutCoords(baseW, baseH);
         } else if (modType === 'chat') {
           this.config.chatScale = newScale;
-          this.recalculateChatCoords();
+          this.recalculateChatCoords(baseW, baseH);
         } else if (modType === 'qa') {
           this.config.qaScale = newScale;
-          this.recalculateQACoords();
+          this.recalculateQACoords(baseW, baseH);
         }
         this.updateDomCoords();
         this.broadcastManipulate(modType);
@@ -763,16 +880,17 @@ class GTAOverlayEngine {
 
   broadcastManipulate(modType) {
     if (window.parent === window) return;
+    const l = this.config.layout;
     if (modType === 'walkon') {
-      window.parent.postMessage({ type: 'CARD_MANIPULATED', x: this.config.posX, y: this.config.posY, scale: this.config.scale, alignH: this.config.alignH, alignV: this.config.alignV }, '*');
+      window.parent.postMessage({ type: 'CARD_MANIPULATED', layout: l, x: this.config.posX, y: this.config.posY, scale: this.config.scale, alignH: this.config.alignH, alignV: this.config.alignV }, '*');
     } else if (modType === 'alert') {
-      window.parent.postMessage({ type: 'ALERT_MANIPULATED', ax: this.config.alertX, ay: this.config.alertY, ascale: this.config.alertScale, aAlignH: this.config.alertAlignH, aAlignV: this.config.alertAlignV }, '*');
+      window.parent.postMessage({ type: 'ALERT_MANIPULATED', layout: l, ax: this.config.alertX, ay: this.config.alertY, ascale: this.config.alertScale, aAlignH: this.config.alertAlignH, aAlignV: this.config.alertAlignV }, '*');
     } else if (modType === 'shoutout') {
-      window.parent.postMessage({ type: 'SHOUTOUT_MANIPULATED', soX: this.config.soX, soY: this.config.soY, soScale: this.config.soScale, soAlignH: this.config.soAlignH, soAlignV: this.config.soAlignV }, '*');
+      window.parent.postMessage({ type: 'SHOUTOUT_MANIPULATED', layout: l, soX: this.config.soX, soY: this.config.soY, soScale: this.config.soScale, soAlignH: this.config.soAlignH, soAlignV: this.config.soAlignV }, '*');
     } else if (modType === 'chat') {
-      window.parent.postMessage({ type: 'CHAT_MANIPULATED', chatX: this.config.chatX, chatY: this.config.chatY, chatScale: this.config.chatScale, chatAlignH: this.config.chatAlignH, chatAlignV: this.config.chatAlignV }, '*');
+      window.parent.postMessage({ type: 'CHAT_MANIPULATED', layout: l, chatX: this.config.chatX, chatY: this.config.chatY, chatScale: this.config.chatScale, chatAlignH: this.config.chatAlignH, chatAlignV: this.config.chatAlignV }, '*');
     } else if (modType === 'qa') {
-      window.parent.postMessage({ type: 'QA_MANIPULATED', qaX: this.config.qaX, qaY: this.config.qaY, qaScale: this.config.qaScale, qaAlignH: this.config.qaAlignH, qaAlignV: this.config.qaAlignV }, '*');
+      window.parent.postMessage({ type: 'QA_MANIPULATED', layout: l, qaX: this.config.qaX, qaY: this.config.qaY, qaScale: this.config.qaScale, qaAlignH: this.config.qaAlignH, qaAlignV: this.config.qaAlignV }, '*');
     }
   }
 
@@ -886,6 +1004,9 @@ class GTAOverlayEngine {
       const msg = event.data;
       if (!msg || !msg.type) return;
 
+      // Ignore state updates meant for the OTHER layout frame to prevent snapping back
+      if (msg.type === 'LIVE_CONFIG_UPDATE' && msg.targetLayout && msg.targetLayout !== this.config.layout) return;
+
       if (msg.type === 'TRIGGER_WALKON_TEST') {
         if (this.config.modules.walkon) this.enqueueWalkOn(msg.payload || {});
       } else if (msg.type === 'TRIGGER_ALERT_TEST') {
@@ -900,18 +1021,35 @@ class GTAOverlayEngine {
         this.setPreviewPinned(Boolean(msg.pinned));
       } else if (msg.type === 'LIVE_CONFIG_UPDATE') {
         const s = msg.state;
+        const isVert = this.config.layout === 'vertical';
+
+        // Update language & translations dynamically
+        this.config.lang = s.lang || 'en';
+        this.config.t = i18nDict[this.config.lang] || i18nDict['en'];
+
+        // Update resolution scale in real-time
+        this.config.res = parseInt(s.res || '1080', 10);
+
         // Walk-on
-        this.config.posX = parseFloat(s.x); this.config.posY = parseFloat(s.y); this.config.scale = parseFloat(s.scale);
-        this.config.alignH = s.alignH === '1'; this.config.alignV = s.alignV === '1';
-        this.config.noBg = s.noBg === '1'; this.config.duration = parseInt(s.duration, 10) * 1000;
+        this.config.posX = parseFloat(isVert ? s.v_x : s.x); 
+        this.config.posY = parseFloat(isVert ? s.v_y : s.y); 
+        this.config.scale = parseFloat(isVert ? s.v_scale : s.scale);
+        this.config.alignH = (isVert ? (s.v_alignH ?? s.alignH) : s.alignH) === '1'; 
+        this.config.alignV = (isVert ? (s.v_alignV ?? s.alignV) : s.alignV) === '1';
+        
+        this.config.noBg = s.noBg === '1'; 
+        this.config.duration = parseInt(s.duration, 10) * 1000;
         this.config.cardAnim = s.cardAnim; this.config.avatarAnim = s.avatarAnim;
         this.config.showAvatar = s.showAvatar !== '0';
         this.config.showUser = s.showUser !== '0';
         this.config.showTier = s.showTier !== '0';
         
         // Alerts
-        this.config.alertX = parseFloat(s.ax); this.config.alertY = parseFloat(s.ay); this.config.alertScale = parseFloat(s.ascale);
-        this.config.alertAlignH = s.aAlignH === '1'; this.config.alertAlignV = s.aAlignV === '1';
+        this.config.alertX = parseFloat(isVert ? s.v_ax : s.ax); 
+        this.config.alertY = parseFloat(isVert ? s.v_ay : s.ay); 
+        this.config.alertScale = parseFloat(isVert ? s.v_ascale : s.ascale);
+        this.config.alertAlignH = (isVert ? (s.v_aAlignH ?? s.aAlignH) : s.aAlignH) === '1'; 
+        this.config.alertAlignV = (isVert ? (s.v_aAlignV ?? s.aAlignV) : s.aAlignV) === '1';
         this.config.alertDuration = parseInt(s.aDur, 10) * 1000;
         this.config.alertsConfig = {
           sub:          s.al_sub !== '0',
@@ -935,14 +1073,12 @@ class GTAOverlayEngine {
         };
 
         // Shoutout
-        this.config.soGlobalVar = s.soVar || 'viShoutOuts';
-        this.config.soEvent = s.soEvent || 'GTA_Shoutout';
-        this.config.soTitle = s.soTitle || 'SHOUTOUT';
-        this.config.soX = parseFloat(s.soX || '1380');
-        this.config.soY = parseFloat(s.soY || '80');
-        this.config.soScale = parseFloat(s.soScale || '1');
-        this.config.soAlignH = s.soAlignH === '1';
-        this.config.soAlignV = s.soAlignV === '1';
+        this.config.soTitle = s.soTitle || this.config.t.shoutout;
+        this.config.soX = parseFloat(isVert ? s.v_soX : s.soX);
+        this.config.soY = parseFloat(isVert ? s.v_soY : s.soY);
+        this.config.soScale = parseFloat(isVert ? s.v_soScale : s.soScale);
+        this.config.soAlignH = (isVert ? (s.v_soAlignH ?? s.soAlignH) : s.soAlignH) === '1';
+        this.config.soAlignV = (isVert ? (s.v_soAlignV ?? s.soAlignV) : s.soAlignV) === '1';
         this.config.soDuration = parseInt(s.soDur || '5', 10) * 1000;
         this.config.soAnim = s.soAnim || 'so-roll';
         this.config.soLayout = s.soLayout || 'right';
@@ -950,13 +1086,13 @@ class GTAOverlayEngine {
         this.config.soNoBg = s.soNoBg === '1';
 
         // Horizontal Chat
-        this.config.chatEvent        = s.chatEvent || 'GTA_Chat';
-        this.config.chatX            = parseFloat(s.chatX || '0');
-        this.config.chatY            = parseFloat(s.chatY || '0');
-        this.config.chatW            = parseFloat(s.chatW || '1920');
-        this.config.chatScale        = parseFloat(s.chatScale || '1');
-        this.config.chatAlignH       = s.chatAlignH === '1';
-        this.config.chatAlignV       = s.chatAlignV === '1';
+        this.config.chatX            = parseFloat(isVert ? s.v_chatX : s.chatX);
+        this.config.chatY            = parseFloat(isVert ? s.v_chatY : s.chatY);
+        this.config.chatW            = parseFloat(isVert ? s.v_chatW : s.chatW);
+        this.config.chatScale        = parseFloat(isVert ? s.v_chatScale : s.chatScale);
+        this.config.chatAlignH       = (isVert ? (s.v_chatAlignH ?? s.chatAlignH) : s.chatAlignH) === '1';
+        this.config.chatAlignV       = (isVert ? (s.v_chatAlignV ?? s.chatAlignV) : s.chatAlignV) === '1';
+        
         this.config.chatFontSize     = parseInt(s.chatFS || '20', 10);
         this.config.chatMaxMsgs      = parseInt(s.chatMax || '15', 10);
         this.config.chatHideAfter    = parseInt(s.chatHide || '0', 10);
@@ -977,14 +1113,13 @@ class GTAOverlayEngine {
         this.config.chatIgnoreGroups = s.chatIgGroups || '';
 
         // Q&A Highlight Toast
-        this.config.qaGlobalVar = s.qaVar || 'viChatHighlight';
-        this.config.qaEvent     = s.qaEvent || 'GTA_QA';
-        this.config.qaTitle     = s.qaTitle || 'Q&A HIGHLIGHT';
-        this.config.qaX         = parseFloat(s.qaX || '960');
-        this.config.qaY         = parseFloat(s.qaY || '60');
-        this.config.qaScale     = parseFloat(s.qaScale || '1');
-        this.config.qaAlignH    = s.qaAlignH === '1';
-        this.config.qaAlignV    = s.qaAlignV === '1';
+        this.config.qaTitle     = s.qaTitle || this.config.t.qa;
+        this.config.qaX         = parseFloat(isVert ? s.v_qaX : s.qaX);
+        this.config.qaY         = parseFloat(isVert ? s.v_qaY : s.qaY);
+        this.config.qaScale     = parseFloat(isVert ? s.v_qaScale : s.qaScale);
+        this.config.qaAlignH    = (isVert ? (s.v_qaAlignH ?? s.qaAlignH) : s.qaAlignH) === '1';
+        this.config.qaAlignV    = (isVert ? (s.v_qaAlignV ?? s.qaAlignV) : s.qaAlignV) === '1';
+        
         this.config.qaDuration  = parseInt(s.qaDur || '15', 10) * 1000;
         this.config.qaAnim      = s.qaAnim || 'qa-slide-up';
         this.config.qaColor     = s.qaColor || 'teal';
@@ -997,14 +1132,6 @@ class GTAOverlayEngine {
         try { this.config.stats = JSON.parse(s.stats); } catch (e) {}
         this.renderStatRows(this.lastWalkonData);
         this.applyGlobalStyles();
-
-        if (this.config.previewMode && window.parent !== window) {
-          if (this.config.alignH || this.config.alignV) this.broadcastManipulate('walkon');
-          if (this.config.alertAlignH || this.config.alertAlignV) this.broadcastManipulate('alert');
-          if (this.config.soAlignH || this.config.soAlignV) this.broadcastManipulate('shoutout');
-          if (this.config.chatAlignH || this.config.chatAlignV) this.broadcastManipulate('chat');
-          if (this.config.qaAlignH || this.config.qaAlignV) this.broadcastManipulate('qa');
-        }
       }
     });
   }
@@ -1124,23 +1251,24 @@ class GTAOverlayEngine {
     const bodyEl = document.getElementById('alert-body');
     bodyEl.innerHTML = '';
 
+    const t = this.config.t || i18nDict.en;
     if (type === 'member' && levelName) {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Tier</span><span class="alert-highlight">${levelName}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.tier}</span><span class="alert-highlight">${levelName}</span></div>`;
     } else if (type === 'milestone') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Tenure</span><span class="alert-highlight">${months} Months</span></div>`;
-      if (levelName) bodyEl.innerHTML += `<div class="alert-detail-row"><span>Tier</span><span class="alert-highlight">${levelName}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.tenure}</span><span class="alert-highlight">${months} ${t.months}</span></div>`;
+      if (levelName) bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.tier}</span><span class="alert-highlight">${levelName}</span></div>`;
     } else if (type === 'gift') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Gifted</span><span class="alert-highlight">${count} Memberships</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.gifted}</span><span class="alert-highlight">${count} ${t.memberships}</span></div>`;
     } else if (type === 'giftRec') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>From</span><span class="alert-highlight">${gifterUser || 'Anonymous'}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.from}</span><span class="alert-highlight">${gifterUser || t.anonymous}</span></div>`;
     } else if (type === 'superchat') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Amount</span><span class="alert-highlight amount">${amount}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.amount}</span><span class="alert-highlight amount">${amount}</span></div>`;
     } else if (type === 'supersticker') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Amount</span><span class="alert-highlight amount">${amount}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.amount}</span><span class="alert-highlight amount">${amount}</span></div>`;
       if (stickerUrl) bodyEl.innerHTML += `<div class="alert-media"><img src="${stickerUrl}" /></div>`;
     } else if (type === 'jewels') {
-      bodyEl.innerHTML += `<div class="alert-detail-row"><span>Sent</span><span class="alert-highlight amount">${jewelsAmount} Jewels</span></div>`;
-      if (jewelsName) bodyEl.innerHTML += `<div class="alert-detail-row"><span>Gift</span><span class="alert-highlight">${jewelsName}</span></div>`;
+      bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.sent}</span><span class="alert-highlight amount">${jewelsAmount} ${t.jewels}</span></div>`;
+      if (jewelsName) bodyEl.innerHTML += `<div class="alert-detail-row"><span>${t.gift}</span><span class="alert-highlight">${jewelsName}</span></div>`;
       if (jewelsUrl) bodyEl.innerHTML += `<div class="alert-media"><img src="${jewelsUrl}" /></div>`;
     }
 
@@ -1199,7 +1327,7 @@ class GTAOverlayEngine {
 
     this.applyShoutoutAccentColor();
     if (this.dom.shoutoutTitle) {
-      this.dom.shoutoutTitle.innerHTML = `<i class="fa-solid fa-bullhorn"></i> ${this.config.soTitle || 'SHOUTOUT'}`;
+      this.dom.shoutoutTitle.innerHTML = `<i class="fa-solid fa-bullhorn"></i> ${this.config.soTitle || this.config.t.shoutout}`;
     }
     if (this.dom.shoutoutName) {
       this.dom.shoutoutName.textContent = String(userName).toUpperCase();
@@ -1488,7 +1616,7 @@ class GTAOverlayEngine {
     }
     if (this.dom.qaBadge) {
       this.dom.qaBadge.style.display = this.config.qaShowBadge ? 'inline-flex' : 'none';
-      this.dom.qaBadge.innerHTML = `<i class="fa-solid fa-comments"></i> ${this.config.qaTitle || 'Q&A HIGHLIGHT'}`;
+      this.dom.qaBadge.innerHTML = `<i class="fa-solid fa-comments"></i> ${this.config.qaTitle || this.config.t.qa}`;
     }
 
     this.dom.qaContainer.classList.remove('animate-out', 'animate-in');

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GTA VI Overlays - Universal Setup v0.0.5</title>
+  <title>GTA VI Overlays - Universal Setup v0.1.4</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,24 +15,35 @@
       --gta-icon-stroke: #171a21; --gta-border: #0b2328; --gta-bg-fill: #303030;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #12151a; color: #f0f4f8; font-family: 'Inter', sans-serif; display: grid; grid-template-columns: 510px 1fr; height: 100vh; overflow: hidden; }
+    body { background: #12151a; color: #f0f4f8; font-family: 'Inter', sans-serif; display: grid; grid-template-columns: 520px minmax(0, 1fr); width: 100vw; height: 100vh; overflow: hidden; }
     .sidebar { background: #171a21; border-right: 3px solid var(--gta-border); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    .brand-header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #232834; }
+    
+    .brand-header { padding: 14px 20px 10px; display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #232834; }
+    .brand-top { display: flex; align-items: center; justify-content: space-between; }
     .brand-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.95rem; letter-spacing: 1.5px; color: var(--gta-pink); text-shadow: 0 2px 0 var(--gta-border); display: flex; align-items: center; gap: 10px; }
     .ver-pill { font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 800; background: #232834; color: var(--gta-yellow); padding: 3px 8px; border-radius: 8px; letter-spacing: 0.5px; }
     .sb-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: #2b1d28; color: var(--gta-pink); border: 1px solid var(--gta-pink); display: flex; align-items: center; gap: 6px; }
     .sb-badge.connected { background: #132a28; color: var(--gta-teal); border-color: var(--gta-teal); }
     
+    .global-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
     .tab-nav { display: grid; grid-template-columns: repeat(4, 1fr); background: #12151a; border-bottom: 2px solid #232834; }
     .tab-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: #8c96a6; padding: 9px 4px; font-size: 0.69rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.15s ease; white-space: nowrap; }
     .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
     .tab-btn.active { color: var(--gta-teal); border-bottom-color: var(--gta-teal); background: #171a21; }
-    .tab-content { display: none; padding: 16px 18px; overflow-y: auto; flex: 1; flex-direction: column; gap: 14px; }
+    .tab-content { display: none; padding: 14px 18px; overflow-y: auto; flex: 1; flex-direction: column; gap: 14px; }
     .tab-content.active { display: flex; }
     
     .panel { background: #1e222b; border: 2px solid var(--gta-border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
     .panel-header { display: flex; justify-content: space-between; align-items: center; }
     .panel-title { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--gta-teal); display: flex; align-items: center; gap: 8px; }
+    
+    /* Layout Switcher */
+    .layout-switcher { display: flex; gap: 4px; background: #14171f; padding: 4px; border-radius: 8px; border: 1px solid #282e3d; margin-bottom: 4px; }
+    .layout-btn { flex: 1; background: transparent; border: none; color: #8c96a6; font-size: 0.72rem; font-weight: 700; padding: 6px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .layout-btn:hover { background: rgba(255,255,255,0.05); }
+    .layout-btn.active { background: #232834; color: var(--gta-yellow); }
+
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     label { display: flex; flex-direction: column; gap: 5px; font-size: 0.72rem; color: #b0b8c4; font-weight: 600; }
@@ -44,16 +55,7 @@
     .mini-switch-card { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; font-size: 0.67rem; font-weight: 700; color: #c0c8d6; cursor: pointer; user-select: none; }
     .inline-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #14171f; padding: 7px 10px; border-radius: 8px; border: 1px solid #282e3d; font-size: 0.73rem; font-weight: 700; color: #d0d7e2; cursor: pointer; margin-bottom: 2px; }
 
-    .alert-config-row {
-      display: grid;
-      grid-template-columns: 1fr 118px 42px;
-      align-items: center;
-      gap: 8px;
-      background: #14171f;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid #282e3d;
-    }
+    .alert-config-row { display: grid; grid-template-columns: 1fr 118px 42px; align-items: center; gap: 8px; background: #14171f; padding: 6px 10px; border-radius: 8px; border: 1px solid #282e3d; }
     .alert-config-row span { font-size: 0.73rem; font-weight: 700; color: #d0d7e2; }
     .alert-config-row select { padding: 4px 6px; font-size: 0.72rem; font-weight: 700; }
     .alert-config-row .switch-cell { display: flex; justify-content: flex-end; }
@@ -79,64 +81,123 @@
     .btn-yellow { background: var(--gta-yellow); color: var(--gta-icon-stroke); }
     .btn-dark { background: #262b36; color: #e2e8f0; border-color: #384050; }
     
-    .workspace { display: flex; flex-direction: column; padding: 20px 24px; gap: 16px; overflow-y: auto; }
-    .url-box { background: #171a21; border: 2px solid var(--gta-teal); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
-    .url-row { display: flex; gap: 10px; align-items: center; }
-    .url-input { flex: 1; font-family: monospace; font-size: 0.8rem; background: #0e1014; color: var(--gta-yellow); }
+    .workspace { display: flex; flex-direction: column; background: #0e1014; min-width: 0; min-height: 0; width: 100%; height: 100vh; overflow: hidden; }
+    .top-bar { padding: 16px 24px; background: #171a21; border-bottom: 2px solid var(--gta-border); display: flex; flex-direction: column; gap: 14px; }
     
-    .preview-toolbar { display: flex; justify-content: space-between; align-items: center; background: #171a21; border: 2px solid #262c3a; border-radius: 10px; padding: 10px 16px; }
+    .module-select-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #1a1e26; padding: 12px 16px; border-radius: 10px; border: 1px solid #282e3d; }
+    .module-select-title { font-size: 0.78rem; font-weight: 800; color: var(--gta-teal); text-transform: uppercase; margin-right: 10px; }
+    .mod-chk-label { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; color: #d0d7e2; cursor: pointer; user-select: none; }
+    .mod-chk-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--gta-teal); cursor: pointer; }
+
+    .url-row { display: flex; gap: 10px; align-items: center; }
+    .url-input { flex: 1; font-family: monospace; font-size: 0.78rem; background: #0a0c10; color: var(--gta-yellow); border-color: var(--gta-border); }
+    .url-label { min-width: 95px; white-space: nowrap; font-size: 0.75rem; font-weight: 800; color: #8c96a6; text-transform: uppercase; }
+
+    .preview-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; background: #12151a; border-bottom: 1px solid #232834; }
     .pin-toggle-label { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 700; color: var(--gta-yellow); cursor: pointer; user-select: none; }
     .pin-toggle-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gta-teal); cursor: pointer; }
     
-    .preview-wrapper { flex: 1; background: radial-gradient(circle at center, #222733 0%, #0e1015 100%); border: 3px solid var(--gta-border); border-radius: 14px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 480px; }
-    .canvas-scaler { width: 1920px; height: 1080px; transform: scale(0.55); transform-origin: center center; border: 2px dashed rgba(244, 172, 196, 0.35); position: relative; flex-shrink: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px; }
-    iframe { width: 1920px; height: 1080px; border: none; }
+    .view-toggles { display: flex; gap: 6px; }
+    .view-toggles .btn { padding: 6px 12px; font-size: 0.7rem; border-color: transparent; }
+    .view-toggles .btn.active { border-color: var(--gta-teal); background: #1a1e26; color: var(--gta-teal); }
+
+    .preview-stage { flex: 1; display: flex; gap: 20px; align-items: flex-start; justify-content: flex-start; padding: 20px; background: radial-gradient(circle at center, #222733 0%, #0e1015 100%); min-width: 0; min-height: 0; width: 100%; overflow: hidden; }
+    .preview-wrap { position: relative; border: 2px dashed rgba(244, 172, 196, 0.35); outline: 3px solid var(--gta-border); border-radius: 8px; overflow: hidden; background-color: rgba(14, 16, 21, 0.65); background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 60px 60px; background-position: 0 0; display: none; flex-shrink: 0; }
+    .preview-wrap.active { display: block; }
     
+    .preview-tag { position: absolute; top: 0; left: 0; background: var(--gta-border); color: #fff; font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-bottom-right-radius: 8px; z-index: 999; pointer-events: none; }
+    
+    .canvas-scaler { 
+      transform-origin: top left; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 1920px; 
+      height: 1080px; 
+      background: transparent;
+      flex-shrink: 0; 
+    }
+
+    iframe { 
+      border: none; 
+      transform-origin: top left; 
+      width: 100%; 
+      height: 100%; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+    }
+
     .status-log { font-size: 0.74rem; padding: 8px 10px; border-radius: 6px; background: #12151a; border: 1px solid #2b313e; color: #9aa4b2; min-height: 46px; display: flex; align-items: center; line-height: 1.35; word-break: break-word; }
+    
+    .edit-vert { display: none; }
   </style>
 </head>
 <body>
 
   <aside class="sidebar">
     <div class="brand-header">
-      <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.0.5</span></div>
-      <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> Disconnected</div>
+      <div class="brand-top">
+        <div class="brand-title">GTA VI OVERLAY HUB <span class="ver-pill">v0.1.4</span></div>
+        <div id="sb-status" class="sb-badge"><i class="fa-solid fa-plug"></i> <span data-i18n="status_disconnected">Disconnected</span></div>
+      </div>
+      <div class="global-controls">
+        <label style="flex-direction:row; align-items:center; gap:8px;">
+          <span style="color:#8c96a6;"><i class="fa-solid fa-earth-americas"></i></span>
+          <select id="cfg-lang">
+            <option value="en" selected>English</option>
+            <option value="pt-br">Português (BR)</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </label>
+        <label style="flex-direction:row; align-items:center; gap:8px;">
+          <span style="color:#8c96a6;"><i class="fa-solid fa-display"></i></span>
+          <select id="cfg-res">
+            <option value="720" data-i18n="res_720">720p Canvas</option>
+            <option value="1080" data-i18n="res_1080" selected>1080p Canvas</option>
+            <option value="1440" data-i18n="res_1440">1440p Canvas</option>
+            <option value="2160" data-i18n="res_2160">2160p (4K) Canvas</option>
+          </select>
+        </label>
+      </div>
     </div>
 
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-general"><i class="fa-solid fa-sliders"></i> General</button>
-      <button class="tab-btn" data-tab="tab-walkon"><i class="fa-solid fa-id-card"></i> Card</button>
-      <button class="tab-btn" data-tab="tab-alerts"><i class="fa-solid fa-bell"></i> Alerts</button>
-      <button class="tab-btn" data-tab="tab-shoutout"><i class="fa-solid fa-bullhorn"></i> Shoutout</button>
-      <button class="tab-btn" data-tab="tab-chat"><i class="fa-solid fa-comments"></i> Chat</button>
-      <button class="tab-btn" data-tab="tab-qa"><i class="fa-solid fa-circle-question"></i> Q&amp;A</button>
-      <button class="tab-btn" data-tab="tab-colors"><i class="fa-solid fa-palette"></i> Colors</button>
-      <button class="tab-btn" data-tab="tab-test"><i class="fa-solid fa-flask"></i> Test</button>
+      <button class="tab-btn active" data-tab="tab-general"><i class="fa-solid fa-sliders"></i> <span data-i18n="tab_general">General</span></button>
+      <button class="tab-btn" data-tab="tab-walkon"><i class="fa-solid fa-id-card"></i> <span data-i18n="tab_card">Card</span></button>
+      <button class="tab-btn" data-tab="tab-alerts"><i class="fa-solid fa-bell"></i> <span data-i18n="tab_alerts">Alerts</span></button>
+      <button class="tab-btn" data-tab="tab-shoutout"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="tab_shoutout">Shoutout</span></button>
+      <button class="tab-btn" data-tab="tab-chat"><i class="fa-solid fa-comments"></i> <span data-i18n="tab_chat">Chat</span></button>
+      <button class="tab-btn" data-tab="tab-qa"><i class="fa-solid fa-circle-question"></i> <span data-i18n="tab_qa">Q&amp;A</span></button>
+      <button class="tab-btn" data-tab="tab-colors"><i class="fa-solid fa-palette"></i> <span data-i18n="tab_colors">Colors</span></button>
+      <button class="tab-btn" data-tab="tab-test"><i class="fa-solid fa-flask"></i> <span data-i18n="tab_test">Test</span></button>
     </nav>
 
     <!-- TAB 1: GENERAL -->
     <div id="tab-general" class="tab-content active">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Streamer.bot Connection</div>
+        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> <span data-i18n="panel_sb_conn">Streamer.bot Connection</span></div>
         <div class="grid-2">
-          <label>WebSocket IP / Host <input type="text" id="cfg-host" value="127.0.0.1"></label>
-          <label>Port <input type="number" id="cfg-port" value="8080"></label>
+          <label><span data-i18n="lbl_ws_host">WebSocket IP / Host</span> <input type="text" id="cfg-host" value="127.0.0.1"></label>
+          <label><span data-i18n="lbl_ws_port">Port</span> <input type="number" id="cfg-port" value="8080"></label>
         </div>
-        <label style="margin-top:4px;">WebSocket Password (If Enabled) <input type="password" id="cfg-password" placeholder="Leave blank if no auth"></label>
-        <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:8px;">Connect SB</button>
+        <label style="margin-top:4px;"><span data-i18n="lbl_ws_pass">WebSocket Password</span> <input type="password" id="cfg-password" data-i18n-placeholder="ph_ws_pass" placeholder="Leave blank if no auth"></label>
+        <button class="btn btn-teal" id="btn-connect-sb" style="margin-top:8px;" data-i18n="btn_connect_sb">Connect SB</button>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-font"></i> Global Typography & Shared Texture</div>
+        <div class="panel-title"><i class="fa-solid fa-font"></i> <span data-i18n="panel_typo">Global Typography &amp; Shared Texture</span></div>
         <div class="grid-2">
-          <label>Heading Font
+          <label><span data-i18n="lbl_font_heading">Heading Font</span>
             <select id="cfg-fontHeading">
               <option value="Bebas Neue">Bebas Neue</option>
               <option value="Anton">Anton</option>
               <option value="Changa One">Changa One</option>
             </select>
           </label>
-          <label>Body Font
+          <label><span data-i18n="lbl_font_body">Body Font</span>
             <select id="cfg-fontBody">
               <option value="Inter">Inter</option>
               <option value="Montserrat">Montserrat</option>
@@ -144,63 +205,84 @@
             </select>
           </label>
         </div>
-        <label>Background Texture URL / Path <input type="text" id="cfg-bg" value="assets/gta6-bg.webp"></label>
+        <label><span data-i18n="lbl_bg_url">Background Texture URL / Path</span> <input type="text" id="cfg-bg" value="assets/gta6-bg.webp"></label>
       </div>
     </div>
 
     <!-- TAB 2: WALK-ON CARD -->
     <div id="tab-walkon" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-id-card"></i> Card Base Layout</div>
+        <div class="panel-title"><i class="fa-solid fa-id-card"></i> <span data-i18n="panel_card_layout">Card Base Layout</span></div>
+        
+        <div class="layout-switcher">
+          <button class="layout-btn active" data-target="horiz"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_layout_horiz">Horizontal Layout</span></button>
+          <button class="layout-btn" data-target="vert"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_layout_vert">Vertical Layout</span></button>
+        </div>
+
         <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Show Avatar</span><input type="checkbox" class="switch" id="chk-showAvatar" checked></label>
-          <label class="mini-switch-card"><span>Show User</span><input type="checkbox" class="switch" id="chk-showUser" checked></label>
-          <label class="mini-switch-card"><span>Show Tier</span><input type="checkbox" class="switch" id="chk-showTier" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_show_avatar">Show Avatar</span><input type="checkbox" class="switch" id="chk-showAvatar" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_show_user">Show User</span><input type="checkbox" class="switch" id="chk-showUser" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_show_tier">Show Tier</span><input type="checkbox" class="switch" id="chk-showTier" checked></label>
         </div>
-        <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-alignH"></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-alignV"></label>
-          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-alignScreen"></label>
+        
+        <!-- HORIZONTAL INPUTS -->
+        <div class="edit-horiz grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-x" value="60"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-y" value="60"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-scale" value="1" step="0.05"></label>
         </div>
+        <div class="edit-horiz toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-alignH"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-alignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-alignScreen"></label>
+        </div>
+
+        <!-- VERTICAL INPUTS -->
+        <div class="edit-vert grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-v_x" value="60"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-v_y" value="60"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-v_scale" value="1" step="0.05"></label>
+        </div>
+        <div class="edit-vert toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-v_alignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-v_alignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-v_alignScreen"></label>
+        </div>
+
         <div class="grid-2">
-          <label>Left Offset (X px) <input type="number" id="cfg-x" value="60" min="0" max="1800" step="5"></label>
-          <label>Bottom Offset (Y px) <input type="number" id="cfg-y" value="60" min="0" max="1000" step="5"></label>
-        </div>
-        <div class="grid-2">
-          <label>Scale (0.5 - 2.0) <input type="number" id="cfg-scale" value="1" step="0.05" min="0.5" max="2.0"></label>
-          <label>Duration (sec) <input type="number" id="cfg-duration" value="8" min="3" max="30"></label>
-        </div>
-        <div class="grid-2">
-          <label>Card Transition
+          <label><span data-i18n="lbl_card_anim">Card Transition</span>
             <select id="cfg-cardAnim">
-              <option value="anim-slide-left">Slide In (Left)</option>
-              <option value="anim-slide-right">Slide In (Right)</option>
-              <option value="anim-slide-up">Slide Up (Bottom)</option>
-              <option value="anim-zoom">Vice Zoom Pop</option>
+              <option value="anim-slide-left" data-i18n="opt_anim_slide_left">Slide In (Left)</option>
+              <option value="anim-slide-right" data-i18n="opt_anim_slide_right">Slide In (Right)</option>
+              <option value="anim-slide-up" data-i18n="opt_anim_slide_up">Slide Up (Bottom)</option>
+              <option value="anim-zoom" data-i18n="opt_anim_zoom">Vice Zoom Pop</option>
             </select>
           </label>
-          <label>Avatar Animation
+          <label><span data-i18n="lbl_avatar_anim">Avatar Animation</span>
             <select id="cfg-avatarAnim">
-              <option value="av-flip">3D Coin Flip</option>
-              <option value="av-spin">360° Spin In</option>
-              <option value="av-pop">Elastic Pop</option>
+              <option value="av-flip" data-i18n="opt_av_flip">3D Coin Flip</option>
+              <option value="av-spin" data-i18n="opt_av_spin">360° Spin In</option>
+              <option value="av-pop" data-i18n="opt_av_pop">Elastic Pop</option>
             </select>
           </label>
         </div>
         <div class="grid-2">
-          <label>Avatar SB Variable <input type="text" id="cfg-vAvatar" value="avatarUrl"></label>
-          <label>Tier Badge SB Variable <input type="text" id="cfg-vTier" value="levelName"></label>
+          <label><span data-i18n="lbl_duration_sec">Duration (sec)</span> <input type="number" id="cfg-duration" value="8" min="3" max="30"></label>
+          <label><span data-i18n="lbl_sb_custom_event">SB Custom Event</span> <input type="text" id="cfg-event" value="MemberWalkOn"></label>
         </div>
-        <label>SB Custom Event Name <input type="text" id="cfg-event" value="MemberWalkOn"></label>
+        <div class="grid-2">
+          <label><span data-i18n="lbl_avatar_sb_var">Avatar SB Var</span> <input type="text" id="cfg-vAvatar" value="avatarUrl"></label>
+          <label><span data-i18n="lbl_tier_sb_var">Tier SB Var</span> <input type="text" id="cfg-vTier" value="levelName"></label>
+        </div>
         <label class="inline-toggle-row">
-          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> Solid Fill (No Background Image)</span>
+          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> <span data-i18n="lbl_solid_fill">Solid Fill (No Background Image)</span></span>
           <input type="checkbox" class="switch" id="chk-noBg">
         </label>
       </div>
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><i class="fa-solid fa-layer-group"></i> Card Variables (Dynamic Rows)</div>
-          <button class="btn btn-teal" id="btn-add-stat" style="padding: 4px 8px; font-size: 0.65rem;">+ Add Row</button>
+          <div class="panel-title"><i class="fa-solid fa-layer-group"></i> <span data-i18n="panel_card_vars">Card Variables (Dynamic Rows)</span></div>
+          <button class="btn btn-teal" id="btn-add-stat" style="padding: 4px 8px; font-size: 0.65rem;" data-i18n="btn_add_row">+ Add Row</button>
         </div>
         <div id="stats-list-container" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
@@ -209,122 +291,127 @@
     <!-- TAB 3: ALERTS -->
     <div id="tab-alerts" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-brands fa-youtube"></i> YouTube Events & Accent Colors</div>
-        <p style="font-size:0.72rem; color:#9aa4b2;">Choose an independent accent color and toggle visibility for each alert type.</p>
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> <span data-i18n="panel_yt_events">YouTube Events &amp; Accent Colors</span></div>
+        <p style="font-size:0.72rem; color:#9aa4b2;" data-i18n="desc_yt_events">Choose an independent accent color and toggle visibility for each alert type.</p>
 
-        <div class="alert-config-row">
-          <span>New Subscriber</span>
-          <select id="cfg-ac_sub"><option value="teal" selected>TEAL</option><option value="pink">PINK</option><option value="purple">PURPLE</option><option value="yellow">YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sub" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>New Member</span>
-          <select id="cfg-ac_mem"><option value="teal">TEAL</option><option value="pink">PINK</option><option value="purple" selected>PURPLE</option><option value="yellow">YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_mem" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Membership Milestone</span>
-          <select id="cfg-ac_ms"><option value="teal">TEAL</option><option value="pink">PINK</option><option value="purple" selected>PURPLE</option><option value="yellow">YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_ms" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Membership Gift Sent</span>
-          <select id="cfg-ac_gft"><option value="teal">TEAL</option><option value="pink" selected>PINK</option><option value="purple">PURPLE</option><option value="yellow">YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_gft" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Gift Membership Received</span>
-          <select id="cfg-ac_grc"><option value="teal" selected>TEAL</option><option value="pink">PINK</option><option value="purple">PURPLE</option><option value="yellow">YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_grc" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Super Chat</span>
-          <select id="cfg-ac_sc"><option value="teal">TEAL</option><option value="pink">PINK</option><option value="purple">PURPLE</option><option value="yellow" selected>YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sc" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Super Sticker</span>
-          <select id="cfg-ac_stk"><option value="teal">TEAL</option><option value="pink">PINK</option><option value="purple">PURPLE</option><option value="yellow" selected>YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_stk" checked></div>
-        </div>
-        <div class="alert-config-row">
-          <span>Jewels Gifted</span>
-          <select id="cfg-ac_jwl"><option value="teal">TEAL</option><option value="pink">PINK</option><option value="purple">PURPLE</option><option value="yellow" selected>YELLOW</option></select>
-          <div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_jwl" checked></div>
-        </div>
+        <div class="alert-config-row"><span data-i18n="al_new_sub">New Subscriber</span><select id="cfg-ac_sub"><option value="teal" data-i18n="opt_teal" selected>TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow">YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sub" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_new_mem">New Member</span><select id="cfg-ac_mem"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple" selected>PURPLE</option><option value="yellow" data-i18n="opt_yellow">YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_mem" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_milestone">Membership Milestone</span><select id="cfg-ac_ms"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple" selected>PURPLE</option><option value="yellow" data-i18n="opt_yellow">YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_ms" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_gift_sent">Membership Gift Sent</span><select id="cfg-ac_gft"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink" selected>PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow">YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_gft" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_gift_rec">Gift Membership Received</span><select id="cfg-ac_grc"><option value="teal" data-i18n="opt_teal" selected>TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow">YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_grc" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_superchat">Super Chat</span><select id="cfg-ac_sc"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow" selected>YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_sc" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_supersticker">Super Sticker</span><select id="cfg-ac_stk"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow" selected>YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_stk" checked></div></div>
+        <div class="alert-config-row"><span data-i18n="al_jewels">Jewels Gifted</span><select id="cfg-ac_jwl"><option value="teal" data-i18n="opt_teal">TEAL</option><option value="pink" data-i18n="opt_pink">PINK</option><option value="purple" data-i18n="opt_purple">PURPLE</option><option value="yellow" data-i18n="opt_yellow" selected>YELLOW</option></select><div class="switch-cell"><input type="checkbox" class="switch" id="chk-al_jwl" checked></div></div>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> Alerts Position & Timing</div>
-        <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-aAlignH" checked></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-aAlignV"></label>
-          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-aAlignScreen"></label>
+        <div class="panel-title"><i class="fa-solid fa-up-down-left-right"></i> <span data-i18n="panel_alerts_pos">Alerts Position &amp; Timing</span></div>
+        <div class="layout-switcher">
+          <button class="layout-btn active" data-target="horiz"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_layout_horiz">Horizontal Layout</span></button>
+          <button class="layout-btn" data-target="vert"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_layout_vert">Vertical Layout</span></button>
         </div>
+        
+        <!-- HORIZONTAL -->
+        <div class="edit-horiz grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-ax" value="960"></label>
+          <label><span data-i18n="lbl_top_y">Top (Y px)</span> <input type="number" id="cfg-ay" value="100"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-ascale" value="1" step="0.05"></label>
+        </div>
+        <div class="edit-horiz toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-aAlignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-aAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-aAlignScreen"></label>
+        </div>
+
+        <!-- VERTICAL -->
+        <div class="edit-vert grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-v_ax" value="540"></label>
+          <label><span data-i18n="lbl_top_y">Top (Y px)</span> <input type="number" id="cfg-v_ay" value="200"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-v_ascale" value="1" step="0.05"></label>
+        </div>
+        <div class="edit-vert toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-v_aAlignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-v_aAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-v_aAlignScreen"></label>
+        </div>
+
         <div class="grid-2">
-          <label>Left Offset (X px) <input type="number" id="cfg-ax" value="960" disabled></label>
-          <label>Top Offset (Y px) <input type="number" id="cfg-ay" value="100" min="0" max="1000" step="5"></label>
+          <label><span data-i18n="lbl_duration_sec">Duration (sec)</span> <input type="number" id="cfg-aDur" value="6" min="3" max="30"></label>
+          <label><span data-i18n="lbl_sb_alert_event">SB Custom Alert Event</span> <input type="text" id="cfg-alertEvent" value="GTA_Alert"></label>
         </div>
-        <div class="grid-2">
-          <label>Scale <input type="number" id="cfg-ascale" value="1" step="0.05" min="0.5" max="2.0"></label>
-          <label>Duration (sec) <input type="number" id="cfg-aDur" value="6" min="3" max="30"></label>
-        </div>
-        <label>SB Custom Alert Event <input type="text" id="cfg-alertEvent" value="GTA_Alert"></label>
       </div>
     </div>
 
     <!-- TAB 4: SHOUTOUT TOAST -->
     <div id="tab-shoutout" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-bullhorn"></i> Shoutout Toast Position & Timing</div>
-        <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-soAlignH"></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-soAlignV"></label>
-          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-soAlignScreen"></label>
+        <div class="panel-title"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="panel_so_pos">Shoutout Toast Position &amp; Timing</span></div>
+        <div class="layout-switcher">
+          <button class="layout-btn active" data-target="horiz"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_layout_horiz">Horizontal Layout</span></button>
+          <button class="layout-btn" data-target="vert"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_layout_vert">Vertical Layout</span></button>
         </div>
-        <div class="grid-2">
-          <label>Left Offset (X px) <input type="number" id="cfg-soX" value="1380" min="0" max="1800" step="5"></label>
-          <label>Top Offset (Y px) <input type="number" id="cfg-soY" value="80" min="0" max="1000" step="5"></label>
+        
+        <!-- HORIZONTAL -->
+        <div class="edit-horiz grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-soX" value="1380"></label>
+          <label><span data-i18n="lbl_top_y">Top (Y px)</span> <input type="number" id="cfg-soY" value="80"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-soScale" value="1" step="0.05"></label>
         </div>
-        <div class="grid-2">
-          <label>Scale (0.5 - 2.0) <input type="number" id="cfg-soScale" value="1" step="0.05" min="0.5" max="2.0"></label>
-          <label>Duration (sec) <input type="number" id="cfg-soDur" value="5" min="3" max="30"></label>
+        <div class="edit-horiz toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-soAlignH"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-soAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-soAlignScreen"></label>
+        </div>
+
+        <!-- VERTICAL -->
+        <div class="edit-vert grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-v_soX" value="540"></label>
+          <label><span data-i18n="lbl_top_y">Top (Y px)</span> <input type="number" id="cfg-v_soY" value="380"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-v_soScale" value="1" step="0.05"></label>
+        </div>
+        <div class="edit-vert toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-v_soAlignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-v_soAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-v_soAlignScreen"></label>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Shoutout Aesthetics & SB Trigger</div>
+        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="panel_so_aesthetics">Shoutout Aesthetics &amp; SB Trigger</span></div>
         <div class="grid-3">
-          <label>Toast Animation
+          <label><span data-i18n="lbl_toast_anim">Toast Animation</span>
             <select id="cfg-soAnim">
-              <option value="so-roll">Roll & Pop</option>
-              <option value="so-slide-right">Slide Right</option>
-              <option value="so-slide-left">Slide Left</option>
-              <option value="so-zoom">Vice Zoom</option>
+              <option value="so-roll" data-i18n="opt_so_roll">Roll &amp; Pop</option>
+              <option value="so-slide-right" data-i18n="opt_so_slide_right">Slide Right</option>
+              <option value="so-slide-left" data-i18n="opt_so_slide_left">Slide Left</option>
+              <option value="so-zoom" data-i18n="opt_so_zoom">Vice Zoom</option>
             </select>
           </label>
-          <label>Avatar Side
+          <label><span data-i18n="lbl_avatar_side">Avatar Side</span>
             <select id="cfg-soLayout">
-              <option value="right">Right Side</option>
-              <option value="left">Left Side</option>
+              <option value="right" data-i18n="opt_side_right">Right Side</option>
+              <option value="left" data-i18n="opt_side_left">Left Side</option>
             </select>
           </label>
-          <label>Accent Color
+          <label><span data-i18n="lbl_accent_color">Accent Color</span>
             <select id="cfg-soColor">
-              <option value="pink" selected>PINK</option>
-              <option value="teal">TEAL</option>
-              <option value="purple">PURPLE</option>
-              <option value="yellow">YELLOW</option>
+              <option value="pink" data-i18n="opt_pink" selected>PINK</option>
+              <option value="teal" data-i18n="opt_teal">TEAL</option>
+              <option value="purple" data-i18n="opt_purple">PURPLE</option>
+              <option value="yellow" data-i18n="opt_yellow">YELLOW</option>
             </select>
           </label>
         </div>
-        <label>Header Title Text <input type="text" id="cfg-soTitle" value="SHOUTOUT"></label>
         <div class="grid-2">
-          <label>SB Global Variable Name <input type="text" id="cfg-soVar" value="viShoutOuts"></label>
-          <label>SB Custom Event Name <input type="text" id="cfg-soEvent" value="GTA_Shoutout"></label>
+          <label><span data-i18n="lbl_header_title">Header Title Text</span> <input type="text" id="cfg-soTitle" data-i18n-placeholder="ph_auto_trans" placeholder="Leave empty for auto-translation"></label>
+          <label><span data-i18n="lbl_duration_sec">Duration (sec)</span> <input type="number" id="cfg-soDur" value="5" min="3" max="30"></label>
+        </div>
+        <div class="grid-2">
+          <label><span data-i18n="lbl_sb_global_var">SB Global Variable Name</span> <input type="text" id="cfg-soVar" value="viShoutOuts"></label>
+          <label><span data-i18n="lbl_sb_event_name">SB Custom Event Name</span> <input type="text" id="cfg-soEvent" value="GTA_Shoutout"></label>
         </div>
         <label class="inline-toggle-row">
-          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> Solid Fill (No Background Image)</span>
+          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> <span data-i18n="lbl_solid_fill">Solid Fill (No Background Image)</span></span>
           <input type="checkbox" class="switch" id="chk-soNoBg">
         </label>
       </div>
@@ -333,88 +420,110 @@
     <!-- TAB 5: HORIZONTAL CHAT -->
     <div id="tab-chat" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-comments"></i> Horizontal Chat Position & Dimensions</div>
-        <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-chatAlignH"></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-chatAlignV"></label>
-          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-chatAlignScreen"></label>
+        <div class="panel-title"><i class="fa-solid fa-comments"></i> <span data-i18n="panel_chat_pos">Horizontal Chat Position &amp; Dimensions</span></div>
+        <div class="layout-switcher">
+          <button class="layout-btn active" data-target="horiz"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_layout_horiz">Horizontal Layout</span></button>
+          <button class="layout-btn" data-target="vert"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_layout_vert">Vertical Layout</span></button>
         </div>
-        <div class="grid-3">
-          <label>Left (X px) <input type="number" id="cfg-chatX" value="0" min="0" max="1800" step="10"></label>
-          <label>Bottom (Y px) <input type="number" id="cfg-chatY" value="0" min="0" max="1040" step="10"></label>
-          <label>Bar Width (px) <input type="number" id="cfg-chatW" value="1920" min="400" max="1920" step="20"></label>
+
+        <!-- HORIZONTAL -->
+        <div class="edit-horiz grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-chatX" value="0"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-chatY" value="0"></label>
+          <label><span data-i18n="lbl_bar_width">Bar Width</span> <input type="number" id="cfg-chatW" value="1920"></label>
         </div>
-        <div class="grid-3">
-          <label>Scale (0.5-2.0) <input type="number" id="cfg-chatScale" value="1" step="0.05" min="0.5" max="2.0"></label>
-          <label>Font Size (px) <input type="number" id="cfg-chatFS" value="20" min="12" max="42"></label>
-          <label>Max Messages <input type="number" id="cfg-chatMax" value="15" min="3" max="40"></label>
+        <div class="edit-horiz grid-2" style="margin-top:-4px; margin-bottom: 4px;">
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-chatScale" value="1" step="0.05"></label>
+          <div class="toggle-strip" style="grid-template-columns: 1fr 1fr;">
+            <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-chatAlignH"></label>
+            <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-chatAlignV"></label>
+          </div>
+        </div>
+
+        <!-- VERTICAL -->
+        <div class="edit-vert grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-v_chatX" value="0"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-v_chatY" value="0"></label>
+          <label><span data-i18n="lbl_bar_width">Bar Width</span> <input type="number" id="cfg-v_chatW" value="1080"></label>
+        </div>
+        <div class="edit-vert grid-2" style="margin-top:-4px; margin-bottom: 4px;">
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-v_chatScale" value="1" step="0.05"></label>
+          <div class="toggle-strip" style="grid-template-columns: 1fr 1fr;">
+            <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-v_chatAlignH"></label>
+            <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-v_chatAlignV"></label>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <label><span data-i18n="lbl_font_size">Font Size (px)</span> <input type="number" id="cfg-chatFS" value="20" min="12" max="42"></label>
+          <label><span data-i18n="lbl_max_msgs">Max Messages</span> <input type="number" id="cfg-chatMax" value="15" min="3" max="40"></label>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-user-tag"></i> Role Colors & Bar Background</div>
+        <div class="panel-title"><i class="fa-solid fa-user-tag"></i> <span data-i18n="panel_chat_colors">Role Colors &amp; Bar Background</span></div>
         <div class="grid-2">
-          <label>Member Name Color (Default Teal)
+          <label><span data-i18n="lbl_mem_color">Member Name Color (Default Teal)</span>
             <div class="color-picker-group"><input type="color" id="picker-cMem" value="#53d8bf"><input type="text" id="cfg-cMem" value="#53d8bf"></div>
           </label>
-          <label>Moderator Name Color (Default Purple)
+          <label><span data-i18n="lbl_mod_color">Moderator Name Color (Default Purple)</span>
             <div class="color-picker-group"><input type="color" id="picker-cMod" value="#a688ff"><input type="text" id="cfg-cMod" value="#a688ff"></div>
           </label>
         </div>
         <div class="grid-2">
-          <label>Viewer Name Color (Default Yellow)
+          <label><span data-i18n="lbl_view_color">Viewer Name Color (Default Yellow)</span>
             <div class="color-picker-group"><input type="color" id="picker-cView" value="#fede9a"><input type="text" id="cfg-cView" value="#fede9a"></div>
           </label>
-          <label>Message Text Color
+          <label><span data-i18n="lbl_msg_color">Message Text Color</span>
             <div class="color-picker-group"><input type="color" id="picker-cMsg" value="#f0f4f8"><input type="text" id="cfg-cMsg" value="#f0f4f8"></div>
           </label>
         </div>
         <div class="grid-3">
-          <label>Bar Fill Color
+          <label><span data-i18n="lbl_bar_fill">Bar Fill Color</span>
             <div class="color-picker-group"><input type="color" id="picker-cChatBg" value="#303030"><input type="text" id="cfg-cChatBg" value="#303030"></div>
           </label>
-          <label>Bar Opacity (%)
+          <label><span data-i18n="lbl_bar_opacity">Bar Opacity (%)</span>
             <input type="number" id="cfg-chatBgOp" value="88" min="0" max="100" step="5">
           </label>
-          <label>Top Border Color
+          <label><span data-i18n="lbl_top_border_color">Top Border Color</span>
             <select id="cfg-chatAccent">
-              <option value="teal" selected>TEAL</option>
-              <option value="pink">PINK</option>
-              <option value="purple">PURPLE</option>
-              <option value="yellow">YELLOW</option>
+              <option value="teal" data-i18n="opt_teal" selected>TEAL</option>
+              <option value="pink" data-i18n="opt_pink">PINK</option>
+              <option value="purple" data-i18n="opt_purple">PURPLE</option>
+              <option value="yellow" data-i18n="opt_yellow">YELLOW</option>
             </select>
           </label>
         </div>
         <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Show Avatars</span><input type="checkbox" class="switch" id="chk-chatAv"></label>
-          <label class="mini-switch-card"><span>Show Badges</span><input type="checkbox" class="switch" id="chk-chatBadges" checked></label>
-          <label class="mini-switch-card"><span>ALL CAPS</span><input type="checkbox" class="switch" id="chk-chatUpper"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_show_avatars">Show Avatars</span><input type="checkbox" class="switch" id="chk-chatAv"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_show_badges">Show Badges</span><input type="checkbox" class="switch" id="chk-chatBadges" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_all_caps">ALL CAPS</span><input type="checkbox" class="switch" id="chk-chatUpper"></label>
         </div>
         <label class="inline-toggle-row">
-          <span><i class="fa-solid fa-eye-slash" style="color:var(--gta-pink); margin-right:6px;"></i> Transparent Bar (Hide Background Strip)</span>
+          <span><i class="fa-solid fa-eye-slash" style="color:var(--gta-pink); margin-right:6px;"></i> <span data-i18n="lbl_transparent_bar">Transparent Bar (Hide Background Strip)</span></span>
           <input type="checkbox" class="switch" id="chk-chatNoBg">
         </label>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-filter"></i> Chat Filters (Commands, Users & Groups)</div>
+        <div class="panel-title"><i class="fa-solid fa-filter"></i> <span data-i18n="panel_chat_filters">Chat Filters (Commands, Users &amp; Groups)</span></div>
         <label class="inline-toggle-row">
-          <span>Ignore Commands (Starts with Prefix)</span>
+          <span data-i18n="lbl_ignore_cmds">Ignore Commands (Starts with Prefix)</span>
           <input type="checkbox" class="switch" id="chk-chatNoCmd" checked>
         </label>
         <div class="grid-2">
-          <label>Command Prefixes (Comma-separated)
+          <label><span data-i18n="lbl_cmd_prefixes">Command Prefixes (Comma-separated)</span>
             <input type="text" id="cfg-chatPrefixes" value="!, #, /">
           </label>
-          <label>Auto-Hide Msg After (sec, 0=Never)
+          <label><span data-i18n="lbl_auto_hide">Auto-Hide Msg After (sec, 0=Never)</span>
             <input type="number" id="cfg-chatHide" value="0" min="0" max="300">
           </label>
         </div>
-        <label>Ignore Users by Name or Channel ID (Comma-separated)
-          <input type="text" id="cfg-chatIgUsers" placeholder="e.g. Nightbot, StreamElements, UC...">
+        <label><span data-i18n="lbl_ignore_users">Ignore Users by Name or Channel ID (Comma-separated)</span>
+          <input type="text" id="cfg-chatIgUsers" data-i18n-placeholder="ph_ignore_users" placeholder="e.g. Nightbot, StreamElements, UC...">
         </label>
-        <label>Ignore Groups by groupName (Comma-separated)
-          <input type="text" id="cfg-chatIgGroups" placeholder="e.g. Bots, ExcludedGroup">
+        <label><span data-i18n="lbl_ignore_groups">Ignore Groups by groupName (Comma-separated)</span>
+          <input type="text" id="cfg-chatIgGroups" data-i18n-placeholder="ph_ignore_groups" placeholder="e.g. Bots, ExcludedGroup">
         </label>
       </div>
     </div>
@@ -422,52 +531,68 @@
     <!-- TAB 6: Q&A HIGHLIGHT -->
     <div id="tab-qa" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-circle-question"></i> Q&amp;A Highlight Position & Timing</div>
-        <div class="toggle-strip">
-          <label class="mini-switch-card"><span>Center H</span><input type="checkbox" class="switch" id="chk-qaAlignH" checked></label>
-          <label class="mini-switch-card"><span>Center V</span><input type="checkbox" class="switch" id="chk-qaAlignV"></label>
-          <label class="mini-switch-card"><span>Screen Center</span><input type="checkbox" class="switch" id="chk-qaAlignScreen"></label>
+        <div class="panel-title"><i class="fa-solid fa-circle-question"></i> <span data-i18n="panel_qa_pos">Q&amp;A Highlight Position &amp; Timing</span></div>
+        <div class="layout-switcher">
+          <button class="layout-btn active" data-target="horiz"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_layout_horiz">Horizontal Layout</span></button>
+          <button class="layout-btn" data-target="vert"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_layout_vert">Vertical Layout</span></button>
         </div>
-        <div class="grid-2">
-          <label>Left Offset (X px) <input type="number" id="cfg-qaX" value="960" disabled></label>
-          <label>Bottom Offset (Y px) <input type="number" id="cfg-qaY" value="60" min="0" max="1000" step="5"></label>
+
+        <!-- HORIZONTAL -->
+        <div class="edit-horiz grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-qaX" value="960"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-qaY" value="60"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-qaScale" value="1" step="0.05"></label>
         </div>
-        <div class="grid-2">
-          <label>Scale (0.5 - 2.0) <input type="number" id="cfg-qaScale" value="1" step="0.05" min="0.5" max="2.0"></label>
-          <label>Duration (sec) <input type="number" id="cfg-qaDur" value="15" min="3" max="120"></label>
+        <div class="edit-horiz toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-qaAlignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-qaAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-qaAlignScreen"></label>
+        </div>
+
+        <!-- VERTICAL -->
+        <div class="edit-vert grid-3">
+          <label><span data-i18n="lbl_left_x">Left (X px)</span> <input type="number" id="cfg-v_qaX" value="540"></label>
+          <label><span data-i18n="lbl_bottom_y">Bottom (Y px)</span> <input type="number" id="cfg-v_qaY" value="120"></label>
+          <label><span data-i18n="lbl_scale">Scale</span> <input type="number" id="cfg-v_qaScale" value="1" step="0.05"></label>
+        </div>
+        <div class="edit-vert toggle-strip" style="margin-top:-4px;">
+          <label class="mini-switch-card"><span data-i18n="lbl_center_h">Center H</span><input type="checkbox" class="switch" id="chk-v_qaAlignH" checked></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_center_v">Center V</span><input type="checkbox" class="switch" id="chk-v_qaAlignV"></label>
+          <label class="mini-switch-card"><span data-i18n="lbl_screen_center">Screen Center</span><input type="checkbox" class="switch" id="chk-v_qaAlignScreen"></label>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Q&amp;A Aesthetics & SB Trigger</div>
-        <div class="grid-2">
-          <label>Entrance Animation
+        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="panel_qa_aesthetics">Q&amp;A Aesthetics &amp; SB Trigger</span></div>
+        <div class="grid-3">
+          <label><span data-i18n="lbl_entrance_anim">Entrance Animation</span>
             <select id="cfg-qaAnim">
-              <option value="qa-slide-up">Slide Up (Bottom)</option>
-              <option value="qa-slide-left">Slide In (Left)</option>
-              <option value="qa-zoom">Vice Zoom Pop</option>
+              <option value="qa-slide-up" data-i18n="opt_anim_slide_up">Slide Up (Bottom)</option>
+              <option value="qa-slide-left" data-i18n="opt_anim_slide_left">Slide In (Left)</option>
+              <option value="qa-zoom" data-i18n="opt_anim_zoom">Vice Zoom Pop</option>
             </select>
           </label>
-          <label>Accent Color
+          <label><span data-i18n="lbl_accent_color">Accent Color</span>
             <select id="cfg-qaColor">
-              <option value="teal" selected>TEAL</option>
-              <option value="pink">PINK</option>
-              <option value="purple">PURPLE</option>
-              <option value="yellow">YELLOW</option>
+              <option value="teal" data-i18n="opt_teal" selected>TEAL</option>
+              <option value="pink" data-i18n="opt_pink">PINK</option>
+              <option value="purple" data-i18n="opt_purple">PURPLE</option>
+              <option value="yellow" data-i18n="opt_yellow">YELLOW</option>
             </select>
           </label>
+          <label><span data-i18n="lbl_duration_sec">Duration (sec)</span> <input type="number" id="cfg-qaDur" value="15" min="3" max="120"></label>
         </div>
-        <label>Header Badge Text <input type="text" id="cfg-qaTitle" value="Q&A HIGHLIGHT"></label>
+        <label><span data-i18n="lbl_header_badge_text">Header Badge Text</span> <input type="text" id="cfg-qaTitle" data-i18n-placeholder="ph_auto_trans" placeholder="Leave empty for auto-translation"></label>
         <div class="grid-2">
-          <label>SB Global Variable Name <input type="text" id="cfg-qaVar" value="viChatHighlight"></label>
-          <label>SB Custom Event Name <input type="text" id="cfg-qaEvent" value="GTA_QA"></label>
+          <label><span data-i18n="lbl_sb_global_var">SB Global Variable Name</span> <input type="text" id="cfg-qaVar" value="viChatHighlight"></label>
+          <label><span data-i18n="lbl_sb_event_name">SB Custom Event Name</span> <input type="text" id="cfg-qaEvent" value="GTA_QA"></label>
         </div>
         <label class="inline-toggle-row">
-          <span>Show Header Badge Pill</span>
+          <span data-i18n="lbl_show_badge_pill">Show Header Badge Pill</span>
           <input type="checkbox" class="switch" id="chk-qaShowBadge" checked>
         </label>
         <label class="inline-toggle-row">
-          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> Solid Fill (No Background Image)</span>
+          <span><i class="fa-solid fa-ban" style="color:var(--gta-pink); margin-right:6px;"></i> <span data-i18n="lbl_solid_fill">Solid Fill (No Background Image)</span></span>
           <input type="checkbox" class="switch" id="chk-qaNoBg">
         </label>
       </div>
@@ -477,108 +602,127 @@
     <div id="tab-colors" class="tab-content">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><i class="fa-solid fa-eye-dropper"></i> GTA VI Palette Overrides</div>
-          <button class="btn btn-dark" id="btn-reset-colors" style="padding: 5px 10px; font-size: 0.72rem;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          <div class="panel-title"><i class="fa-solid fa-eye-dropper"></i> <span data-i18n="panel_palette">GTA VI Palette Overrides</span></div>
+          <button class="btn btn-dark" id="btn-reset-colors" style="padding: 5px 10px; font-size: 0.72rem;"><i class="fa-solid fa-rotate-left"></i> <span data-i18n="btn_reset">Reset</span></button>
         </div>
         <div class="grid-2">
-          <label>Primary Pink <div class="color-picker-group"><input type="color" id="picker-cPink" value="#f4acc4"><input type="text" id="cfg-cPink" value="#f4acc4"></div></label>
-          <label>Primary Teal <div class="color-picker-group"><input type="color" id="picker-cTeal" value="#53d8bf"><input type="text" id="cfg-cTeal" value="#53d8bf"></div></label>
+          <label><span data-i18n="lbl_prim_pink">Primary Pink</span> <div class="color-picker-group"><input type="color" id="picker-cPink" value="#f4acc4"><input type="text" id="cfg-cPink" value="#f4acc4"></div></label>
+          <label><span data-i18n="lbl_prim_teal">Primary Teal</span> <div class="color-picker-group"><input type="color" id="picker-cTeal" value="#53d8bf"><input type="text" id="cfg-cTeal" value="#53d8bf"></div></label>
         </div>
         <div class="grid-2">
-          <label>Primary Purple <div class="color-picker-group"><input type="color" id="picker-cPurple" value="#a688ff"><input type="text" id="cfg-cPurple" value="#a688ff"></div></label>
-          <label>Primary Yellow <div class="color-picker-group"><input type="color" id="picker-cYellow" value="#fede9a"><input type="text" id="cfg-cYellow" value="#fede9a"></div></label>
+          <label><span data-i18n="lbl_prim_purple">Primary Purple</span> <div class="color-picker-group"><input type="color" id="picker-cPurple" value="#a688ff"><input type="text" id="cfg-cPurple" value="#a688ff"></div></label>
+          <label><span data-i18n="lbl_prim_yellow">Primary Yellow</span> <div class="color-picker-group"><input type="color" id="picker-cYellow" value="#fede9a"><input type="text" id="cfg-cYellow" value="#fede9a"></div></label>
         </div>
         <div class="grid-2">
-          <label>Icon / Text Stroke <div class="color-picker-group"><input type="color" id="picker-cStroke" value="#171a21"><input type="text" id="cfg-cStroke" value="#171a21"></div></label>
-          <label>Card Outer Border <div class="color-picker-group"><input type="color" id="picker-cBorder" value="#0b2328"><input type="text" id="cfg-cBorder" value="#0b2328"></div></label>
+          <label><span data-i18n="lbl_stroke_color">Icon / Text Stroke</span> <div class="color-picker-group"><input type="color" id="picker-cStroke" value="#171a21"><input type="text" id="cfg-cStroke" value="#171a21"></div></label>
+          <label><span data-i18n="lbl_border_color">Card Outer Border</span> <div class="color-picker-group"><input type="color" id="picker-cBorder" value="#0b2328"><input type="text" id="cfg-cBorder" value="#0b2328"></div></label>
         </div>
-        <label>Card Base Fill <div class="color-picker-group"><input type="color" id="picker-cBg" value="#303030"><input type="text" id="cfg-cBg" value="#303030"></div></label>
+        <label><span data-i18n="lbl_bg_fill_color">Card Base Fill</span> <div class="color-picker-group"><input type="color" id="picker-cBg" value="#303030"><input type="text" id="cfg-cBg" value="#303030"></div></label>
       </div>
     </div>
 
     <!-- TAB 8: TEST -->
     <div id="tab-test" class="tab-content">
       <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-dice"></i> 5-Module Simulators</div>
+        <div class="panel-title"><i class="fa-solid fa-dice"></i> <span data-i18n="panel_simulators">5-Module Simulators</span></div>
         <div class="grid-3" style="margin-bottom: 6px;">
-          <button class="btn btn-teal" id="btn-sim-walkon"><i class="fa-solid fa-id-card"></i> Walk-On</button>
-          <button class="btn btn-purple" id="btn-sim-alert"><i class="fa-solid fa-bell"></i> Alert</button>
-          <button class="btn btn-pink" id="btn-sim-shoutout"><i class="fa-solid fa-bullhorn"></i> Shoutout</button>
+          <button class="btn btn-teal" id="btn-sim-walkon"><i class="fa-solid fa-id-card"></i> <span data-i18n="btn_sim_walkon">Walk-On</span></button>
+          <button class="btn btn-purple" id="btn-sim-alert"><i class="fa-solid fa-bell"></i> <span data-i18n="btn_sim_alert">Alert</span></button>
+          <button class="btn btn-pink" id="btn-sim-shoutout"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="btn_sim_shoutout">Shoutout</span></button>
         </div>
         <div class="grid-2" style="margin-bottom: 6px;">
-          <button class="btn btn-yellow" id="btn-sim-chat"><i class="fa-solid fa-comments"></i> Send Test Chat</button>
-          <button class="btn btn-teal" id="btn-sim-qa"><i class="fa-solid fa-circle-question"></i> Test Q&amp;A Toast</button>
+          <button class="btn btn-yellow" id="btn-sim-chat"><i class="fa-solid fa-comments"></i> <span data-i18n="btn_sim_chat">Send Test Chat</span></button>
+          <button class="btn btn-teal" id="btn-sim-qa"><i class="fa-solid fa-circle-question"></i> <span data-i18n="btn_sim_qa">Test Q&amp;A</span></button>
         </div>
         <div class="grid-2">
-          <label>Alert Type to Simulate
+          <label><span data-i18n="lbl_sim_alert_type">Alert Type to Simulate</span>
             <select id="sim-alert-type">
-              <option value="sub">New Subscriber</option>
-              <option value="member">New Member</option>
-              <option value="milestone">Membership Milestone</option>
-              <option value="gift">Membership Gift</option>
-              <option value="giftRec">Gift Received</option>
-              <option value="superchat">Super Chat</option>
-              <option value="supersticker">Super Sticker</option>
-              <option value="jewels">Jewels Gifted</option>
+              <option value="sub" data-i18n="al_new_sub">New Subscriber</option>
+              <option value="member" data-i18n="al_new_mem">New Member</option>
+              <option value="milestone" data-i18n="al_milestone">Membership Milestone</option>
+              <option value="gift" data-i18n="al_gift_sent">Membership Gift</option>
+              <option value="giftRec" data-i18n="al_gift_rec">Gift Received</option>
+              <option value="superchat" data-i18n="al_superchat">Super Chat</option>
+              <option value="supersticker" data-i18n="al_supersticker">Super Sticker</option>
+              <option value="jewels" data-i18n="al_jewels">Jewels Gifted</option>
             </select>
           </label>
-          <label>Chat Role to Simulate
+          <label><span data-i18n="lbl_sim_chat_role">Chat Role to Simulate</span>
             <select id="sim-chat-role">
-              <option value="random">Random Role</option>
-              <option value="member">Member (Teal)</option>
-              <option value="mod">Moderator (Purple)</option>
-              <option value="viewer">Viewer (Yellow)</option>
+              <option value="random" data-i18n="opt_role_random">Random Role</option>
+              <option value="member" data-i18n="opt_role_member">Member (Teal)</option>
+              <option value="mod" data-i18n="opt_role_mod">Moderator (Purple)</option>
+              <option value="viewer" data-i18n="opt_role_viewer">Viewer (Yellow)</option>
             </select>
           </label>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title"><i class="fa-brands fa-youtube"></i> Live SB User Test (Card, SO &amp; Q&amp;A)</div>
-        <label>Channel ID or Username <input type="text" id="test-user-input" placeholder="e.g. UCVu2Tib4ZyK3FzwnCjPBHGw or Username"></label>
-        <label>Sample Q&amp;A Message <input type="text" id="test-qa-msg" value="When is the next Vice City heist stream starting?"></label>
-        <label>SB Lookup Action <input type="text" id="cfg-lookupAction" value="GTA_LookupYouTubeUser"></label>
+        <div class="panel-title"><i class="fa-brands fa-youtube"></i> <span data-i18n="panel_live_test">Live SB User Test (Card, SO &amp; Q&amp;A)</span></div>
+        <label><span data-i18n="lbl_chan_or_user">Channel ID or Username</span> <input type="text" id="test-user-input" data-i18n-placeholder="ph_chan_or_user" placeholder="e.g. UCVu2Tib4ZyK3FzwnCjPBHGw or Username"></label>
+        <label><span data-i18n="lbl_sample_qa_msg">Sample Q&amp;A Message</span> <input type="text" id="test-qa-msg" value="When is the next Vice City heist stream starting?"></label>
+        <label><span data-i18n="lbl_sb_lookup_action">SB Lookup Action</span> <input type="text" id="cfg-lookupAction" value="GTA_LookupYouTubeUser"></label>
         <div class="grid-3">
-          <button class="btn btn-pink" id="btn-test-user"><i class="fa-solid fa-id-card"></i> Test Card</button>
-          <button class="btn btn-yellow" id="btn-test-so-user"><i class="fa-solid fa-bullhorn"></i> Test SO</button>
-          <button class="btn btn-teal" id="btn-test-qa-user"><i class="fa-solid fa-circle-question"></i> Test Q&amp;A</button>
+          <button class="btn btn-pink" id="btn-test-user"><i class="fa-solid fa-id-card"></i> <span data-i18n="btn_test_card">Test Card</span></button>
+          <button class="btn btn-yellow" id="btn-test-so-user"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="btn_test_so">Test SO</span></button>
+          <button class="btn btn-teal" id="btn-test-qa-user"><i class="fa-solid fa-circle-question"></i> <span data-i18n="btn_test_qa">Test Q&amp;A</span></button>
         </div>
-        <div id="test-status-log" class="status-log">Ready...</div>
+        <div id="test-status-log" class="status-log" data-i18n="status_ready">Ready...</div>
       </div>
     </div>
   </aside>
 
   <main class="workspace">
-    <div class="url-box">
-      <div class="panel-header">
-        <div class="panel-title"><i class="fa-solid fa-link"></i> OBS Browser Source URL (1920x1080)</div>
-        <label style="flex-direction:row; align-items:center; font-size:11px; color:#fff; gap:8px;">Include Modules:
-          <select id="cfg-modules" style="width:auto; padding:4px 8px; font-size:11px;">
-            <option value="all">All 5 Modules (Global Combined)</option>
-            <option value="walkon">1. Walk-On Card Only</option>
-            <option value="alerts">2. Alerts Box Only</option>
-            <option value="shoutout">3. Shoutout Toast Only</option>
-            <option value="chat">4. Horizontal Chat Bar Only</option>
-            <option value="qa">5. Q&amp;A Highlight Toast Only</option>
-          </select>
-        </label>
+    
+    <div class="top-bar">
+      <div class="module-select-bar">
+        <span class="module-select-title" data-i18n="lbl_modules_gen">Modules to Generate:</span>
+        <label class="mod-chk-label"><input type="checkbox" id="mod-walkon" class="mod-chk" checked> <span data-i18n="mod_1_walkon">1. Walk-On Card</span></label>
+        <label class="mod-chk-label"><input type="checkbox" id="mod-alerts" class="mod-chk" checked> <span data-i18n="mod_2_alerts">2. Alerts Box</span></label>
+        <label class="mod-chk-label"><input type="checkbox" id="mod-shoutout" class="mod-chk" checked> <span data-i18n="mod_3_shoutout">3. Shoutout</span></label>
+        <label class="mod-chk-label"><input type="checkbox" id="mod-chat" class="mod-chk" checked> <span data-i18n="mod_4_chat">4. Chat Bar</span></label>
+        <label class="mod-chk-label"><input type="checkbox" id="mod-qa" class="mod-chk" checked> <span data-i18n="mod_5_qa">5. Q&amp;A Toast</span></label>
       </div>
-      <div class="url-row">
-        <input type="text" id="obs-url-output" class="url-input" readonly>
-        <button class="btn btn-yellow" id="btn-copy-url"><i class="fa-solid fa-copy"></i> Copy</button>
+
+      <div class="url-box">
+        <div class="url-row">
+          <span class="url-label"><i class="fa-solid fa-tv"></i> <span data-i18n="lbl_url_horiz">Horizontal</span></span>
+          <input type="text" id="obs-url-horiz" class="url-input" readonly>
+          <button class="btn btn-yellow" onclick="copyUrl('obs-url-horiz', this)"><i class="fa-solid fa-copy"></i> <span data-i18n="btn_copy">Copy</span></button>
+        </div>
+        <div class="url-row">
+          <span class="url-label"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="lbl_url_vert">Vertical</span></span>
+          <input type="text" id="obs-url-vert" class="url-input" readonly>
+          <button class="btn btn-teal" onclick="copyUrl('obs-url-vert', this)"><i class="fa-solid fa-copy"></i> <span data-i18n="btn_copy">Copy</span></button>
+        </div>
       </div>
     </div>
 
     <div class="preview-toolbar">
       <label class="pin-toggle-label">
         <input type="checkbox" id="chk-pin-preview" checked>
-        <span><i class="fa-solid fa-thumbtack"></i> Pin Visible (Setup Mode) — Drag any module to move • Drag corner handle to scale</span>
+        <span><i class="fa-solid fa-thumbtack"></i> <span data-i18n="lbl_pin_preview">Pin Visible (Setup Mode) — Drag any module to move • Drag corner handle to scale</span></span>
       </label>
+      <div class="view-toggles">
+        <button class="btn btn-dark active" onclick="setPreviewMode('dual', this)"><i class="fa-solid fa-columns"></i> <span data-i18n="btn_view_dual">Dual Preview</span></button>
+        <button class="btn btn-dark" onclick="setPreviewMode('horiz', this)"><i class="fa-solid fa-tv"></i> <span data-i18n="btn_view_horiz">Horizontal</span></button>
+        <button class="btn btn-dark" onclick="setPreviewMode('vert', this)"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="btn_view_vert">Vertical</span></button>
+      </div>
     </div>
 
-    <div class="preview-wrapper" id="preview-wrapper">
-      <div class="canvas-scaler" id="canvas-scaler">
-        <iframe id="preview-frame" src="gta-overlay.html?preview=1"></iframe>
+    <div class="preview-stage" id="preview-stage">
+      <div class="preview-wrap active" id="wrap-horiz">
+        <div class="preview-tag" data-i18n="tag_horiz_16_9">HORIZONTAL (16:9)</div>
+        <div class="canvas-scaler" id="scaler-horiz">
+          <iframe id="frame-horiz" src=""></iframe>
+        </div>
+      </div>
+      <div class="preview-wrap active" id="wrap-vert">
+        <div class="preview-tag" data-i18n="tag_vert_9_16">VERTICAL (9:16)</div>
+        <div class="canvas-scaler" id="scaler-vert">
+          <iframe id="frame-vert" src=""></iframe>
+        </div>
       </div>
     </div>
   </main>
@@ -586,60 +730,126 @@
   <script>
     let sbAdminClient = null;
     let pendingLookupTargetModule = 'walkon'; // 'walkon', 'shoutout', or 'qa'
-    const previewFrame = document.getElementById('preview-frame');
-    const urlOutput = document.getElementById('obs-url-output');
+    
+    const frameHoriz = document.getElementById('frame-horiz');
+    const frameVert = document.getElementById('frame-vert');
+    const wrapHoriz = document.getElementById('wrap-horiz');
+    const wrapVert = document.getElementById('wrap-vert');
+    
+    const urlOutHoriz = document.getElementById('obs-url-horiz');
+    const urlOutVert = document.getElementById('obs-url-vert');
+    
     const sbStatusBadge = document.getElementById('sb-status');
     const statsListContainer = document.getElementById('stats-list-container');
     const pinCheckbox = document.getElementById('chk-pin-preview');
     const testStatusLog = document.getElementById('test-status-log');
-    const selModules = document.getElementById('cfg-modules');
 
-    // Module 1 (Card) Alignment Controls
-    const chkAlignH = document.getElementById('chk-alignH');
-    const chkAlignV = document.getElementById('chk-alignV');
-    const chkAlignScreen = document.getElementById('chk-alignScreen');
-    const inputX = document.getElementById('cfg-x');
-    const inputY = document.getElementById('cfg-y');
-    const inputScale = document.getElementById('cfg-scale');
-    
-    // Module 2 (Alerts) Alignment Controls
-    const chkAAlignH = document.getElementById('chk-aAlignH');
-    const chkAAlignV = document.getElementById('chk-aAlignV');
-    const chkAAlignScreen = document.getElementById('chk-aAlignScreen');
-    const inputAX = document.getElementById('cfg-ax');
-    const inputAY = document.getElementById('cfg-ay');
+    let currentLayoutEdit = 'horiz';
+    let currentPreviewMode = 'dual';
 
-    // Module 3 (Shoutout) Alignment Controls
-    const chkSoAlignH = document.getElementById('chk-soAlignH');
-    const chkSoAlignV = document.getElementById('chk-soAlignV');
-    const chkSoAlignScreen = document.getElementById('chk-soAlignScreen');
-    const inputSoX = document.getElementById('cfg-soX');
-    const inputSoY = document.getElementById('cfg-soY');
-    const inputSoScale = document.getElementById('cfg-soScale');
+    document.querySelectorAll('.layout-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget.dataset.target;
+        currentLayoutEdit = target;
+        document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.layout-btn[data-target="'+target+'"]').forEach(b => b.classList.add('active'));
+        
+        document.querySelectorAll('.edit-horiz').forEach(el => el.style.display = target === 'horiz' ? '' : 'none');
+        document.querySelectorAll('.edit-vert').forEach(el => el.style.display = target === 'vert' ? '' : 'none');
+      });
+    });
+    // Trigger initial state
+    document.querySelectorAll('.edit-vert').forEach(el => el.style.display = 'none');
 
-    // Module 4 (Chat) Alignment Controls
-    const chkChatAlignH = document.getElementById('chk-chatAlignH');
-    const chkChatAlignV = document.getElementById('chk-chatAlignV');
-    const chkChatAlignScreen = document.getElementById('chk-chatAlignScreen');
-    const inputChatX = document.getElementById('cfg-chatX');
-    const inputChatY = document.getElementById('cfg-chatY');
-    const inputChatScale = document.getElementById('cfg-chatScale');
-
-    // Module 5 (Q&A) Alignment Controls
-    const chkQaAlignH = document.getElementById('chk-qaAlignH');
-    const chkQaAlignV = document.getElementById('chk-qaAlignV');
-    const chkQaAlignScreen = document.getElementById('chk-qaAlignScreen');
-    const inputQaX = document.getElementById('cfg-qaX');
-    const inputQaY = document.getElementById('cfg-qaY');
-    const inputQaScale = document.getElementById('cfg-qaScale');
+    function setPreviewMode(mode, btnEl) {
+      currentPreviewMode = mode;
+      document.querySelectorAll('.view-toggles .btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      
+      wrapHoriz.style.display = (mode === 'dual' || mode === 'horiz') ? 'block' : 'none';
+      wrapVert.style.display = (mode === 'dual' || mode === 'vert') ? 'block' : 'none';
+      fitPreviewCanvas();
+    }
 
     function fitPreviewCanvas() {
-      const wrapper = document.getElementById('preview-wrapper');
-      const scaler = document.getElementById('canvas-scaler');
-      if (!wrapper || !scaler) return;
-      const pad = 36;
-      const zoom = Math.min((wrapper.clientWidth - pad) / 1920, (wrapper.clientHeight - pad) / 1080, 1);
-      scaler.style.transform = `scale(${zoom})`;
+      const stage = document.getElementById('preview-stage');
+      if (!stage) return;
+
+      // Reset wrapper sizes prior to measuring stage dimensions so a large single-canvas
+      // preview never stretches the flex/grid container when switching back to Dual mode.
+      wrapHoriz.style.width = '0px';
+      wrapHoriz.style.height = '0px';
+      wrapVert.style.width = '0px';
+      wrapVert.style.height = '0px';
+
+      const pad = 48; // 20px padding per side + 8px buffer for outer 3px borders
+      const gap = 20;
+      const stageW = Math.max(320, stage.clientWidth - pad);
+      const stageH = Math.max(240, stage.clientHeight - pad);
+
+      // Account for selected canvas resolution (720p, 1080p, 1440p, 2160p)
+      // Inside gta-overlay.html, body.obs-canvas scales by (res / 1080) from a 1920x1080 (or 1080x1920) base.
+      const resVal = parseInt(document.getElementById('cfg-res')?.value || '1080', 10);
+      const resScale = (resVal > 0 ? resVal : 1080) / 1080;
+
+      const hLogicalW = Math.round(1920 * resScale);
+      const hLogicalH = Math.round(1080 * resScale);
+      const vLogicalW = Math.round(1080 * resScale);
+      const vLogicalH = Math.round(1920 * resScale);
+
+      const scalerHoriz = document.getElementById('scaler-horiz');
+      const scalerVert = document.getElementById('scaler-vert');
+
+      const applyHorizSize = (visH) => {
+        const visW = Math.floor(visH * (16 / 9));
+        const zoomH = visH / hLogicalH;
+        const gridStepH = 60 * (visH / 1080);
+
+        scalerHoriz.style.width = `${hLogicalW}px`;
+        scalerHoriz.style.height = `${hLogicalH}px`;
+        scalerHoriz.style.transform = `scale(${zoomH})`;
+        frameHoriz.style.width = `${hLogicalW}px`;
+        frameHoriz.style.height = `${hLogicalH}px`;
+
+        wrapHoriz.style.width = `${visW}px`;
+        wrapHoriz.style.height = `${visH}px`;
+        wrapHoriz.style.backgroundSize = `${gridStepH}px ${gridStepH}px`;
+      };
+
+      const applyVertSize = (visH) => {
+        const visW = Math.floor(visH * (9 / 16));
+        const zoomV = visH / vLogicalH;
+        const gridStepV = 60 * (visH / 1920);
+
+        scalerVert.style.width = `${vLogicalW}px`;
+        scalerVert.style.height = `${vLogicalH}px`;
+        scalerVert.style.transform = `scale(${zoomV})`;
+        frameVert.style.width = `${vLogicalW}px`;
+        frameVert.style.height = `${vLogicalH}px`;
+
+        wrapVert.style.width = `${visW}px`;
+        wrapVert.style.height = `${visH}px`;
+        wrapVert.style.backgroundSize = `${gridStepV}px ${gridStepV}px`;
+      };
+
+      if (currentPreviewMode === 'dual') {
+        // OBS Dual-Canvas style: both canvases share the exact same visual height,
+        // pinned to the top-left with Horizontal (16:9) on the left and Vertical (9:16) on the right.
+        const combinedAspect = (16 / 9) + (9 / 16); // 2.3402778
+        const maxVisHByWidth = (stageW - gap) / combinedAspect;
+        const sharedVisH = Math.max(180, Math.floor(Math.min(stageH, maxVisHByWidth)));
+
+        applyHorizSize(sharedVisH);
+        applyVertSize(sharedVisH);
+      } else if (currentPreviewMode === 'horiz') {
+        const maxVisHByWidth = stageW / (16 / 9);
+        const visH = Math.max(180, Math.floor(Math.min(stageH, maxVisHByWidth)));
+        applyHorizSize(visH);
+      } else if (currentPreviewMode === 'vert') {
+        const maxVisHByWidth = stageW / (9 / 16);
+        const visH = Math.max(180, Math.floor(Math.min(stageH, maxVisHByWidth)));
+        applyVertSize(visH);
+      }
     }
     window.addEventListener('resize', fitPreviewCanvas);
 
@@ -654,9 +864,9 @@
 
     if (pinCheckbox) {
       pinCheckbox.addEventListener('change', () => {
-        if (previewFrame && previewFrame.contentWindow) {
-          previewFrame.contentWindow.postMessage({ type: 'SET_PREVIEW_PINNED', pinned: pinCheckbox.checked }, '*');
-        }
+        const payload = { type: 'SET_PREVIEW_PINNED', pinned: pinCheckbox.checked };
+        if (frameHoriz && frameHoriz.contentWindow) frameHoriz.contentWindow.postMessage(payload, '*');
+        if (frameVert && frameVert.contentWindow) frameVert.contentWindow.postMessage(payload, '*');
       });
     }
 
@@ -676,68 +886,91 @@
           update();
         });
       }
+      if (chkScreen && chkH && chkV) chkScreen.checked = chkH.checked && chkV.checked;
+      if (inpX && chkH) inpX.disabled = chkH.checked;
+      if (inpY && chkV) inpY.disabled = chkV.checked;
     }
 
-    bindAlignGroup(chkAlignH, chkAlignV, chkAlignScreen, inputX, inputY);
-    bindAlignGroup(chkAAlignH, chkAAlignV, chkAAlignScreen, inputAX, inputAY);
-    bindAlignGroup(chkSoAlignH, chkSoAlignV, chkSoAlignScreen, inputSoX, inputSoY);
-    bindAlignGroup(chkChatAlignH, chkChatAlignV, chkChatAlignScreen, inputChatX, inputChatY);
-    bindAlignGroup(chkQaAlignH, chkQaAlignV, chkQaAlignScreen, inputQaX, inputQaY);
+    // Horizontal
+    bindAlignGroup(document.getElementById('chk-alignH'), document.getElementById('chk-alignV'), document.getElementById('chk-alignScreen'), document.getElementById('cfg-x'), document.getElementById('cfg-y'));
+    bindAlignGroup(document.getElementById('chk-aAlignH'), document.getElementById('chk-aAlignV'), document.getElementById('chk-aAlignScreen'), document.getElementById('cfg-ax'), document.getElementById('cfg-ay'));
+    bindAlignGroup(document.getElementById('chk-soAlignH'), document.getElementById('chk-soAlignV'), document.getElementById('chk-soAlignScreen'), document.getElementById('cfg-soX'), document.getElementById('cfg-soY'));
+    bindAlignGroup(document.getElementById('chk-chatAlignH'), document.getElementById('chk-chatAlignV'), document.getElementById('chk-chatAlignScreen'), document.getElementById('cfg-chatX'), document.getElementById('cfg-chatY'));
+    bindAlignGroup(document.getElementById('chk-qaAlignH'), document.getElementById('chk-qaAlignV'), document.getElementById('chk-qaAlignScreen'), document.getElementById('cfg-qaX'), document.getElementById('cfg-qaY'));
+
+    // Vertical
+    bindAlignGroup(document.getElementById('chk-v_alignH'), document.getElementById('chk-v_alignV'), document.getElementById('chk-v_alignScreen'), document.getElementById('cfg-v_x'), document.getElementById('cfg-v_y'));
+    bindAlignGroup(document.getElementById('chk-v_aAlignH'), document.getElementById('chk-v_aAlignV'), document.getElementById('chk-v_aAlignScreen'), document.getElementById('cfg-v_ax'), document.getElementById('cfg-v_ay'));
+    bindAlignGroup(document.getElementById('chk-v_soAlignH'), document.getElementById('chk-v_soAlignV'), document.getElementById('chk-v_soAlignScreen'), document.getElementById('cfg-v_soX'), document.getElementById('cfg-v_soY'));
+    bindAlignGroup(document.getElementById('chk-v_chatAlignH'), document.getElementById('chk-v_chatAlignV'), document.getElementById('chk-v_chatAlignScreen'), document.getElementById('cfg-v_chatX'), document.getElementById('cfg-v_chatY'));
+    bindAlignGroup(document.getElementById('chk-v_qaAlignH'), document.getElementById('chk-v_qaAlignV'), document.getElementById('chk-v_qaAlignScreen'), document.getElementById('cfg-v_qaX'), document.getElementById('cfg-v_qaY'));
 
     // Sync Drag / Resize from Preview Iframe
     window.addEventListener('message', (msg) => {
       if (!msg || !msg.data) return;
       const d = msg.data;
+      const isVert = d.layout === 'vertical';
+      const pfx = isVert ? 'v_' : '';
+
       if (d.type === 'CARD_MANIPULATED') {
-        if (inputX) inputX.value = d.x;
-        if (inputY) inputY.value = d.y;
-        if (inputScale) inputScale.value = d.scale;
-        if (chkAlignH) chkAlignH.checked = Boolean(d.alignH);
-        if (chkAlignV) chkAlignV.checked = Boolean(d.alignV);
-        if (chkAlignScreen) chkAlignScreen.checked = chkAlignH.checked && chkAlignV.checked;
-        if (inputX) inputX.disabled = chkAlignH.checked;
-        if (inputY) inputY.disabled = chkAlignV.checked;
+        if (document.getElementById(`cfg-${pfx}x`)) document.getElementById(`cfg-${pfx}x`).value = d.x;
+        if (document.getElementById(`cfg-${pfx}y`)) document.getElementById(`cfg-${pfx}y`).value = d.y;
+        if (document.getElementById(`cfg-${pfx}scale`)) document.getElementById(`cfg-${pfx}scale`).value = d.scale;
+        
+        if (document.getElementById(`chk-${pfx}alignH`)) document.getElementById(`chk-${pfx}alignH`).checked = Boolean(d.alignH);
+        if (document.getElementById(`chk-${pfx}alignV`)) document.getElementById(`chk-${pfx}alignV`).checked = Boolean(d.alignV);
+        if (document.getElementById(`chk-${pfx}alignScreen`)) document.getElementById(`chk-${pfx}alignScreen`).checked = Boolean(d.alignH) && Boolean(d.alignV);
+        
+        if (document.getElementById(`cfg-${pfx}x`)) document.getElementById(`cfg-${pfx}x`).disabled = Boolean(d.alignH);
+        if (document.getElementById(`cfg-${pfx}y`)) document.getElementById(`cfg-${pfx}y`).disabled = Boolean(d.alignV);
         updateGeneratedUrlOnly();
       } else if (d.type === 'ALERT_MANIPULATED') {
-        if (inputAX) inputAX.value = d.ax;
-        if (inputAY) inputAY.value = d.ay;
-        const aScale = document.getElementById('cfg-ascale');
-        if (aScale) aScale.value = d.ascale;
-        if (chkAAlignH) chkAAlignH.checked = Boolean(d.aAlignH);
-        if (chkAAlignV) chkAAlignV.checked = Boolean(d.aAlignV);
-        if (chkAAlignScreen) chkAAlignScreen.checked = chkAAlignH.checked && chkAAlignV.checked;
-        if (inputAX) inputAX.disabled = chkAAlignH.checked;
-        if (inputAY) inputAY.disabled = chkAAlignV.checked;
+        if (document.getElementById(`cfg-${pfx}ax`)) document.getElementById(`cfg-${pfx}ax`).value = d.ax;
+        if (document.getElementById(`cfg-${pfx}ay`)) document.getElementById(`cfg-${pfx}ay`).value = d.ay;
+        if (document.getElementById(`cfg-${pfx}ascale`)) document.getElementById(`cfg-${pfx}ascale`).value = d.ascale;
+        
+        if (document.getElementById(`chk-${pfx}aAlignH`)) document.getElementById(`chk-${pfx}aAlignH`).checked = Boolean(d.aAlignH);
+        if (document.getElementById(`chk-${pfx}aAlignV`)) document.getElementById(`chk-${pfx}aAlignV`).checked = Boolean(d.aAlignV);
+        if (document.getElementById(`chk-${pfx}aAlignScreen`)) document.getElementById(`chk-${pfx}aAlignScreen`).checked = Boolean(d.aAlignH) && Boolean(d.aAlignV);
+        
+        if (document.getElementById(`cfg-${pfx}ax`)) document.getElementById(`cfg-${pfx}ax`).disabled = Boolean(d.aAlignH);
+        if (document.getElementById(`cfg-${pfx}ay`)) document.getElementById(`cfg-${pfx}ay`).disabled = Boolean(d.aAlignV);
         updateGeneratedUrlOnly();
       } else if (d.type === 'SHOUTOUT_MANIPULATED') {
-        if (inputSoX) inputSoX.value = d.soX;
-        if (inputSoY) inputSoY.value = d.soY;
-        if (inputSoScale) inputSoScale.value = d.soScale;
-        if (chkSoAlignH) chkSoAlignH.checked = Boolean(d.soAlignH);
-        if (chkSoAlignV) chkSoAlignV.checked = Boolean(d.soAlignV);
-        if (chkSoAlignScreen) chkSoAlignScreen.checked = chkSoAlignH.checked && chkSoAlignV.checked;
-        if (inputSoX) inputSoX.disabled = chkSoAlignH.checked;
-        if (inputSoY) inputSoY.disabled = chkSoAlignV.checked;
+        if (document.getElementById(`cfg-${pfx}soX`)) document.getElementById(`cfg-${pfx}soX`).value = d.soX;
+        if (document.getElementById(`cfg-${pfx}soY`)) document.getElementById(`cfg-${pfx}soY`).value = d.soY;
+        if (document.getElementById(`cfg-${pfx}soScale`)) document.getElementById(`cfg-${pfx}soScale`).value = d.soScale;
+        
+        if (document.getElementById(`chk-${pfx}soAlignH`)) document.getElementById(`chk-${pfx}soAlignH`).checked = Boolean(d.soAlignH);
+        if (document.getElementById(`chk-${pfx}soAlignV`)) document.getElementById(`chk-${pfx}soAlignV`).checked = Boolean(d.soAlignV);
+        if (document.getElementById(`chk-${pfx}soAlignScreen`)) document.getElementById(`chk-${pfx}soAlignScreen`).checked = Boolean(d.soAlignH) && Boolean(d.soAlignV);
+        
+        if (document.getElementById(`cfg-${pfx}soX`)) document.getElementById(`cfg-${pfx}soX`).disabled = Boolean(d.soAlignH);
+        if (document.getElementById(`cfg-${pfx}soY`)) document.getElementById(`cfg-${pfx}soY`).disabled = Boolean(d.soAlignV);
         updateGeneratedUrlOnly();
       } else if (d.type === 'CHAT_MANIPULATED') {
-        if (inputChatX) inputChatX.value = d.chatX;
-        if (inputChatY) inputChatY.value = d.chatY;
-        if (inputChatScale) inputChatScale.value = d.chatScale;
-        if (chkChatAlignH) chkChatAlignH.checked = Boolean(d.chatAlignH);
-        if (chkChatAlignV) chkChatAlignV.checked = Boolean(d.chatAlignV);
-        if (chkChatAlignScreen) chkChatAlignScreen.checked = chkChatAlignH.checked && chkChatAlignV.checked;
-        if (inputChatX) inputChatX.disabled = chkChatAlignH.checked;
-        if (inputChatY) inputChatY.disabled = chkChatAlignV.checked;
+        if (document.getElementById(`cfg-${pfx}chatX`)) document.getElementById(`cfg-${pfx}chatX`).value = d.chatX;
+        if (document.getElementById(`cfg-${pfx}chatY`)) document.getElementById(`cfg-${pfx}chatY`).value = d.chatY;
+        if (document.getElementById(`cfg-${pfx}chatScale`)) document.getElementById(`cfg-${pfx}chatScale`).value = d.chatScale;
+        
+        if (document.getElementById(`chk-${pfx}chatAlignH`)) document.getElementById(`chk-${pfx}chatAlignH`).checked = Boolean(d.chatAlignH);
+        if (document.getElementById(`chk-${pfx}chatAlignV`)) document.getElementById(`chk-${pfx}chatAlignV`).checked = Boolean(d.chatAlignV);
+        if (document.getElementById(`chk-${pfx}chatAlignScreen`)) document.getElementById(`chk-${pfx}chatAlignScreen`).checked = Boolean(d.chatAlignH) && Boolean(d.chatAlignV);
+        
+        if (document.getElementById(`cfg-${pfx}chatX`)) document.getElementById(`cfg-${pfx}chatX`).disabled = Boolean(d.chatAlignH);
+        if (document.getElementById(`cfg-${pfx}chatY`)) document.getElementById(`cfg-${pfx}chatY`).disabled = Boolean(d.chatAlignV);
         updateGeneratedUrlOnly();
       } else if (d.type === 'QA_MANIPULATED') {
-        if (inputQaX) inputQaX.value = d.qaX;
-        if (inputQaY) inputQaY.value = d.qaY;
-        if (inputQaScale) inputQaScale.value = d.qaScale;
-        if (chkQaAlignH) chkQaAlignH.checked = Boolean(d.qaAlignH);
-        if (chkQaAlignV) chkQaAlignV.checked = Boolean(d.qaAlignV);
-        if (chkQaAlignScreen) chkQaAlignScreen.checked = chkQaAlignH.checked && chkQaAlignV.checked;
-        if (inputQaX) inputQaX.disabled = chkQaAlignH.checked;
-        if (inputQaY) inputQaY.disabled = chkQaAlignV.checked;
+        if (document.getElementById(`cfg-${pfx}qaX`)) document.getElementById(`cfg-${pfx}qaX`).value = d.qaX;
+        if (document.getElementById(`cfg-${pfx}qaY`)) document.getElementById(`cfg-${pfx}qaY`).value = d.qaY;
+        if (document.getElementById(`cfg-${pfx}qaScale`)) document.getElementById(`cfg-${pfx}qaScale`).value = d.qaScale;
+        
+        if (document.getElementById(`chk-${pfx}qaAlignH`)) document.getElementById(`chk-${pfx}qaAlignH`).checked = Boolean(d.qaAlignH);
+        if (document.getElementById(`chk-${pfx}qaAlignV`)) document.getElementById(`chk-${pfx}qaAlignV`).checked = Boolean(d.qaAlignV);
+        if (document.getElementById(`chk-${pfx}qaAlignScreen`)) document.getElementById(`chk-${pfx}qaAlignScreen`).checked = Boolean(d.qaAlignH) && Boolean(d.qaAlignV);
+        
+        if (document.getElementById(`cfg-${pfx}qaX`)) document.getElementById(`cfg-${pfx}qaX`).disabled = Boolean(d.qaAlignH);
+        if (document.getElementById(`cfg-${pfx}qaY`)) document.getElementById(`cfg-${pfx}qaY`).disabled = Boolean(d.qaAlignV);
         updateGeneratedUrlOnly();
       }
     });
@@ -745,13 +978,1031 @@
     const DEFAULT_COLORS = { cPink: '#f4acc4', cTeal: '#53d8bf', cPurple: '#a688ff', cYellow: '#fede9a', cStroke: '#171a21', cBorder: '#0b2328', cBg: '#303030' };
     const CHAT_COLOR_KEYS = ['cMem', 'cMod', 'cView', 'cMsg', 'cChatBg'];
 
+    const i18nDict = {
+  "en": {
+    "tenure": "Tenure",
+    "joined": "Joined",
+    "loyalty": "Loyalty",
+    "months": " Months",
+    "shoutout": "SHOUTOUT",
+    "qa": "Q&A HIGHLIGHT",
+    "status_disconnected": "Disconnected",
+    "status_connected": "SB Connected",
+    "res_720": "720p Canvas",
+    "res_1080": "1080p Canvas",
+    "res_1440": "1440p Canvas",
+    "res_2160": "2160p (4K) Canvas",
+    "tab_general": "General",
+    "tab_card": "Card",
+    "tab_alerts": "Alerts",
+    "tab_shoutout": "Shoutout",
+    "tab_chat": "Chat",
+    "tab_qa": "Q&A",
+    "tab_colors": "Colors",
+    "tab_test": "Test",
+    "panel_sb_conn": "Streamer.bot Connection",
+    "lbl_ws_host": "WebSocket IP / Host",
+    "lbl_ws_port": "Port",
+    "lbl_ws_pass": "WebSocket Password",
+    "ph_ws_pass": "Leave blank if no auth",
+    "btn_connect_sb": "Connect SB",
+    "panel_typo": "Global Typography & Shared Texture",
+    "lbl_font_heading": "Heading Font",
+    "lbl_font_body": "Body Font",
+    "lbl_bg_url": "Background Texture URL / Path",
+    "btn_layout_horiz": "Horizontal Layout",
+    "btn_layout_vert": "Vertical Layout",
+    "lbl_left_x": "Left (X px)",
+    "lbl_bottom_y": "Bottom (Y px)",
+    "lbl_top_y": "Top (Y px)",
+    "lbl_scale": "Scale",
+    "lbl_center_h": "Center H",
+    "lbl_center_v": "Center V",
+    "lbl_screen_center": "Screen Center",
+    "lbl_duration_sec": "Duration (sec)",
+    "lbl_solid_fill": "Solid Fill (No Background Image)",
+    "opt_teal": "TEAL",
+    "opt_pink": "PINK",
+    "opt_purple": "PURPLE",
+    "opt_yellow": "YELLOW",
+    "panel_card_layout": "Card Base Layout",
+    "lbl_show_avatar": "Show Avatar",
+    "lbl_show_user": "Show User",
+    "lbl_show_tier": "Show Tier",
+    "lbl_card_anim": "Card Transition",
+    "opt_anim_slide_left": "Slide In (Left)",
+    "opt_anim_slide_right": "Slide In (Right)",
+    "opt_anim_slide_up": "Slide Up (Bottom)",
+    "opt_anim_zoom": "Vice Zoom Pop",
+    "lbl_avatar_anim": "Avatar Animation",
+    "opt_av_flip": "3D Coin Flip",
+    "opt_av_spin": "360° Spin In",
+    "opt_av_pop": "Elastic Pop",
+    "lbl_sb_custom_event": "SB Custom Event",
+    "lbl_avatar_sb_var": "Avatar SB Var",
+    "lbl_tier_sb_var": "Tier SB Var",
+    "panel_card_vars": "Card Variables (Dynamic Rows)",
+    "btn_add_row": "+ Add Row",
+    "stat_row_title": "ROW #",
+    "stat_lbl_label": "Label",
+    "stat_lbl_sb_var": "SB Var",
+    "stat_lbl_suffix": "Suffix",
+    "stat_lbl_icon": "Icon",
+    "stat_lbl_icolor": "I-Color",
+    "stat_lbl_vcolor": "V-Color",
+    "stat_new_default": "New",
+    "icon_heart": "Heart",
+    "icon_calendar": "Calendar",
+    "icon_eye": "Eye",
+    "icon_crown": "Crown",
+    "icon_medal": "Medal",
+    "icon_skull": "Skull",
+    "icon_bolt": "Bolt",
+    "icon_cash": "Cash",
+    "icon_star": "Star",
+    "panel_yt_events": "YouTube Events & Accent Colors",
+    "desc_yt_events": "Choose an independent accent color and toggle visibility for each alert type.",
+    "al_new_sub": "New Subscriber",
+    "al_new_mem": "New Member",
+    "al_milestone": "Membership Milestone",
+    "al_gift_sent": "Membership Gift Sent",
+    "al_gift_rec": "Gift Membership Received",
+    "al_superchat": "Super Chat",
+    "al_supersticker": "Super Sticker",
+    "al_jewels": "Jewels Gifted",
+    "panel_alerts_pos": "Alerts Position & Timing",
+    "lbl_sb_alert_event": "SB Custom Alert Event",
+    "panel_so_pos": "Shoutout Toast Position & Timing",
+    "panel_so_aesthetics": "Shoutout Aesthetics & SB Trigger",
+    "lbl_toast_anim": "Toast Animation",
+    "opt_so_roll": "Roll & Pop",
+    "opt_so_slide_right": "Slide Right",
+    "opt_so_slide_left": "Slide Left",
+    "opt_so_zoom": "Vice Zoom",
+    "lbl_avatar_side": "Avatar Side",
+    "opt_side_right": "Right Side",
+    "opt_side_left": "Left Side",
+    "lbl_accent_color": "Accent Color",
+    "lbl_header_title": "Header Title Text",
+    "ph_auto_trans": "Leave empty for auto-translation",
+    "lbl_sb_global_var": "SB Global Variable Name",
+    "lbl_sb_event_name": "SB Custom Event Name",
+    "panel_chat_pos": "Horizontal Chat Position & Dimensions",
+    "lbl_bar_width": "Bar Width",
+    "lbl_font_size": "Font Size (px)",
+    "lbl_max_msgs": "Max Messages",
+    "panel_chat_colors": "Role Colors & Bar Background",
+    "lbl_mem_color": "Member Name Color (Default Teal)",
+    "lbl_mod_color": "Moderator Name Color (Default Purple)",
+    "lbl_view_color": "Viewer Name Color (Default Yellow)",
+    "lbl_msg_color": "Message Text Color",
+    "lbl_bar_fill": "Bar Fill Color",
+    "lbl_bar_opacity": "Bar Opacity (%)",
+    "lbl_top_border_color": "Top Border Color",
+    "lbl_show_avatars": "Show Avatars",
+    "lbl_show_badges": "Show Badges",
+    "lbl_all_caps": "ALL CAPS",
+    "lbl_transparent_bar": "Transparent Bar (Hide Background Strip)",
+    "panel_chat_filters": "Chat Filters (Commands, Users & Groups)",
+    "lbl_ignore_cmds": "Ignore Commands (Starts with Prefix)",
+    "lbl_cmd_prefixes": "Command Prefixes (Comma-separated)",
+    "lbl_auto_hide": "Auto-Hide Msg After (sec, 0=Never)",
+    "lbl_ignore_users": "Ignore Users by Name or Channel ID (Comma-separated)",
+    "ph_ignore_users": "e.g. Nightbot, StreamElements, UC...",
+    "lbl_ignore_groups": "Ignore Groups by groupName (Comma-separated)",
+    "ph_ignore_groups": "e.g. Bots, ExcludedGroup",
+    "panel_qa_pos": "Q&A Highlight Position & Timing",
+    "panel_qa_aesthetics": "Q&A Aesthetics & SB Trigger",
+    "lbl_entrance_anim": "Entrance Animation",
+    "lbl_header_badge_text": "Header Badge Text",
+    "lbl_show_badge_pill": "Show Header Badge Pill",
+    "panel_palette": "GTA VI Palette Overrides",
+    "btn_reset": "Reset",
+    "lbl_prim_pink": "Primary Pink",
+    "lbl_prim_teal": "Primary Teal",
+    "lbl_prim_purple": "Primary Purple",
+    "lbl_prim_yellow": "Primary Yellow",
+    "lbl_stroke_color": "Icon / Text Stroke",
+    "lbl_border_color": "Card Outer Border",
+    "lbl_bg_fill_color": "Card Base Fill",
+    "panel_simulators": "5-Module Simulators",
+    "btn_sim_walkon": "Walk-On",
+    "btn_sim_alert": "Alert",
+    "btn_sim_shoutout": "Shoutout",
+    "btn_sim_chat": "Send Test Chat",
+    "btn_sim_qa": "Test Q&A",
+    "lbl_sim_alert_type": "Alert Type to Simulate",
+    "lbl_sim_chat_role": "Chat Role to Simulate",
+    "opt_role_random": "Random Role",
+    "opt_role_member": "Member (Teal)",
+    "opt_role_mod": "Moderator (Purple)",
+    "opt_role_viewer": "Viewer (Yellow)",
+    "panel_live_test": "Live SB User Test (Card, SO & Q&A)",
+    "lbl_chan_or_user": "Channel ID or Username",
+    "ph_chan_or_user": "e.g. UCVu2Tib4ZyK3FzwnCjPBHGw or Username",
+    "lbl_sample_qa_msg": "Sample Q&A Message",
+    "lbl_sb_lookup_action": "SB Lookup Action",
+    "btn_test_card": "Test Card",
+    "btn_test_so": "Test SO",
+    "btn_test_qa": "Test Q&A",
+    "status_ready": "Ready...",
+    "status_enter_user": "Enter a Channel ID or Username first.",
+    "status_not_connected": "Not connected to Streamer.bot!",
+    "status_querying": "Querying SB for \"{user}\"...",
+    "status_action_not_found": "Action \"{action}\" not found in SB.",
+    "status_error_query": "Error querying SB.",
+    "status_loaded_vars": "Loaded real SB vars for {user}!",
+    "lbl_modules_gen": "Modules to Generate:",
+    "mod_1_walkon": "1. Walk-On Card",
+    "mod_2_alerts": "2. Alerts Box",
+    "mod_3_shoutout": "3. Shoutout",
+    "mod_4_chat": "4. Chat Bar",
+    "mod_5_qa": "5. Q&A Toast",
+    "lbl_url_horiz": "Horizontal",
+    "lbl_url_vert": "Vertical",
+    "btn_copy": "Copy",
+    "btn_copied": "Copied",
+    "lbl_pin_preview": "Pin Visible (Setup Mode) — Drag any module to move • Drag corner handle to scale",
+    "btn_view_dual": "Dual Preview",
+    "btn_view_horiz": "Horizontal",
+    "btn_view_vert": "Vertical",
+    "tag_horiz_16_9": "HORIZONTAL (16:9)",
+    "tag_vert_9_16": "VERTICAL (9:16)"
+  },
+  "pt-br": {
+    "tenure": "Tempo",
+    "joined": "Membro",
+    "loyalty": "Lealdade",
+    "months": " Meses",
+    "shoutout": "DESTAQUE",
+    "qa": "PERGUNTAS",
+    "status_disconnected": "Desconectado",
+    "status_connected": "SB Conectado",
+    "res_720": "Tela 720p",
+    "res_1080": "Tela 1080p",
+    "res_1440": "Tela 1440p",
+    "res_2160": "Tela 2160p (4K)",
+    "tab_general": "Geral",
+    "tab_card": "Card",
+    "tab_alerts": "Alertas",
+    "tab_shoutout": "Destaque",
+    "tab_chat": "Chat",
+    "tab_qa": "P&R",
+    "tab_colors": "Cores",
+    "tab_test": "Teste",
+    "panel_sb_conn": "Conexão com Streamer.bot",
+    "lbl_ws_host": "IP / Host do WebSocket",
+    "lbl_ws_port": "Porta",
+    "lbl_ws_pass": "Senha do WebSocket",
+    "ph_ws_pass": "Deixe em branco se não houver senha",
+    "btn_connect_sb": "Conectar ao SB",
+    "panel_typo": "Tipografia Global e Textura Compartilhada",
+    "lbl_font_heading": "Fonte de Título",
+    "lbl_font_body": "Fonte de Texto",
+    "lbl_bg_url": "URL / Caminho da Textura de Fundo",
+    "btn_layout_horiz": "Layout Horizontal",
+    "btn_layout_vert": "Layout Vertical",
+    "lbl_left_x": "Esquerda (X px)",
+    "lbl_bottom_y": "Inferior (Y px)",
+    "lbl_top_y": "Topo (Y px)",
+    "lbl_scale": "Escala",
+    "lbl_center_h": "Centro H",
+    "lbl_center_v": "Centro V",
+    "lbl_screen_center": "Centro da Tela",
+    "lbl_duration_sec": "Duração (seg)",
+    "lbl_solid_fill": "Cor Sólida (Sem Imagem de Fundo)",
+    "opt_teal": "VERDE-ÁGUA",
+    "opt_pink": "ROSA",
+    "opt_purple": "ROXO",
+    "opt_yellow": "AMARELO",
+    "panel_card_layout": "Layout Base do Card",
+    "lbl_show_avatar": "Mostrar Avatar",
+    "lbl_show_user": "Mostrar Usuário",
+    "lbl_show_tier": "Mostrar Nível",
+    "lbl_card_anim": "Transição do Card",
+    "opt_anim_slide_left": "Deslizar (Esquerda)",
+    "opt_anim_slide_right": "Deslizar (Direita)",
+    "opt_anim_slide_up": "Subir (Inferior)",
+    "opt_anim_zoom": "Zoom Vice Pop",
+    "lbl_avatar_anim": "Animação do Avatar",
+    "opt_av_flip": "Giro de Moeda 3D",
+    "opt_av_spin": "Giro 360°",
+    "opt_av_pop": "Pulo Elástico",
+    "lbl_sb_custom_event": "Evento Personalizado SB",
+    "lbl_avatar_sb_var": "Var SB do Avatar",
+    "lbl_tier_sb_var": "Var SB do Nível",
+    "panel_card_vars": "Variáveis do Card (Linhas Dinâmicas)",
+    "btn_add_row": "+ Adicionar Linha",
+    "stat_row_title": "LINHA #",
+    "stat_lbl_label": "Rótulo",
+    "stat_lbl_sb_var": "Var SB",
+    "stat_lbl_suffix": "Sufixo",
+    "stat_lbl_icon": "Ícone",
+    "stat_lbl_icolor": "Cor Ícone",
+    "stat_lbl_vcolor": "Cor Valor",
+    "stat_new_default": "Novo",
+    "icon_heart": "Coração",
+    "icon_calendar": "Calendário",
+    "icon_eye": "Olho",
+    "icon_crown": "Coroa",
+    "icon_medal": "Medalha",
+    "icon_skull": "Caveira",
+    "icon_bolt": "Raio",
+    "icon_cash": "Dinheiro",
+    "icon_star": "Estrela",
+    "panel_yt_events": "Eventos do YouTube e Cores de Destaque",
+    "desc_yt_events": "Escolha uma cor de destaque independente e ative/desative a visibilidade para cada tipo de alerta.",
+    "al_new_sub": "Novo Inscrito",
+    "al_new_mem": "Novo Membro",
+    "al_milestone": "Marco de Membro",
+    "al_gift_sent": "Presente de Membro Enviado",
+    "al_gift_rec": "Presente de Membro Recebido",
+    "al_superchat": "Super Chat",
+    "al_supersticker": "Super Sticker",
+    "al_jewels": "Joias Enviadas",
+    "panel_alerts_pos": "Posição e Tempo dos Alertas",
+    "lbl_sb_alert_event": "Evento de Alerta Personalizado SB",
+    "panel_so_pos": "Posição e Tempo do Destaque",
+    "panel_so_aesthetics": "Estética do Destaque e Gatilho SB",
+    "lbl_toast_anim": "Animação do Toast",
+    "opt_so_roll": "Rolar e Pular",
+    "opt_so_slide_right": "Deslizar Direita",
+    "opt_so_slide_left": "Deslizar Esquerda",
+    "opt_so_zoom": "Zoom Vice",
+    "lbl_avatar_side": "Lado do Avatar",
+    "opt_side_right": "Lado Direito",
+    "opt_side_left": "Lado Esquerdo",
+    "lbl_accent_color": "Cor de Destaque",
+    "lbl_header_title": "Texto do Cabeçalho",
+    "ph_auto_trans": "Deixe vazio para tradução automática",
+    "lbl_sb_global_var": "Nome da Variável Global SB",
+    "lbl_sb_event_name": "Nome do Evento Personalizado SB",
+    "panel_chat_pos": "Posição e Dimensões do Chat Horizontal",
+    "lbl_bar_width": "Largura da Barra",
+    "lbl_font_size": "Tam. da Fonte (px)",
+    "lbl_max_msgs": "Máx. de Mensagens",
+    "panel_chat_colors": "Cores dos Cargos e Fundo da Barra",
+    "lbl_mem_color": "Cor do Membro (Padrão Verde-água)",
+    "lbl_mod_color": "Cor do Moderador (Padrão Roxo)",
+    "lbl_view_color": "Cor do Espectador (Padrão Amarelo)",
+    "lbl_msg_color": "Cor do Texto da Mensagem",
+    "lbl_bar_fill": "Cor de Fundo",
+    "lbl_bar_opacity": "Opacidade (%)",
+    "lbl_top_border_color": "Cor da Borda Superior",
+    "lbl_show_avatars": "Mostrar Avatares",
+    "lbl_show_badges": "Mostrar Emblemas",
+    "lbl_all_caps": " MAIÚSCULAS",
+    "lbl_transparent_bar": "Barra Transparente (Ocultar Faixa de Fundo)",
+    "panel_chat_filters": "Filtros de Chat (Comandos, Usuários e Grupos)",
+    "lbl_ignore_cmds": "Ignorar Comandos (Começa com Prefixo)",
+    "lbl_cmd_prefixes": "Prefixos de Comando (Sep. por vírgula)",
+    "lbl_auto_hide": "Ocultar Msg Após (seg, 0=Nunca)",
+    "lbl_ignore_users": "Ignorar Usuários por Nome ou ID do Canal (Sep. por vírgula)",
+    "ph_ignore_users": "ex: Nightbot, StreamElements, UC...",
+    "lbl_ignore_groups": "Ignorar Grupos por groupName (Sep. por vírgula)",
+    "ph_ignore_groups": "ex: Bots, GrupoExcluido",
+    "panel_qa_pos": "Posição e Tempo do P&R",
+    "panel_qa_aesthetics": "Estética do P&R e Gatilho SB",
+    "lbl_entrance_anim": "Animação de Entrada",
+    "lbl_header_badge_text": "Texto do Emblema Superior",
+    "lbl_show_badge_pill": "Mostrar Emblema no Cabeçalho",
+    "panel_palette": "Substituições da Paleta GTA VI",
+    "btn_reset": "Redefinir",
+    "lbl_prim_pink": "Rosa Primário",
+    "lbl_prim_teal": "Verde-água Primário",
+    "lbl_prim_purple": "Roxo Primário",
+    "lbl_prim_yellow": "Amarelo Primário",
+    "lbl_stroke_color": "Contorno de Ícone / Texto",
+    "lbl_border_color": "Borda Externa do Card",
+    "lbl_bg_fill_color": "Preenchimento Base do Card",
+    "panel_simulators": "Simuladores dos 5 Módulos",
+    "btn_sim_walkon": "Card",
+    "btn_sim_alert": "Alerta",
+    "btn_sim_shoutout": "Destaque",
+    "btn_sim_chat": "Enviar Chat Teste",
+    "btn_sim_qa": "Testar P&R",
+    "lbl_sim_alert_type": "Tipo de Alerta para Simular",
+    "lbl_sim_chat_role": "Cargo do Chat para Simular",
+    "opt_role_random": "Cargo Aleatório",
+    "opt_role_member": "Membro (Verde-água)",
+    "opt_role_mod": "Moderador (Roxo)",
+    "opt_role_viewer": "Espectador (Amarelo)",
+    "panel_live_test": "Teste de Usuário Real no SB (Card, Destaque e P&R)",
+    "lbl_chan_or_user": "ID do Canal ou Nome de Usuário",
+    "ph_chan_or_user": "ex: UCVu2Tib4ZyK3FzwnCjPBHGw ou Nome",
+    "lbl_sample_qa_msg": "Mensagem de Exemplo P&R",
+    "lbl_sb_lookup_action": "Ação de Busca no SB",
+    "btn_test_card": "Testar Card",
+    "btn_test_so": "Testar Destaque",
+    "btn_test_qa": "Testar P&R",
+    "status_ready": "Pronto...",
+    "status_enter_user": "Digite um ID do Canal ou Nome de Usuário primeiro.",
+    "status_not_connected": "Não conectado ao Streamer.bot!",
+    "status_querying": "Consultando SB para \"{user}\"...",
+    "status_action_not_found": "Ação \"{action}\" não encontrada no SB.",
+    "status_error_query": "Erro ao consultar o SB.",
+    "status_loaded_vars": "Variáveis reais do SB carregadas para {user}!",
+    "lbl_modules_gen": "Módulos para Gerar:",
+    "mod_1_walkon": "1. Card de Entrada",
+    "mod_2_alerts": "2. Caixa de Alertas",
+    "mod_3_shoutout": "3. Destaque",
+    "mod_4_chat": "4. Barra de Chat",
+    "mod_5_qa": "5. Toast de P&R",
+    "lbl_url_horiz": "Horizontal",
+    "lbl_url_vert": "Vertical",
+    "btn_copy": "Copiar",
+    "btn_copied": "Copiado",
+    "lbl_pin_preview": "Fixar Visível (Modo de Ajuste) — Arraste qualquer módulo para mover • Arraste o canto para redimensionar",
+    "btn_view_dual": "Prévia Dupla",
+    "btn_view_horiz": "Horizontal",
+    "btn_view_vert": "Vertical",
+    "tag_horiz_16_9": "HORIZONTAL (16:9)",
+    "tag_vert_9_16": "VERTICAL (9:16)"
+  },
+  "es": {
+    "tenure": "Antigüedad",
+    "joined": "Unió",
+    "loyalty": "Lealtad",
+    "months": " Meses",
+    "shoutout": "DESTACADO",
+    "qa": "PREGUNTAS",
+    "status_disconnected": "Desconectado",
+    "status_connected": "SB Conectado",
+    "res_720": "Lienzo 720p",
+    "res_1080": "Lienzo 1080p",
+    "res_1440": "Lienzo 1440p",
+    "res_2160": "Lienzo 2160p (4K)",
+    "tab_general": "General",
+    "tab_card": "Tarjeta",
+    "tab_alerts": "Alertas",
+    "tab_shoutout": "Destacado",
+    "tab_chat": "Chat",
+    "tab_qa": "P&R",
+    "tab_colors": "Colores",
+    "tab_test": "Prueba",
+    "panel_sb_conn": "Conexión con Streamer.bot",
+    "lbl_ws_host": "IP / Host de WebSocket",
+    "lbl_ws_port": "Puerto",
+    "lbl_ws_pass": "Contraseña de WebSocket",
+    "ph_ws_pass": "Dejar en blanco si no tiene",
+    "btn_connect_sb": "Conectar SB",
+    "panel_typo": "Tipografía Global y Textura Compartida",
+    "lbl_font_heading": "Fuente de Títulos",
+    "lbl_font_body": "Fuente de Cuerpo",
+    "lbl_bg_url": "URL / Ruta de Textura de Fondo",
+    "btn_layout_horiz": "Diseño Horizontal",
+    "btn_layout_vert": "Diseño Vertical",
+    "lbl_left_x": "Izquierda (X px)",
+    "lbl_bottom_y": "Abajo (Y px)",
+    "lbl_top_y": "Arriba (Y px)",
+    "lbl_scale": "Escala",
+    "lbl_center_h": "Centrar H",
+    "lbl_center_v": "Centrar V",
+    "lbl_screen_center": "Centrar Pantalla",
+    "lbl_duration_sec": "Duración (seg)",
+    "lbl_solid_fill": "Fondo Sólido (Sin Imagen de Fondo)",
+    "opt_teal": "VERDE AZULADO",
+    "opt_pink": "ROSA",
+    "opt_purple": "MORADO",
+    "opt_yellow": "AMARILLO",
+    "panel_card_layout": "Diseño Base de la Tarjeta",
+    "lbl_show_avatar": "Mostrar Avatar",
+    "lbl_show_user": "Mostrar Usuario",
+    "lbl_show_tier": "Mostrar Nivel",
+    "lbl_card_anim": "Transición de Tarjeta",
+    "opt_anim_slide_left": "Deslizar (Izquierda)",
+    "opt_anim_slide_right": "Deslizar (Derecha)",
+    "opt_anim_slide_up": "Subir (Abajo)",
+    "opt_anim_zoom": "Zoom Vice Pop",
+    "lbl_avatar_anim": "Animación de Avatar",
+    "opt_av_flip": "Giro de Moneda 3D",
+    "opt_av_spin": "Giro 360°",
+    "opt_av_pop": "Salto Elástico",
+    "lbl_sb_custom_event": "Evento Personalizado SB",
+    "lbl_avatar_sb_var": "Var SB de Avatar",
+    "lbl_tier_sb_var": "Var SB de Nivel",
+    "panel_card_vars": "Variables de Tarjeta (Filas Dinámicas)",
+    "btn_add_row": "+ Añadir Fila",
+    "stat_row_title": "FILA #",
+    "stat_lbl_label": "Etiqueta",
+    "stat_lbl_sb_var": "Var SB",
+    "stat_lbl_suffix": "Sufijo",
+    "stat_lbl_icon": "Icono",
+    "stat_lbl_icolor": "Color Icono",
+    "stat_lbl_vcolor": "Color Valor",
+    "stat_new_default": "Nuevo",
+    "icon_heart": "Corazón",
+    "icon_calendar": "Calendario",
+    "icon_eye": "Ojo",
+    "icon_crown": "Corona",
+    "icon_medal": "Medalla",
+    "icon_skull": "Calavera",
+    "icon_bolt": "Rayo",
+    "icon_cash": "Dinero",
+    "icon_star": "Estrella",
+    "panel_yt_events": "Eventos de YouTube y Colores de Acento",
+    "desc_yt_events": "Elige un color de acento independiente y activa o desactiva la visibilidad de cada tipo de alerta.",
+    "al_new_sub": "Nuevo Suscriptor",
+    "al_new_mem": "Nuevo Miembro",
+    "al_milestone": "Hito de Membresía",
+    "al_gift_sent": "Membresía de Regalo Enviada",
+    "al_gift_rec": "Membresía de Regalo Recibida",
+    "al_superchat": "Super Chat",
+    "al_supersticker": "Super Sticker",
+    "al_jewels": "Joyas Regaladas",
+    "panel_alerts_pos": "Posición y Tiempo de Alertas",
+    "lbl_sb_alert_event": "Evento de Alerta Personalizado SB",
+    "panel_so_pos": "Posición y Tiempo del Destacado",
+    "panel_so_aesthetics": "Estética del Destacado y Disparador SB",
+    "lbl_toast_anim": "Animación del Toast",
+    "opt_so_roll": "Rodar y Saltar",
+    "opt_so_slide_right": "Deslizar Derecha",
+    "opt_so_slide_left": "Deslizar Izquierda",
+    "opt_so_zoom": "Zoom Vice",
+    "lbl_avatar_side": "Lado del Avatar",
+    "opt_side_right": "Lado Derecho",
+    "opt_side_left": "Lado Izquierdo",
+    "lbl_accent_color": "Color de Acento",
+    "lbl_header_title": "Texto del Encabezado",
+    "ph_auto_trans": "Dejar vacío para traducción automática",
+    "lbl_sb_global_var": "Nombre de Variable Global SB",
+    "lbl_sb_event_name": "Nombre de Evento Personalizado SB",
+    "panel_chat_pos": "Posición y Dimensiones del Chat Horizontal",
+    "lbl_bar_width": "Ancho de Barra",
+    "lbl_font_size": "Tamaño de Fuente (px)",
+    "lbl_max_msgs": "Máx. de Mensajes",
+    "panel_chat_colors": "Colores de Rol y Fondo de Barra",
+    "lbl_mem_color": "Color de Miembro (Predet. Verde azulado)",
+    "lbl_mod_color": "Color de Moderador (Predet. Morado)",
+    "lbl_view_color": "Color de Espectador (Predet. Amarillo)",
+    "lbl_msg_color": "Color de Texto del Mensaje",
+    "lbl_bar_fill": "Color de Fondo",
+    "lbl_bar_opacity": "Opacidad (%)",
+    "lbl_top_border_color": "Color del Borde Superior",
+    "lbl_show_avatars": "Mostrar Avatares",
+    "lbl_show_badges": "Mostrar Insignias",
+    "lbl_all_caps": "MAYÚSCULAS",
+    "lbl_transparent_bar": "Barra Transparente (Ocultar Franja de Fondo)",
+    "panel_chat_filters": "Filtros de Chat (Comandos, Usuarios y Grupos)",
+    "lbl_ignore_cmds": "Ignorar Comandos (Empieza con Prefijo)",
+    "lbl_cmd_prefixes": "Prefijos de Comandos (Sep. por comas)",
+    "lbl_auto_hide": "Ocultar Msj Tras (seg, 0=Nunca)",
+    "lbl_ignore_users": "Ignorar Usuarios por Nombre o ID de Canal (Sep. por comas)",
+    "ph_ignore_users": "ej. Nightbot, StreamElements, UC...",
+    "lbl_ignore_groups": "Ignorar Grupos por groupName (Sep. por comas)",
+    "ph_ignore_groups": "ej. Bots, GrupoExcluido",
+    "panel_qa_pos": "Posición y Tiempo de P&R",
+    "panel_qa_aesthetics": "Estética de P&R y Disparador SB",
+    "lbl_entrance_anim": "Animación de Entrada",
+    "lbl_header_badge_text": "Texto de Insignia Superior",
+    "lbl_show_badge_pill": "Mostrar Insignia en el Encabezado",
+    "panel_palette": "Ajustes de Paleta GTA VI",
+    "btn_reset": "Restablecer",
+    "lbl_prim_pink": "Rosa Primario",
+    "lbl_prim_teal": "Verde Azulado Primario",
+    "lbl_prim_purple": "Morado Primario",
+    "lbl_prim_yellow": "Amarillo Primario",
+    "lbl_stroke_color": "Trazo de Icono / Texto",
+    "lbl_border_color": "Borde Exterior de Tarjeta",
+    "lbl_bg_fill_color": "Relleno Base de Tarjeta",
+    "panel_simulators": "Simuladores de 5 Módulos",
+    "btn_sim_walkon": "Tarjeta",
+    "btn_sim_alert": "Alerta",
+    "btn_sim_shoutout": "Destacado",
+    "btn_sim_chat": "Enviar Chat de Prueba",
+    "btn_sim_qa": "Probar P&R",
+    "lbl_sim_alert_type": "Tipo de Alerta a Simular",
+    "lbl_sim_chat_role": "Rol de Chat a Simular",
+    "opt_role_random": "Rol Aleatorio",
+    "opt_role_member": "Miembro (Verde azulado)",
+    "opt_role_mod": "Moderador (Morado)",
+    "opt_role_viewer": "Espectador (Amarillo)",
+    "panel_live_test": "Prueba en Vivo con SB (Tarjeta, Destacado y P&R)",
+    "lbl_chan_or_user": "ID del Canal o Usuario",
+    "ph_chan_or_user": "ej. UCVu2Tib4ZyK3FzwnCjPBHGw o Usuario",
+    "lbl_sample_qa_msg": "Mensaje de Ejemplo P&R",
+    "lbl_sb_lookup_action": "Acción de Búsqueda SB",
+    "btn_test_card": "Probar Tarjeta",
+    "btn_test_so": "Probar Destacado",
+    "btn_test_qa": "Probar P&R",
+    "status_ready": "Listo...",
+    "status_enter_user": "Ingresa primero un ID de Canal o Nombre de Usuario.",
+    "status_not_connected": "¡No conectado a Streamer.bot!",
+    "status_querying": "Consultando SB para \"{user}\"...",
+    "status_action_not_found": "Acción \"{action}\" no encontrada en SB.",
+    "status_error_query": "Error al consultar SB.",
+    "status_loaded_vars": "¡Variables reales de SB cargadas para {user}!",
+    "lbl_modules_gen": "Módulos a Generar:",
+    "mod_1_walkon": "1. Tarjeta de Entrada",
+    "mod_2_alerts": "2. Caja de Alertas",
+    "mod_3_shoutout": "3. Destacado",
+    "mod_4_chat": "4. Barra de Chat",
+    "mod_5_qa": "5. Toast de P&R",
+    "lbl_url_horiz": "Horizontal",
+    "lbl_url_vert": "Vertical",
+    "btn_copy": "Copiar",
+    "btn_copied": "Copiado",
+    "lbl_pin_preview": "Fijar Visible (Modo Ajuste) — Arrastra cualquier módulo para mover • Arrastra la esquina para escalar",
+    "btn_view_dual": "Vista Doble",
+    "btn_view_horiz": "Horizontal",
+    "btn_view_vert": "Vertical",
+    "tag_horiz_16_9": "HORIZONTAL (16:9)",
+    "tag_vert_9_16": "VERTICAL (9:16)"
+  },
+  "fr": {
+    "tenure": "Ancienneté",
+    "joined": "Rejoint",
+    "loyalty": "Fidélité",
+    "months": " Mois",
+    "shoutout": "DÉDICACE",
+    "qa": "Q&R",
+    "status_disconnected": "Déconnecté",
+    "status_connected": "SB Connecté",
+    "res_720": "Canevas 720p",
+    "res_1080": "Canevas 1080p",
+    "res_1440": "Canevas 1440p",
+    "res_2160": "Canevas 2160p (4K)",
+    "tab_general": "Général",
+    "tab_card": "Carte",
+    "tab_alerts": "Alertes",
+    "tab_shoutout": "Dédicace",
+    "tab_chat": "Chat",
+    "tab_qa": "Q&R",
+    "tab_colors": "Couleurs",
+    "tab_test": "Test",
+    "panel_sb_conn": "Connexion Streamer.bot",
+    "lbl_ws_host": "IP / Hôte WebSocket",
+    "lbl_ws_port": "Port",
+    "lbl_ws_pass": "Mot de passe WebSocket",
+    "ph_ws_pass": "Laisser vide si sans auth",
+    "btn_connect_sb": "Connecter SB",
+    "panel_typo": "Typographie Globale et Texture Partagée",
+    "lbl_font_heading": "Police des Titres",
+    "lbl_font_body": "Police du Texte",
+    "lbl_bg_url": "URL / Chemin de la Texture de Fond",
+    "btn_layout_horiz": "Disposition Horizontale",
+    "btn_layout_vert": "Disposition Verticale",
+    "lbl_left_x": "Gauche (X px)",
+    "lbl_bottom_y": "Bas (Y px)",
+    "lbl_top_y": "Haut (Y px)",
+    "lbl_scale": "Échelle",
+    "lbl_center_h": "Centrer H",
+    "lbl_center_v": "Centrer V",
+    "lbl_screen_center": "Centrer Écran",
+    "lbl_duration_sec": "Durée (sec)",
+    "lbl_solid_fill": "Fond Uni (Sans Image de Fond)",
+    "opt_teal": "SARCELLES",
+    "opt_pink": "ROSE",
+    "opt_purple": "VIOLET",
+    "opt_yellow": "JAUNE",
+    "panel_card_layout": "Disposition de Base de la Carte",
+    "lbl_show_avatar": "Afficher Avatar",
+    "lbl_show_user": "Afficher Pseudo",
+    "lbl_show_tier": "Afficher Niveau",
+    "lbl_card_anim": "Transition de la Carte",
+    "opt_anim_slide_left": "Glisser (Gauche)",
+    "opt_anim_slide_right": "Glisser (Droite)",
+    "opt_anim_slide_up": "Monter (Bas)",
+    "opt_anim_zoom": "Zoom Vice Pop",
+    "lbl_avatar_anim": "Animation de l'Avatar",
+    "opt_av_flip": "Rotation Pièce 3D",
+    "opt_av_spin": "Rotation 360°",
+    "opt_av_pop": "Rebond Élastique",
+    "lbl_sb_custom_event": "Événement Personnalisé SB",
+    "lbl_avatar_sb_var": "Var SB Avatar",
+    "lbl_tier_sb_var": "Var SB Niveau",
+    "panel_card_vars": "Variables de la Carte (Lignes Dynamiques)",
+    "btn_add_row": "+ Ajouter Ligne",
+    "stat_row_title": "LIGNE #",
+    "stat_lbl_label": "Libellé",
+    "stat_lbl_sb_var": "Var SB",
+    "stat_lbl_suffix": "Suffixe",
+    "stat_lbl_icon": "Icône",
+    "stat_lbl_icolor": "Coul. Icône",
+    "stat_lbl_vcolor": "Coul. Valeur",
+    "stat_new_default": "Nouveau",
+    "icon_heart": "Cœur",
+    "icon_calendar": "Calendrier",
+    "icon_eye": "Œil",
+    "icon_crown": "Couronne",
+    "icon_medal": "Médaille",
+    "icon_skull": "Crâne",
+    "icon_bolt": "Éclair",
+    "icon_cash": "Argent",
+    "icon_star": "Étoile",
+    "panel_yt_events": "Événements YouTube et Couleurs d'Accent",
+    "desc_yt_events": "Choisissez une couleur d'accent indépendante et activez/désactivez chaque type d'alerte.",
+    "al_new_sub": "Nouvel Abonné",
+    "al_new_mem": "Nouveau Membre",
+    "al_milestone": "Jalon d'Adhésion",
+    "al_gift_sent": "Adhésion Cadeau Envoyée",
+    "al_gift_rec": "Adhésion Cadeau Reçue",
+    "al_superchat": "Super Chat",
+    "al_supersticker": "Super Sticker",
+    "al_jewels": "Joyaux Offerts",
+    "panel_alerts_pos": "Position et Durée des Alertes",
+    "lbl_sb_alert_event": "Événement d'Alerte SB",
+    "panel_so_pos": "Position et Durée de la Dédicace",
+    "panel_so_aesthetics": "Esthétique de la Dédicace et Déclencheur SB",
+    "lbl_toast_anim": "Animation du Toast",
+    "opt_so_roll": "Rouler et Rebondir",
+    "opt_so_slide_right": "Glisser Droite",
+    "opt_so_slide_left": "Glisser Gauche",
+    "opt_so_zoom": "Zoom Vice",
+    "lbl_avatar_side": "Côté de l'Avatar",
+    "opt_side_right": "Côté Droit",
+    "opt_side_left": "Côté Gauche",
+    "lbl_accent_color": "Couleur d'Accent",
+    "lbl_header_title": "Texte de l'En-tête",
+    "ph_auto_trans": "Laisser vide pour traduction auto",
+    "lbl_sb_global_var": "Nom de Variable Globale SB",
+    "lbl_sb_event_name": "Nom d'Événement Personnalisé SB",
+    "panel_chat_pos": "Position et Dimensions du Chat Horizontal",
+    "lbl_bar_width": "Largeur de Barre",
+    "lbl_font_size": "Taille Police (px)",
+    "lbl_max_msgs": "Messages Max",
+    "panel_chat_colors": "Couleurs des Rôles et Fond de la Barre",
+    "lbl_mem_color": "Couleur Membre (Défaut Sarcelles)",
+    "lbl_mod_color": "Couleur Modérateur (Défaut Violet)",
+    "lbl_view_color": "Couleur Spectateur (Défaut Jaune)",
+    "lbl_msg_color": "Couleur du Message",
+    "lbl_bar_fill": "Couleur de Fond",
+    "lbl_bar_opacity": "Opacité (%)",
+    "lbl_top_border_color": "Couleur Bordure Haute",
+    "lbl_show_avatars": "Afficher Avatars",
+    "lbl_show_badges": "Afficher Badges",
+    "lbl_all_caps": "MAJUSCULES",
+    "lbl_transparent_bar": "Barre Transparente (Masquer le Fond)",
+    "panel_chat_filters": "Filtres du Chat (Commandes, Utilisateurs et Groupes)",
+    "lbl_ignore_cmds": "Ignorer Commandes (Commence par Préfixe)",
+    "lbl_cmd_prefixes": "Préfixes de Commande (Sép. par virgule)",
+    "lbl_auto_hide": "Masquer Msg Après (sec, 0=Jamais)",
+    "lbl_ignore_users": "Ignorer Utilisateurs par Nom ou ID de Chaîne (Sép. par virgule)",
+    "ph_ignore_users": "ex. Nightbot, StreamElements, UC...",
+    "lbl_ignore_groups": "Ignorer Groupes par groupName (Sép. par virgule)",
+    "ph_ignore_groups": "ex. Bots, GroupeExclu",
+    "panel_qa_pos": "Position et Durée Q&R",
+    "panel_qa_aesthetics": "Esthétique Q&R et Déclencheur SB",
+    "lbl_entrance_anim": "Animation d'Entrée",
+    "lbl_header_badge_text": "Texte du Badge d'En-tête",
+    "lbl_show_badge_pill": "Afficher le Badge d'En-tête",
+    "panel_palette": "Palette de Couleurs GTA VI",
+    "btn_reset": "Réinitialiser",
+    "lbl_prim_pink": "Rose Primaire",
+    "lbl_prim_teal": "Sarcelles Primaire",
+    "lbl_prim_purple": "Violet Primaire",
+    "lbl_prim_yellow": "Jaune Primaire",
+    "lbl_stroke_color": "Contour Icône / Texte",
+    "lbl_border_color": "Bordure Externe de Carte",
+    "lbl_bg_fill_color": "Fond de Base de Carte",
+    "panel_simulators": "Simulateurs des 5 Modules",
+    "btn_sim_walkon": "Carte",
+    "btn_sim_alert": "Alerte",
+    "btn_sim_shoutout": "Dédicace",
+    "btn_sim_chat": "Envoyer Chat Test",
+    "btn_sim_qa": "Tester Q&R",
+    "lbl_sim_alert_type": "Type d'Alerte à Simuler",
+    "lbl_sim_chat_role": "Rôle du Chat à Simuler",
+    "opt_role_random": "Rôle Aléatoire",
+    "opt_role_member": "Membre (Sarcelles)",
+    "opt_role_mod": "Modérateur (Violet)",
+    "opt_role_viewer": "Spectateur (Jaune)",
+    "panel_live_test": "Test Utilisateur SB en Direct (Carte, Dédicace et Q&R)",
+    "lbl_chan_or_user": "ID de Chaîne ou Pseudo",
+    "ph_chan_or_user": "ex. UCVu2Tib4ZyK3FzwnCjPBHGw ou Pseudo",
+    "lbl_sample_qa_msg": "Message Q&R d'Exemple",
+    "lbl_sb_lookup_action": "Action de Recherche SB",
+    "btn_test_card": "Tester Carte",
+    "btn_test_so": "Tester Dédicace",
+    "btn_test_qa": "Tester Q&R",
+    "status_ready": "Prêt...",
+    "status_enter_user": "Entrez d'abord un ID de Chaîne ou un Pseudo.",
+    "status_not_connected": "Non connecté à Streamer.bot !",
+    "status_querying": "Requête SB pour \"{user}\"...",
+    "status_action_not_found": "Action \"{action}\" introuvable dans SB.",
+    "status_error_query": "Erreur lors de la requête SB.",
+    "status_loaded_vars": "Variables SB réelles chargées pour {user} !",
+    "lbl_modules_gen": "Modules à Générer :",
+    "mod_1_walkon": "1. Carte d'Entrée",
+    "mod_2_alerts": "2. Boîte d'Alertes",
+    "mod_3_shoutout": "3. Dédicace",
+    "mod_4_chat": "4. Barre de Chat",
+    "mod_5_qa": "5. Toast Q&R",
+    "lbl_url_horiz": "Horizontal",
+    "lbl_url_vert": "Vertical",
+    "btn_copy": "Copier",
+    "btn_copied": "Copié",
+    "lbl_pin_preview": "Épingler Visible (Mode Configuration) — Glissez un module pour le déplacer • Glissez le coin pour redimensionner",
+    "btn_view_dual": "Double Aperçu",
+    "btn_view_horiz": "Horizontal",
+    "btn_view_vert": "Vertical",
+    "tag_horiz_16_9": "HORIZONTAL (16:9)",
+    "tag_vert_9_16": "VERTICAL (9:16)"
+  },
+  "de": {
+    "tenure": "Dauer",
+    "joined": "Dabei",
+    "loyalty": "Treue",
+    "months": " Monate",
+    "shoutout": "SHOUTOUT",
+    "qa": "F&A",
+    "status_disconnected": "Getrennt",
+    "status_connected": "SB Verbunden",
+    "res_720": "720p-Leinwand",
+    "res_1080": "1080p-Leinwand",
+    "res_1440": "1440p-Leinwand",
+    "res_2160": "2160p (4K)-Leinwand",
+    "tab_general": "Allgemein",
+    "tab_card": "Karte",
+    "tab_alerts": "Alerts",
+    "tab_shoutout": "Shoutout",
+    "tab_chat": "Chat",
+    "tab_qa": "F&A",
+    "tab_colors": "Farben",
+    "tab_test": "Test",
+    "panel_sb_conn": "Streamer.bot-Verbindung",
+    "lbl_ws_host": "WebSocket-IP / Host",
+    "lbl_ws_port": "Port",
+    "lbl_ws_pass": "WebSocket-Passwort",
+    "ph_ws_pass": "Leer lassen falls ohne Auth",
+    "btn_connect_sb": "SB Verbinden",
+    "panel_typo": "Globale Typografie & Textur",
+    "lbl_font_heading": "Überschrift-Schriftart",
+    "lbl_font_body": "Text-Schriftart",
+    "lbl_bg_url": "Hintergrundtextur-URL / Pfad",
+    "btn_layout_horiz": "Horizontales Layout",
+    "btn_layout_vert": "Vertikales Layout",
+    "lbl_left_x": "Links (X px)",
+    "lbl_bottom_y": "Unten (Y px)",
+    "lbl_top_y": "Oben (Y px)",
+    "lbl_scale": "Skalierung",
+    "lbl_center_h": "Zentr. H",
+    "lbl_center_v": "Zentr. V",
+    "lbl_screen_center": "Bildschirmmitte",
+    "lbl_duration_sec": "Dauer (Sek.)",
+    "lbl_solid_fill": "Volltonfarbe (Kein Hintergrundbild)",
+    "opt_teal": "TÜRKIS",
+    "opt_pink": "ROSA",
+    "opt_purple": "LILA",
+    "opt_yellow": "GELB",
+    "panel_card_layout": "Karten-Basislayout",
+    "lbl_show_avatar": "Avatar zeigen",
+    "lbl_show_user": "Nutzer zeigen",
+    "lbl_show_tier": "Stufe zeigen",
+    "lbl_card_anim": "Karten-Übergang",
+    "opt_anim_slide_left": "Hereingleiten (Links)",
+    "opt_anim_slide_right": "Hereingleiten (Rechts)",
+    "opt_anim_slide_up": "Hochgleiten (Unten)",
+    "opt_anim_zoom": "Vice Zoom Pop",
+    "lbl_avatar_anim": "Avatar-Animation",
+    "opt_av_flip": "3D-Münzwurf",
+    "opt_av_spin": "360°-Drehung",
+    "opt_av_pop": "Elastisches Aufpoppen",
+    "lbl_sb_custom_event": "Eigenes SB-Event",
+    "lbl_avatar_sb_var": "Avatar SB-Var",
+    "lbl_tier_sb_var": "Stufen SB-Var",
+    "panel_card_vars": "Kartenvariablen (Dynamische Zeilen)",
+    "btn_add_row": "+ Zeile hinzufügen",
+    "stat_row_title": "ZEILE #",
+    "stat_lbl_label": "Bezeichnung",
+    "stat_lbl_sb_var": "SB-Var",
+    "stat_lbl_suffix": "Suffix",
+    "stat_lbl_icon": "Symbol",
+    "stat_lbl_icolor": "Symbolfarbe",
+    "stat_lbl_vcolor": "Wertfarbe",
+    "stat_new_default": "Neu",
+    "icon_heart": "Herz",
+    "icon_calendar": "Kalender",
+    "icon_eye": "Auge",
+    "icon_crown": "Krone",
+    "icon_medal": "Medaille",
+    "icon_skull": "Schädel",
+    "icon_bolt": "Blitz",
+    "icon_cash": "Geld",
+    "icon_star": "Stern",
+    "panel_yt_events": "YouTube-Events & Akzentfarben",
+    "desc_yt_events": "Wähle eine eigene Akzentfarbe und schalte die Sichtbarkeit für jeden Alert-Typ um.",
+    "al_new_sub": "Neuer Abonnent",
+    "al_new_mem": "Neues Mitglied",
+    "al_milestone": "Mitgliedschafts-Meilenstein",
+    "al_gift_sent": "Mitgliedschaft verschenkt",
+    "al_gift_rec": "Geschenkmitgliedschaft erhalten",
+    "al_superchat": "Super Chat",
+    "al_supersticker": "Super Sticker",
+    "al_jewels": "Juwelen geschenkt",
+    "panel_alerts_pos": "Alert-Position & Timing",
+    "lbl_sb_alert_event": "Eigenes SB-Alert-Event",
+    "panel_so_pos": "Shoutout-Position & Timing",
+    "panel_so_aesthetics": "Shoutout-Design & SB-Trigger",
+    "lbl_toast_anim": "Toast-Animation",
+    "opt_so_roll": "Rollen & Poppen",
+    "opt_so_slide_right": "Gleiten Rechts",
+    "opt_so_slide_left": "Gleiten Links",
+    "opt_so_zoom": "Vice Zoom",
+    "lbl_avatar_side": "Avatar-Seite",
+    "opt_side_right": "Rechte Seite",
+    "opt_side_left": "Linke Seite",
+    "lbl_accent_color": "Akzentfarbe",
+    "lbl_header_title": "Kopfzeilentext",
+    "ph_auto_trans": "Leer lassen für Auto-Übersetzung",
+    "lbl_sb_global_var": "Name der globalen SB-Variable",
+    "lbl_sb_event_name": "Name des eigenen SB-Events",
+    "panel_chat_pos": "Position & Größe des horizontalen Chats",
+    "lbl_bar_width": "Leistenbreite",
+    "lbl_font_size": "Schriftgröße (px)",
+    "lbl_max_msgs": "Max. Nachrichten",
+    "panel_chat_colors": "Rollenfarben & Leistenhintergrund",
+    "lbl_mem_color": "Mitgliedsfarbe (Standard Türkis)",
+    "lbl_mod_color": "Moderatorfarbe (Standard Lila)",
+    "lbl_view_color": "Zuschauerfarbe (Standard Gelb)",
+    "lbl_msg_color": "Nachrichtentextfarbe",
+    "lbl_bar_fill": "Hintergrundfarbe",
+    "lbl_bar_opacity": "Deckkraft (%)",
+    "lbl_top_border_color": "Rahmenfarbe Oben",
+    "lbl_show_avatars": "Avatare zeigen",
+    "lbl_show_badges": "Abzeichen zeigen",
+    "lbl_all_caps": "GROSSBUCHSTABEN",
+    "lbl_transparent_bar": "Transparente Leiste (Hintergrund ausblenden)",
+    "panel_chat_filters": "Chat-Filter (Befehle, Nutzer & Gruppen)",
+    "lbl_ignore_cmds": "Befehle ignorieren (Beginnt mit Präfix)",
+    "lbl_cmd_prefixes": "Befehlspräfixe (Kommagetrennt)",
+    "lbl_auto_hide": "Nachricht ausblenden nach (Sek., 0=Nie)",
+    "lbl_ignore_users": "Nutzer nach Name oder Kanal-ID ignorieren (Kommagetrennt)",
+    "ph_ignore_users": "z.B. Nightbot, StreamElements, UC...",
+    "lbl_ignore_groups": "Gruppen nach groupName ignorieren (Kommagetrennt)",
+    "ph_ignore_groups": "z.B. Bots, AusgeschlosseneGruppe",
+    "panel_qa_pos": "F&A-Position & Timing",
+    "panel_qa_aesthetics": "F&A-Design & SB-Trigger",
+    "lbl_entrance_anim": "Eingangsanimation",
+    "lbl_header_badge_text": "Kopfzeilen-Abzeichentext",
+    "lbl_show_badge_pill": "Kopfzeilen-Abzeichen anzeigen",
+    "panel_palette": "GTA VI-Farbpalette anpassen",
+    "btn_reset": "Zurücksetzen",
+    "lbl_prim_pink": "Primär Rosa",
+    "lbl_prim_teal": "Primär Türkis",
+    "lbl_prim_purple": "Primär Lila",
+    "lbl_prim_yellow": "Primär Gelb",
+    "lbl_stroke_color": "Symbol- / Textkontur",
+    "lbl_border_color": "Äußerer Kartenrahmen",
+    "lbl_bg_fill_color": "Karten-Grundfüllung",
+    "panel_simulators": "5-Modul-Simulatoren",
+    "btn_sim_walkon": "Karte",
+    "btn_sim_alert": "Alert",
+    "btn_sim_shoutout": "Shoutout",
+    "btn_sim_chat": "Test-Chat senden",
+    "btn_sim_qa": "F&A testen",
+    "lbl_sim_alert_type": "Zu simulierender Alert-Typ",
+    "lbl_sim_chat_role": "Zu simulierende Chat-Rolle",
+    "opt_role_random": "Zufällige Rolle",
+    "opt_role_member": "Mitglied (Türkis)",
+    "opt_role_mod": "Moderator (Lila)",
+    "opt_role_viewer": "Zuschauer (Gelb)",
+    "panel_live_test": "Live-SB-Nutzertest (Karte, Shoutout & F&A)",
+    "lbl_chan_or_user": "Kanal-ID oder Nutzername",
+    "ph_chan_or_user": "z.B. UCVu2Tib4ZyK3FzwnCjPBHGw oder Nutzername",
+    "lbl_sample_qa_msg": "Beispiel-F&A-Nachricht",
+    "lbl_sb_lookup_action": "SB-Suchaktion",
+    "btn_test_card": "Karte testen",
+    "btn_test_so": "SO testen",
+    "btn_test_qa": "F&A testen",
+    "status_ready": "Bereit...",
+    "status_enter_user": "Bitte zuerst eine Kanal-ID oder einen Nutzernamen eingeben.",
+    "status_not_connected": "Nicht mit Streamer.bot verbunden!",
+    "status_querying": "Frage SB nach \"{user}\" ab...",
+    "status_action_not_found": "Aktion \"{action}\" in SB nicht gefunden.",
+    "status_error_query": "Fehler bei der SB-Abfrage.",
+    "status_loaded_vars": "Echte SB-Variablen für {user} geladen!",
+    "lbl_modules_gen": "Zu generierende Module:",
+    "mod_1_walkon": "1. Walk-On-Karte",
+    "mod_2_alerts": "2. Alert-Box",
+    "mod_3_shoutout": "3. Shoutout",
+    "mod_4_chat": "4. Chatleiste",
+    "mod_5_qa": "5. F&A-Toast",
+    "lbl_url_horiz": "Horizontal",
+    "lbl_url_vert": "Vertikal",
+    "btn_copy": "Kopieren",
+    "btn_copied": "Kopiert",
+    "lbl_pin_preview": "Sichtbar anheften (Einrichtungsmodus) — Modul ziehen zum Bewegen • Ecke ziehen zum Skalieren",
+    "btn_view_dual": "Doppelvorschau",
+    "btn_view_horiz": "Horizontal",
+    "btn_view_vert": "Vertikal",
+    "tag_horiz_16_9": "HORIZONTAL (16:9)",
+    "tag_vert_9_16": "VERTIKAL (9:16)"
+  }
+};
+    let currentLang = 'en';
+
+    function t(key) {
+      const dict = i18nDict[currentLang] || i18nDict.en;
+      return dict[key] !== undefined ? dict[key] : (i18nDict.en[key] || key);
+    }
+
     let statRows = [
       { label: 'Tenure', varName: 'months', suffix: ' Months', icon: 'fa-heart', iconColor: 'pink', valColor: 'yellow' },
       { label: 'Joined', varName: 'memberSince', suffix: '', icon: 'fa-calendar-check', iconColor: 'teal', valColor: 'pink' },
       { label: 'Loyalty', varName: 'loyaltyLevel', suffix: '', icon: 'fa-eye', iconColor: 'purple', valColor: 'teal' }
     ];
-    const availIcons = [{v:'fa-heart',l:'Heart'}, {v:'fa-calendar-check',l:'Calendar'}, {v:'fa-eye',l:'Eye'}, {v:'fa-crown',l:'Crown'}, {v:'fa-medal',l:'Medal'}, {v:'fa-skull',l:'Skull'}, {v:'fa-bolt',l:'Bolt'}, {v:'fa-sack-dollar',l:'Cash'}, {v:'fa-star',l:'Star'}];
+
+    const availIcons = [
+      { v: 'fa-heart', k: 'icon_heart' },
+      { v: 'fa-calendar-check', k: 'icon_calendar' },
+      { v: 'fa-eye', k: 'icon_eye' },
+      { v: 'fa-crown', k: 'icon_crown' },
+      { v: 'fa-medal', k: 'icon_medal' },
+      { v: 'fa-skull', k: 'icon_skull' },
+      { v: 'fa-bolt', k: 'icon_bolt' },
+      { v: 'fa-sack-dollar', k: 'icon_cash' },
+      { v: 'fa-star', k: 'icon_star' }
+    ];
     const availColors = ['pink', 'teal', 'purple', 'yellow'];
+
+    function applyLanguageTranslation(force = false) {
+      const newLang = document.getElementById('cfg-lang')?.value || 'en';
+      if (!force && newLang === currentLang) return;
+
+      const oldT = i18nDict[currentLang] || i18nDict.en;
+      const newT = i18nDict[newLang] || i18nDict.en;
+      document.documentElement.lang = newLang;
+
+      // Update default stat rows safely
+      statRows.forEach(row => {
+        if (row.label === oldT.tenure) row.label = newT.tenure;
+        if (row.label === oldT.joined) row.label = newT.joined;
+        if (row.label === oldT.loyalty) row.label = newT.loyalty;
+        if (row.label === oldT.stat_new_default) row.label = newT.stat_new_default;
+        if (row.suffix === oldT.months) row.suffix = newT.months;
+      });
+
+      currentLang = newLang;
+
+      // Translate all static UI elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key && newT[key] !== undefined) {
+          el.textContent = newT[key];
+        }
+      });
+
+      // Translate all input placeholders with data-i18n-placeholder
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (key && newT[key] !== undefined) {
+          el.placeholder = newT[key];
+        }
+      });
+
+      // Keep SB connection badge text in sync with current connection state
+      if (sbStatusBadge) {
+        const isConn = sbStatusBadge.classList.contains('connected');
+        sbStatusBadge.innerHTML = isConn
+          ? `<i class="fa-solid fa-circle-check"></i> <span data-i18n="status_connected">${t('status_connected')}</span>`
+          : `<i class="fa-solid fa-plug"></i> <span data-i18n="status_disconnected">${t('status_disconnected')}</span>`;
+      }
+
+      renderStatRowEditors();
+      syncLiveConfig();
+    }
+    document.getElementById('cfg-lang').addEventListener('change', () => applyLanguageTranslation(false));
 
     function renderStatRowEditors() {
       if (!statsListContainer) return;
@@ -759,16 +2010,16 @@
       statRows.forEach((row, idx) => {
         const d = document.createElement('div'); d.className = 'stat-row-editor';
         d.innerHTML = `
-          <div class="stat-row-top"><span>ROW #${idx+1}</span><button class="btn-icon-remove" data-idx="${idx}"><i class="fa-solid fa-trash-can"></i></button></div>
+          <div class="stat-row-top"><span>${t('stat_row_title')}${idx+1}</span><button class="btn-icon-remove" data-idx="${idx}"><i class="fa-solid fa-trash-can"></i></button></div>
           <div class="grid-3">
-            <label>Label <input type="text" data-idx="${idx}" data-field="label" value="${row.label}"></label>
-            <label>SB Var <input type="text" data-idx="${idx}" data-field="varName" value="${row.varName}"></label>
-            <label>Suffix <input type="text" data-idx="${idx}" data-field="suffix" value="${row.suffix}"></label>
+            <label><span>${t('stat_lbl_label')}</span> <input type="text" data-idx="${idx}" data-field="label" value="${row.label}"></label>
+            <label><span>${t('stat_lbl_sb_var')}</span> <input type="text" data-idx="${idx}" data-field="varName" value="${row.varName}"></label>
+            <label><span>${t('stat_lbl_suffix')}</span> <input type="text" data-idx="${idx}" data-field="suffix" value="${row.suffix}"></label>
           </div>
           <div class="grid-3">
-            <label>Icon <select data-idx="${idx}" data-field="icon">${availIcons.map(i=>`<option value="${i.v}" ${row.icon===i.v?'selected':''}>${i.l}</option>`).join('')}</select></label>
-            <label>I-Color <select data-idx="${idx}" data-field="iconColor">${availColors.map(c=>`<option value="${c}" ${row.iconColor===c?'selected':''}>${c}</option>`).join('')}</select></label>
-            <label>V-Color <select data-idx="${idx}" data-field="valColor">${availColors.map(c=>`<option value="${c}" ${row.valColor===c?'selected':''}>${c}</option>`).join('')}</select></label>
+            <label><span>${t('stat_lbl_icon')}</span> <select data-idx="${idx}" data-field="icon">${availIcons.map(i=>`<option value="${i.v}" ${row.icon===i.v?'selected':''}>${t(i.k)}</option>`).join('')}</select></label>
+            <label><span>${t('stat_lbl_icolor')}</span> <select data-idx="${idx}" data-field="iconColor">${availColors.map(c=>`<option value="${c}" ${row.iconColor===c?'selected':''}>${t('opt_'+c).toLowerCase()}</option>`).join('')}</select></label>
+            <label><span>${t('stat_lbl_vcolor')}</span> <select data-idx="${idx}" data-field="valColor">${availColors.map(c=>`<option value="${c}" ${row.valColor===c?'selected':''}>${t('opt_'+c).toLowerCase()}</option>`).join('')}</select></label>
           </div>`;
         statsListContainer.appendChild(d);
       });
@@ -776,7 +2027,7 @@
       statsListContainer.querySelectorAll('.btn-icon-remove').forEach(btn => btn.addEventListener('click', e => { statRows.splice(e.currentTarget.dataset.idx, 1); renderStatRowEditors(); syncLiveConfig(); }));
     }
     const btnAddStat = document.getElementById('btn-add-stat');
-    if (btnAddStat) btnAddStat.addEventListener('click', () => { statRows.push({ label: 'New', varName: 'newVar', suffix: '', icon: 'fa-star', iconColor: 'yellow', valColor: 'yellow' }); renderStatRowEditors(); syncLiveConfig(); });
+    if (btnAddStat) btnAddStat.addEventListener('click', () => { statRows.push({ label: t('stat_new_default'), varName: 'newVar', suffix: '', icon: 'fa-star', iconColor: 'yellow', valColor: 'yellow' }); renderStatRowEditors(); syncLiveConfig(); });
     
     [...Object.keys(DEFAULT_COLORS), ...CHAT_COLOR_KEYS].forEach(k => {
       const picker = document.getElementById(`picker-${k}`);
@@ -790,16 +2041,21 @@
     if (btnResetColors) btnResetColors.addEventListener('click', () => { Object.entries(DEFAULT_COLORS).forEach(([k, h]) => { const p = document.getElementById(`picker-${k}`); const c = document.getElementById(`cfg-${k}`); if(p) p.value = h; if(c) c.value = h; }); syncLiveConfig(); });
 
     const baseInputs = [
-      'host','port','password','event','x','y','scale','duration','cardAnim','avatarAnim',
+      'lang','res','host','port','password','event',
+      'x','y','scale','v_x','v_y','v_scale',
+      'duration','cardAnim','avatarAnim',
       'fontHeading','fontBody','bg','vAvatar','vTier',
       'cPink','cTeal','cPurple','cYellow','cStroke','cBorder','cBg',
-      'alertEvent','ax','ay','ascale','aDur',
+      'alertEvent','ax','ay','ascale','v_ax','v_ay','v_ascale','aDur',
       'ac_sub','ac_mem','ac_ms','ac_gft','ac_grc','ac_sc','ac_stk','ac_jwl',
-      'soX','soY','soScale','soDur','soAnim','soLayout','soColor','soTitle','soVar','soEvent',
-      'chatX','chatY','chatW','chatScale','chatFS','chatMax','chatHide',
+      'soX','soY','soScale','v_soX','v_soY','v_soScale',
+      'soDur','soAnim','soLayout','soColor','soTitle','soVar','soEvent',
+      'chatX','chatY','chatW','chatScale','v_chatX','v_chatY','v_chatW','v_chatScale',
+      'chatFS','chatMax','chatHide',
       'cMem','cMod','cView','cMsg','cChatBg','chatBgOp','chatAccent',
       'chatPrefixes','chatIgUsers','chatIgGroups',
-      'qaX','qaY','qaScale','qaDur','qaAnim','qaColor','qaTitle','qaVar','qaEvent'
+      'qaX','qaY','qaScale','v_qaX','v_qaY','v_qaScale',
+      'qaDur','qaAnim','qaColor','qaTitle','qaVar','qaEvent'
     ];
     const checkboxToggles = [
       'al_sub','al_mem','al_ms','al_gft','al_grc','al_sc','al_stk','al_jwl',
@@ -808,7 +2064,7 @@
       'qaShowBadge','qaNoBg'
     ];
     
-    function getSetupState() {
+    function getSetupState(layoutContext = 'horiz') {
       const s = {};
       baseInputs.forEach(id => { 
         const el = document.getElementById(`cfg-${id}`);
@@ -824,40 +2080,92 @@
         }
       });
       
-      s.alignH      = (chkAlignH && chkAlignH.checked) ? '1' : '0';
-      s.alignV      = (chkAlignV && chkAlignV.checked) ? '1' : '0';
-      s.aAlignH     = (chkAAlignH && chkAAlignH.checked) ? '1' : '0';
-      s.aAlignV     = (chkAAlignV && chkAAlignV.checked) ? '1' : '0';
-      s.soAlignH    = (chkSoAlignH && chkSoAlignH.checked) ? '1' : '0';
-      s.soAlignV    = (chkSoAlignV && chkSoAlignV.checked) ? '1' : '0';
-      s.chatAlignH  = (chkChatAlignH && chkChatAlignH.checked) ? '1' : '0';
-      s.chatAlignV  = (chkChatAlignV && chkChatAlignV.checked) ? '1' : '0';
-      s.qaAlignH    = (chkQaAlignH && chkQaAlignH.checked) ? '1' : '0';
-      s.qaAlignV    = (chkQaAlignV && chkQaAlignV.checked) ? '1' : '0';
+      const isV = layoutContext === 'vert';
+      s.layout = isV ? 'vertical' : 'horizontal';
+
+      const getChk = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.checked) ? '1' : '0';
+      };
+
+      // Horizontal alignment flags
+      s.alignH     = getChk('chk-alignH');
+      s.alignV     = getChk('chk-alignV');
+      s.aAlignH    = getChk('chk-aAlignH');
+      s.aAlignV    = getChk('chk-aAlignV');
+      s.soAlignH   = getChk('chk-soAlignH');
+      s.soAlignV   = getChk('chk-soAlignV');
+      s.chatAlignH = getChk('chk-chatAlignH');
+      s.chatAlignV = getChk('chk-chatAlignV');
+      s.qaAlignH   = getChk('chk-qaAlignH');
+      s.qaAlignV   = getChk('chk-qaAlignV');
+
+      // Vertical alignment flags
+      s.v_alignH     = getChk('chk-v_alignH');
+      s.v_alignV     = getChk('chk-v_alignV');
+      s.v_aAlignH    = getChk('chk-v_aAlignH');
+      s.v_aAlignV    = getChk('chk-v_aAlignV');
+      s.v_soAlignH   = getChk('chk-v_soAlignH');
+      s.v_soAlignV   = getChk('chk-v_soAlignV');
+      s.v_chatAlignH = getChk('chk-v_chatAlignH');
+      s.v_chatAlignV = getChk('chk-v_chatAlignV');
+      s.v_qaAlignH   = getChk('chk-v_qaAlignH');
+      s.v_qaAlignV   = getChk('chk-v_qaAlignV');
       
-      if (selModules) s.modules = selModules.value;
+      const mods = [];
+      const mSel = document.getElementById('cfg-modules');
+      if (mSel && mSel.value === 'all') {
+        s.modules = 'all';
+      } else {
+        if(document.getElementById('mod-walkon') && document.getElementById('mod-walkon').checked) mods.push('walkon');
+        if(document.getElementById('mod-alerts') && document.getElementById('mod-alerts').checked) mods.push('alerts');
+        if(document.getElementById('mod-shoutout') && document.getElementById('mod-shoutout').checked) mods.push('shoutout');
+        if(document.getElementById('mod-chat') && document.getElementById('mod-chat').checked) mods.push('chat');
+        if(document.getElementById('mod-qa') && document.getElementById('mod-qa').checked) mods.push('qa');
+        
+        if (mSel && mSel.value !== 'all') {
+           s.modules = mSel.value; // Single module dropdown logic fallback
+        } else {
+           s.modules = mods.length > 0 ? mods.join(',') : 'none';
+        }
+      }
+      
       s.stats = JSON.stringify(statRows);
       return s;
     }
 
     function updateGeneratedUrlOnly() {
-      if (!urlOutput) return;
-      const p = new URLSearchParams(getSetupState());
-      urlOutput.value = window.location.href.replace(/setup\.html.*$/, 'gta-overlay.html') + '?' + p.toString();
+      if (urlOutHoriz) {
+        const ph = new URLSearchParams(getSetupState('horiz'));
+        urlOutHoriz.value = window.location.href.replace(/setup\.html.*$/, 'gta-overlay.html') + '?' + ph.toString();
+      }
+      if (urlOutVert) {
+        const pv = new URLSearchParams(getSetupState('vert'));
+        urlOutVert.value = window.location.href.replace(/setup\.html.*$/, 'gta-overlay.html') + '?' + pv.toString();
+      }
     }
 
     function syncLiveConfig() {
-      const state = getSetupState();
       updateGeneratedUrlOnly();
-      if (previewFrame && previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', state }, '*');
+      fitPreviewCanvas();
+      if (frameHoriz && frameHoriz.contentWindow) frameHoriz.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', targetLayout: 'horizontal', state: getSetupState('horiz') }, '*');
+      if (frameVert && frameVert.contentWindow) frameVert.contentWindow.postMessage({ type: 'LIVE_CONFIG_UPDATE', targetLayout: 'vertical', state: getSetupState('vert') }, '*');
     }
 
     function initialLoadIframe() {
       updateGeneratedUrlOnly();
-      if (!previewFrame) return;
-      const p = new URLSearchParams(getSetupState());
-      if (pinCheckbox && pinCheckbox.checked) p.set('preview', '1');
-      previewFrame.src = 'gta-overlay.html?' + p.toString();
+      if (frameHoriz) {
+        const ph = new URLSearchParams(getSetupState('horiz'));
+        if (pinCheckbox && pinCheckbox.checked) ph.set('preview', '1');
+        ph.set('layout', 'horizontal'); // explicitly define layout
+        frameHoriz.src = 'gta-overlay.html?' + ph.toString();
+      }
+      if (frameVert) {
+        const pv = new URLSearchParams(getSetupState('vert'));
+        if (pinCheckbox && pinCheckbox.checked) pv.set('preview', '1');
+        pv.set('layout', 'vertical'); // explicitly define layout
+        frameVert.src = 'gta-overlay.html?' + pv.toString();
+      }
     }
 
     baseInputs.forEach(id => { 
@@ -868,19 +2176,19 @@
       const el = document.getElementById('chk-' + id);
       if (el) el.addEventListener('change', syncLiveConfig); 
     });
-    if (selModules) selModules.addEventListener('change', initialLoadIframe);
+    document.querySelectorAll('.mod-chk').forEach(el => el.addEventListener('change', initialLoadIframe));
 
-    const btnCopyUrl = document.getElementById('btn-copy-url');
-    if (btnCopyUrl && urlOutput) {
-      btnCopyUrl.addEventListener('click', () => {
-        navigator.clipboard.writeText(urlOutput.value);
-        btnCopyUrl.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
-        setTimeout(() => { btnCopyUrl.innerHTML = '<i class="fa-solid fa-copy"></i> Copy'; }, 2000);
-      });
+    function copyUrl(elementId, btnEl) {
+      const urlInput = document.getElementById(elementId);
+      if (urlInput) {
+        navigator.clipboard.writeText(urlInput.value);
+        btnEl.innerHTML = `<i class="fa-solid fa-check"></i> <span data-i18n="btn_copied">${t('btn_copied')}</span>`;
+        setTimeout(() => { btnEl.innerHTML = `<i class="fa-solid fa-copy"></i> <span data-i18n="btn_copy">${t('btn_copy')}</span>`; }, 2000);
+      }
     }
 
     function connectSetupToSB() {
-      const state = getSetupState();
+      const state = getSetupState('horiz'); // Connection settings are shared
       if (sbAdminClient) try { sbAdminClient.disconnect(); } catch (e) {}
       
       const opts = { 
@@ -894,10 +2202,10 @@
           Twitch: ['ChatMessage']
         },
         onConnect: () => { 
-          if (sbStatusBadge) { sbStatusBadge.classList.add('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> SB Connected'; }
+          if (sbStatusBadge) { sbStatusBadge.classList.add('connected'); sbStatusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span data-i18n="status_connected">${t('status_connected')}</span>`; }
         },
         onDisconnect: () => { 
-          if (sbStatusBadge) { sbStatusBadge.classList.remove('connected'); sbStatusBadge.innerHTML = '<i class="fa-solid fa-plug"></i> Disconnected'; }
+          if (sbStatusBadge) { sbStatusBadge.classList.remove('connected'); sbStatusBadge.innerHTML = `<i class="fa-solid fa-plug"></i> <span data-i18n="status_disconnected">${t('status_disconnected')}</span>`; }
         }
       };
       if (state.password) opts.password = state.password;
@@ -911,74 +2219,78 @@
         else if (typeof d?.data === 'string') try { d = JSON.parse(d.data); } catch (e) {}
         if (!d) return;
 
-        const cur = getSetupState();
+        const cur = getSetupState('horiz');
         const ev = d.event || d.type;
         if (ev === 'GTA_UserLookupResult') {
-          if (testStatusLog) { testStatusLog.style.color = '#53d8bf'; testStatusLog.textContent = `Loaded real SB vars for ${d.userName || d.targetUser}!`; }
-          if (previewFrame) {
-            if (pendingLookupTargetModule === 'shoutout') {
-              previewFrame.contentWindow.postMessage({
-                type: 'TRIGGER_SHOUTOUT_TEST',
-                payload: {
-                  user: String(d.userName || d.targetUser || 'MEMBER').toUpperCase(),
-                  avatar: d[cur.vAvatar] || d.avatarUrl || d.userProfileUrl || ''
-                }
-              }, '*');
-            } else if (pendingLookupTargetModule === 'qa') {
-              const qaMsg = document.getElementById('test-qa-msg')?.value || 'What a legendary stream!';
-              previewFrame.contentWindow.postMessage({
-                type: 'TRIGGER_QA_TEST',
-                payload: {
-                  user: String(d.userName || d.targetUser || 'MEMBER').toUpperCase(),
-                  msg: qaMsg,
-                  avatar: d[cur.vAvatar] || d.avatarUrl || d.userProfileUrl || ''
-                }
-              }, '*');
-            } else {
-              previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: d }, '*');
+          if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.style.color = '#53d8bf'; testStatusLog.textContent = t('status_loaded_vars').replace('{user}', d.userName || d.targetUser); }
+          [frameHoriz, frameVert].forEach(frame => {
+            if (frame && frame.contentWindow) {
+              if (pendingLookupTargetModule === 'shoutout') {
+                frame.contentWindow.postMessage({
+                  type: 'TRIGGER_SHOUTOUT_TEST',
+                  payload: { user: String(d.userName || d.targetUser || 'MEMBER').toUpperCase(), avatar: d[cur.vAvatar] || d.avatarUrl || d.userProfileUrl || '' }
+                }, '*');
+              } else if (pendingLookupTargetModule === 'qa') {
+                const qaMsg = document.getElementById('test-qa-msg')?.value || 'What a legendary stream!';
+                frame.contentWindow.postMessage({
+                  type: 'TRIGGER_QA_TEST',
+                  payload: { user: String(d.userName || d.targetUser || 'MEMBER').toUpperCase(), msg: qaMsg, avatar: d[cur.vAvatar] || d.avatarUrl || d.userProfileUrl || '' }
+                }, '*');
+              } else {
+                frame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: d }, '*');
+              }
             }
-          }
+          });
         } else if (ev === cur.alertEvent) {
-          if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: d }, '*');
+          if (frameHoriz) frameHoriz.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: d }, '*');
+          if (frameVert) frameVert.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: d }, '*');
         } else if (ev === cur.soEvent) {
-          if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: d }, '*');
+          if (frameHoriz) frameHoriz.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: d }, '*');
+          if (frameVert) frameVert.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: d }, '*');
         } else if (ev === cur.qaEvent) {
-          if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: d }, '*');
+          if (frameHoriz) frameHoriz.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: d }, '*');
+          if (frameVert) frameVert.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: d }, '*');
         }
       });
 
       sbAdminClient.on('Misc.GlobalVariableUpdated', (payload) => {
-        const cur = getSetupState();
+        const cur = getSetupState('horiz');
         const varName = payload?.data?.name;
         const newValue = payload?.data?.newValue;
         if (!varName || !newValue) return;
         if (varName === cur.soVar) {
           try {
             const soData = typeof newValue === 'string' ? JSON.parse(newValue) : newValue;
-            if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: soData }, '*');
+            if (frameHoriz) frameHoriz.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: soData }, '*');
+            if (frameVert) frameVert.contentWindow.postMessage({ type: 'TRIGGER_SHOUTOUT_TEST', payload: soData }, '*');
           } catch (e) {}
         } else if (varName === cur.qaVar) {
           try {
             const qaData = typeof newValue === 'string' ? JSON.parse(newValue) : newValue;
-            if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: qaData }, '*');
+            if (frameHoriz) frameHoriz.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: qaData }, '*');
+            if (frameVert) frameVert.contentWindow.postMessage({ type: 'TRIGGER_QA_TEST', payload: qaData }, '*');
           } catch (e) {}
         }
       });
 
       sbAdminClient.on('YouTube.Message', (payload) => {
         const d = payload?.data || payload;
-        if (!d || !previewFrame) return;
+        if (!d) return;
         const u = d.user || {};
-        previewFrame.contentWindow.postMessage({
-          type: 'TRIGGER_CHAT_TEST',
-          payload: {
-            userName: u.name || d.userName || 'YouTube User',
-            userId: u.id || d.userId || '',
-            message: d.message || '',
-            role: (u.isModerator || u.isOwner) ? 'mod' : ((u.isSponsor || u.isMember) ? 'member' : 'viewer'),
-            avatar: u.profileImageUrl || ''
+        [frameHoriz, frameVert].forEach(frame => {
+          if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage({
+              type: 'TRIGGER_CHAT_TEST',
+              payload: {
+                userName: u.name || d.userName || 'YouTube User',
+                userId: u.id || d.userId || '',
+                message: d.message || '',
+                role: (u.isModerator || u.isOwner) ? 'mod' : ((u.isSponsor || u.isMember) ? 'member' : 'viewer'),
+                avatar: u.profileImageUrl || ''
+              }
+            }, '*');
           }
-        }, '*');
+        });
       });
     }
     const btnConnectSb = document.getElementById('btn-connect-sb');
@@ -991,13 +2303,18 @@
       { userName: 'TommyV_86', levelName: 'Starfish Island VIP', months: 36, avatarUrl: 'https://i.pravatar.cc/300?img=68', role: 'viewer', msg: 'That getaway drift was clean!!' }
     ];
 
+    function sendToBoth(msg) {
+      if (frameHoriz && frameHoriz.contentWindow) frameHoriz.contentWindow.postMessage(msg, '*');
+      if (frameVert && frameVert.contentWindow) frameVert.contentWindow.postMessage(msg, '*');
+    }
+
     const btnSimWalkon = document.getElementById('btn-sim-walkon');
     if (btnSimWalkon) {
       btnSimWalkon.addEventListener('click', () => {
         const pick = mocks[Math.floor(Math.random() * mocks.length)];
         let p = { ...pick };
         statRows.forEach((r, i) => { if (p[r.varName] === undefined) p[r.varName] = (i + 1) * 10; });
-        if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_WALKON_TEST', payload: p }, '*');
+        sendToBoth({ type: 'TRIGGER_WALKON_TEST', payload: p });
       });
     }
 
@@ -1007,15 +2324,15 @@
         const typeEl = document.getElementById('sim-alert-type');
         const type = typeEl ? typeEl.value : 'sub';
         const p = { alertType: type, userName: 'Lucia_Caminos', userProfileUrl: 'https://i.pravatar.cc/300?img=47' };
-        if (type === 'sub') p.triggerName = "New Subscriber";
-        if (type === 'member') { p.triggerName = "New Member"; p.levelName = "Leonida VIP"; }
-        if (type === 'milestone') { p.triggerName = "Member Milestone"; p.months = 12; p.levelName = "Leonida VIP"; p.message = "Keep up the great streams!"; }
-        if (type === 'gift') { p.triggerName = "Membership Gift"; p.count = 5; }
-        if (type === 'giftRec') { p.triggerName = "Gift Membership Received"; p.gifterUser = "TommyV_86"; }
-        if (type === 'superchat') { p.triggerName = "Super Chat"; p.amount = "$20.00"; p.message = "Love the stream!"; }
-        if (type === 'supersticker') { p.triggerName = "Super Sticker"; p.amount = "$5.00"; p.stickerImageUrl = "https://www.gstatic.com/youtube/img/pdg/gift/assets/loot_box.webp"; p.message = "Awesome!"; }
-        if (type === 'jewels') { p.triggerName = "Jewels Gifted"; p.jewelsAmount = 150; p.jewelsName = "Controller"; p.jewelsUrl = "https://www.gstatic.com/youtube/img/pdg/gift/assets/controller.webp"; }
-        if (previewFrame) previewFrame.contentWindow.postMessage({ type: 'TRIGGER_ALERT_TEST', payload: p }, '*');
+        if (type === 'sub') p.triggerName = t('al_new_sub');
+        if (type === 'member') { p.triggerName = t('al_new_mem'); p.levelName = "Leonida VIP"; }
+        if (type === 'milestone') { p.triggerName = t('al_milestone'); p.months = 12; p.levelName = "Leonida VIP"; p.message = "Keep up the great streams!"; }
+        if (type === 'gift') { p.triggerName = t('al_gift_sent'); p.count = 5; }
+        if (type === 'giftRec') { p.triggerName = t('al_gift_rec'); p.gifterUser = "TommyV_86"; }
+        if (type === 'superchat') { p.triggerName = t('al_superchat'); p.amount = "$20.00"; p.message = "Love the stream!"; }
+        if (type === 'supersticker') { p.triggerName = t('al_supersticker'); p.amount = "$5.00"; p.stickerImageUrl = "https://www.gstatic.com/youtube/img/pdg/gift/assets/loot_box.webp"; p.message = "Awesome!"; }
+        if (type === 'jewels') { p.triggerName = t('al_jewels'); p.jewelsAmount = 150; p.jewelsName = "Controller"; p.jewelsUrl = "https://www.gstatic.com/youtube/img/pdg/gift/assets/controller.webp"; }
+        sendToBoth({ type: 'TRIGGER_ALERT_TEST', payload: p });
       });
     }
 
@@ -1023,16 +2340,7 @@
     if (btnSimShoutout) {
       btnSimShoutout.addEventListener('click', () => {
         const pick = mocks[Math.floor(Math.random() * mocks.length)];
-        if (previewFrame) {
-          previewFrame.contentWindow.postMessage({
-            type: 'TRIGGER_SHOUTOUT_TEST',
-            payload: {
-              user: pick.userName.toUpperCase(),
-              avatar: pick.avatarUrl,
-              timestamp: Date.now()
-            }
-          }, '*');
-        }
+        sendToBoth({ type: 'TRIGGER_SHOUTOUT_TEST', payload: { user: pick.userName.toUpperCase(), avatar: pick.avatarUrl, timestamp: Date.now() } });
       });
     }
 
@@ -1042,17 +2350,7 @@
         const pick = mocks[Math.floor(Math.random() * mocks.length)];
         const roleSel = document.getElementById('sim-chat-role')?.value || 'random';
         const role = roleSel === 'random' ? pick.role : roleSel;
-        if (previewFrame) {
-          previewFrame.contentWindow.postMessage({
-            type: 'TRIGGER_CHAT_TEST',
-            payload: {
-              userName: pick.userName,
-              message: pick.msg,
-              role: role,
-              avatar: pick.avatarUrl
-            }
-          }, '*');
-        }
+        sendToBoth({ type: 'TRIGGER_CHAT_TEST', payload: { userName: pick.userName, message: pick.msg, role: role, avatar: pick.avatarUrl } });
       });
     }
 
@@ -1060,17 +2358,7 @@
     if (btnSimQA) {
       btnSimQA.addEventListener('click', () => {
         const pick = mocks[Math.floor(Math.random() * mocks.length)];
-        if (previewFrame) {
-          previewFrame.contentWindow.postMessage({
-            type: 'TRIGGER_QA_TEST',
-            payload: {
-              user: pick.userName.toUpperCase(),
-              msg: pick.msg,
-              avatar: pick.avatarUrl,
-              timestamp: Date.now()
-            }
-          }, '*');
-        }
+        sendToBoth({ type: 'TRIGGER_QA_TEST', payload: { user: pick.userName.toUpperCase(), msg: pick.msg, avatar: pick.avatarUrl, timestamp: Date.now() } });
       });
     }
 
@@ -1082,11 +2370,11 @@
       const actionName = actionNameEl ? actionNameEl.value.trim() : 'GTA_LookupYouTubeUser';
       
       if (!targetUser) {
-        if (testStatusLog) { testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = 'Enter a Channel ID or Username first.'; }
+        if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = t('status_enter_user'); }
         return;
       }
       if (!sbAdminClient || !sbStatusBadge.classList.contains('connected')) {
-        if (testStatusLog) { testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = 'Not connected to Streamer.bot!'; }
+        if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = t('status_not_connected'); }
         return;
       }
       try {
@@ -1101,13 +2389,13 @@
         const evName = document.getElementById('cfg-event') ? document.getElementById('cfg-event').value : 'MemberWalkOn';
         
         if (action) {
-          if (testStatusLog) { testStatusLog.style.color = '#fede9a'; testStatusLog.textContent = `Querying SB for "${targetUser}"...`; }
+          if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.style.color = '#fede9a'; testStatusLog.textContent = t('status_querying').replace('{user}', targetUser); }
           await sbAdminClient.doAction(action.id, { targetUser, requestedVars: reqVars, eventName: evName });
         } else {
-          if (testStatusLog) { testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = `Action "${actionName}" not found in SB.`; }
+          if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.style.color = '#f4acc4'; testStatusLog.textContent = t('status_action_not_found').replace('{action}', actionName); }
         }
       } catch (err) {
-        if (testStatusLog) testStatusLog.textContent = 'Error querying SB.';
+        if (testStatusLog) { testStatusLog.removeAttribute('data-i18n'); testStatusLog.textContent = t('status_error_query'); }
       }
     }
 
@@ -1120,7 +2408,7 @@
     const btnTestQaUser = document.getElementById('btn-test-qa-user');
     if (btnTestQaUser) btnTestQaUser.addEventListener('click', () => querySBUserAndTest('qa'));
 
-    fitPreviewCanvas(); renderStatRowEditors(); initialLoadIframe(); connectSetupToSB();
+    fitPreviewCanvas(); applyLanguageTranslation(true); initialLoadIframe(); connectSetupToSB();
   </script>
 </body>
 </html>

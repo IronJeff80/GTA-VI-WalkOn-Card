@@ -1,6 +1,6 @@
 /* ==========================================================================
    GTA VI OBS OVERLAYS - MASTER STYLESHEET (css/overlays.css)
-   v0.0.5 - 5-Module Suite (Walk-On Card, Alerts, Shoutout, Horizontal Chat, Q&A)
+   v0.1.4 - Multi-Canvas, Multi-Language, Multi-Module Suite
    ========================================================================== */
 
 :root {
@@ -23,6 +23,11 @@
   /* Gradients */
   --grad-gta-badge: linear-gradient(135deg, var(--gta-purple) 0%, var(--gta-pink) 100%);
   --grad-gta-border: linear-gradient(90deg, var(--gta-teal), var(--gta-pink), var(--gta-purple));
+
+  /* Base Canvas Scale & Dimensions */
+  --canvas-w: 1920px;
+  --canvas-h: 1080px;
+  --canvas-scale: 1;
 
   /* Module 1: Walk-On Card Overrides */
   --card-x: 60px;
@@ -77,13 +82,28 @@
   user-select: none;
 }
 
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: transparent !important;
+}
+
 body.obs-canvas {
-  width: 1920px;
-  height: 1080px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: var(--canvas-w);
+  height: var(--canvas-h);
+  transform: scale(var(--canvas-scale));
+  transform-origin: 0 0;
   overflow: hidden;
   background: transparent !important;
   font-family: var(--font-body);
-  position: relative;
   perspective: 1200px;
 }
 
@@ -169,7 +189,6 @@ body.preview-interactive .animate-in .studio-resize-handle {
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
-/* Top-anchored modules put their resize handle on the bottom-right corner */
 body.preview-interactive .alert-container.animate-in .studio-resize-handle,
 body.preview-interactive .shoutout-container.animate-in .studio-resize-handle {
   top: auto;
@@ -622,7 +641,7 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   position: absolute;
   left: var(--chat-x);
   bottom: var(--chat-y);
-  width: var(--chat-w, 1920px);
+  width: var(--chat-w);
   transform-origin: bottom left;
   transform: scale(var(--chat-scale));
   z-index: 80;
@@ -652,7 +671,6 @@ body.preview-interactive .snap-guide.horizontal { left: 0; right: 0; height: 2px
   backdrop-filter: none !important;
 }
 
-/* Track aligns messages so newest enters on the right and pushes older messages left */
 .chat-track {
   display: flex;
   flex-direction: row;
